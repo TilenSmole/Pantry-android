@@ -1,0 +1,342 @@
+{"recepies":
+[
+    {
+      "name": "Pasta with tuna and tomatoes",
+      "prep_time": "10 min",
+      "cook_time": "20 min",
+      "total_time": "30 min",
+      "ingredients": [
+        { "amount": "250g", "ingredient": "macaroni" },
+        { "amount": "1", "ingredient": "onion" },
+        { "amount": "1 can", "ingredient": "tuna" },
+        { "amount": "1", "ingredient": "tomato" },
+        { "amount": "1 tbsp", "ingredient": "sour cream" },
+        { "amount": "1 pinch", "ingredient": "salt" },
+        { "amount": "1 pinch", "ingredient": "pepper" },
+        { "amount": "1 pinch", "ingredient": "oregano" },
+        { "amount": "1 pinch", "ingredient": "basil" }
+      ],
+      "instructions": [
+        "First cook the macaroni.",
+        "For the topping, finely chop the onion, then fry lightly in the oil until golden.",
+        "Add the sliced parsnips and tuna.",
+        "Season to taste with salt and pepper.",
+        "Sauté for a few minutes.",
+        "Before serving, stir the sour cream into the sauce.",
+        "Pour the sauce over the pasta and sprinkle with oregano, basil, and grated cheese."
+      ]
+    },
+    {
+      "name": "Spaghetti Carbonara",
+      "prep_time": "10 min",
+      "cook_time": "15 min",
+      "total_time": "25 min",
+      "ingredients": [
+        { "amount": "200g", "ingredient": "Spaghetti" },
+        { "amount": "2", "ingredient": "Eggs" },
+        { "amount": "150g", "ingredient": "Pancetta" },
+        { "amount": "50g", "ingredient": "Parmesan cheese" },
+        { "amount": "to taste", "ingredient": "Black pepper" },
+        { "amount": "to taste", "ingredient": "Salt" }
+      ],
+      "instructions": [
+        "Boil spaghetti in salted water until al dente.",
+        "In a separate bowl, beat eggs and mix in grated Parmesan cheese and black pepper.",
+        "In a pan, fry pancetta until crispy.",
+        "Drain spaghetti and add to the pan with pancetta.",
+        "Quickly mix in the egg mixture, ensuring the eggs don't scramble.",
+        "Serve immediately, garnished with additional Parmesan and black pepper."
+      ]
+    },
+    {
+      "name": "Tortilla",
+      "prep_time": "20 min",
+      "cook_time": "20 min",
+      "total_time": "40 min",
+      "ingredients": [
+        { "amount": "500g", "ingredient": "chicken fillets" },
+        { "amount": "as needed", "ingredient": "oil" },
+        { "amount": "1", "ingredient": "onion" },
+        { "amount": "2", "ingredient": "small peppers" },
+        { "amount": "100g", "ingredient": "frozen peas" },
+        { "amount": "100g", "ingredient": "canned corn" },
+        { "amount": "200g", "ingredient": "pelati (canned tomatoes)" },
+        { "amount": "200g", "ingredient": "sour cream" },
+        { "amount": "to taste", "ingredient": "salt" },
+        { "amount": "to taste", "ingredient": "ground pepper" },
+        { "amount": "4", "ingredient": "small tortillas" },
+        { "amount": "50g", "ingredient": "grated cheddar" },
+        { "amount": "150g", "ingredient": "grated mozzarella" }
+      ],
+      "instructions": [
+        "Cut the chicken fillets into strips. Peel and chop the onion, and cut the peppers into small cubes.",
+        "Heat the oil in a pan and sauté the chicken strips for three minutes. When the meat changes color, transfer it to a plate.",
+        "Use the same pan for sautéing the vegetables. Add a bit more oil if needed, then sauté the onion and pepper for four minutes. Add peas, corn, and pelati.",
+        "Return the chicken strips to the pan and stir in half of the sour cream. Season with salt and pepper, cook for two more minutes, then remove from heat.",
+        "Preheat the oven to 220°C. Place some filling on each tortilla, sprinkle with a little cheddar and mozzarella. Roll up and place side by side in a baking dish, folded end up. Secure with a toothpick.",
+        "Brush the stuffed tortillas with the remaining sour cream and cheese mixture. Bake for 15 to 20 minutes until the cheese and sour cream are nicely browned."
+      ]
+    },
+    {
+      "name": "Omelette with ham and cheese",
+      "prep_time": "5 min",
+      "cook_time": "10 min",
+      "total_time": "15 min",
+      "ingredients": [
+        { "amount": "4", "ingredient": "eggs" },
+        { "amount": "50ml", "ingredient": "milk" },
+        { "amount": "30g", "ingredient": "ham" },
+        { "amount": "1", "ingredient": "spring onion" },
+        { "amount": "1.5 tsp", "ingredient": "butter" },
+        { "amount": "30g", "ingredient": "cheese (Edam, Gouda, Cheddar)" },
+        { "amount": "2 pinches", "ingredient": "salt" },
+        { "amount": "1 pinch", "ingredient": "pepper" }
+      ],
+      "instructions": [
+        "Wash and finely chop the onion. Cut the ham into pieces (or narrower strips) and grate the cheese into a cup.",
+        "Break the eggs into a bowl and whisk them. Add ham, milk, onion, salt, and pepper. Mix everything well.",
+        "Heat a pan over medium heat. Add butter and wait for it to melt. Rotate the pan to coat it evenly with butter.",
+        "Pour the egg mixture into the pan. When the edges of the omelette set, lift them with a spatula to let the uncooked egg flow underneath.",
+        "When the omelette sets but is still moist on top, sprinkle 3/4 of the cheese over it. Fold the omelette onto a plate, sprinkle with the remaining cheese, and serve."
+      ]
+    },
+    {
+      "name": "Spanish Tortilla",
+      "prep_time": "15 min",
+      "cook_time": "25 min",
+      "total_time": "40 min",
+      "ingredients": [
+        { "amount": "100ml", "ingredient": "olive oil" },
+        { "amount": "400g", "ingredient": "waxy potatoes" },
+        { "amount": "1", "ingredient": "onion" },
+        { "amount": "5", "ingredient": "eggs" },
+        { "amount": "0.5 tsp", "ingredient": "salt" },
+        { "amount": "3 pinches", "ingredient": "pepper" }
+      ],
+      "instructions": [
+        "Peel the potatoes, wash them under running water, and cut into small pieces. Dry the potato pieces with paper towels. Peel and finely chop the onion.",
+        "Heat a large pan over medium heat and add olive oil. Add the potato pieces and chopped onion, reduce the heat, and sauté the vegetables for about 20 minutes, stirring frequently. The potatoes should become soft but not brown.",
+        "Break the eggs into a large bowl and lightly whisk them. Season the eggs with salt and pepper. Place a sieve over a new bowl and pour the sautéed vegetables into it. Save the drained oil and mix the drained vegetables with the eggs.",
+        "Wipe the pan with a paper towel and heat 4 tablespoons of the saved oil. Pour the egg mixture into the pan and cook the tortilla over moderate heat for 3 to 5 minutes. When the eggs set on the bottom, place an inverted plate over the pan and flip the tortilla onto the plate. Add a little more saved oil to the pan, then slide the tortilla back in and cook the other side until golden brown. Let the tortilla rest for at least 5 minutes before cutting into quarters and serving."
+      ]
+    },
+    {
+      "name": "Bolognese Sauce",
+      "prep_time": "10 min",
+      "cook_time": "53 min",
+      "total_time": "1 h 03 min",
+      "ingredients": [
+        { "amount": "1", "ingredient": "onion" },
+        { "amount": "2 cloves", "ingredient": "garlic" },
+        { "amount": "2", "ingredient": "carrots" },
+        { "amount": "1 stalk", "ingredient": "celery" },
+        { "amount": "2.5 tbsp", "ingredient": "oil" },
+        { "amount": "400g", "ingredient": "ground beef" },
+        { "amount": "100g", "ingredient": "ground pork" },
+        { "amount": "400g", "ingredient": "canned whole tomatoes" },
+        { "amount": "150ml", "ingredient": "beef broth" },
+        { "amount": "2", "ingredient": "bay leaves" },
+        { "amount": "1 tsp", "ingredient": "dried oregano" },
+        { "amount": "1 tsp", "ingredient": "fresh thyme leaves" },
+        { "amount": "0.75 tsp", "ingredient": "salt" },
+        { "amount": "2 pinches", "ingredient": "freshly ground black pepper" }
+      ],
+      "instructions": [
+        "Peel and finely chop the onion and garlic. Clean and peel the carrots, then cut into cubes. Wash and cut the celery stalk into smaller pieces.",
+        "Heat a large pan, then add oil. Sauté the ground meat quickly. Add the onion, garlic, carrot, and celery, mix well, and continue sautéing for a few more minutes. Season with salt and pepper.",
+        "Add the tomatoes with their liquid and mash them with a fork. Wait for the sauce to boil. Add wine and beef broth, along with bay leaves, thyme, and oregano. Mix the sauce well.",
+        "Reduce the heat and simmer the sauce for about 40 minutes, stirring occasionally."
+      ]
+    },
+
+    {
+      "name": "Pineapple and Chicken Risotto",
+      "prep_time": "10 min",
+      "cook_time": "25 min",
+      "total_time": "35 min",
+      "ingredients": [
+        { "amount": "200g", "ingredient": "rice" },
+        { "amount": "200g", "ingredient": "chicken breast" },
+        { "amount": "1 can", "ingredient": "pineapple" },
+        { "amount": "2", "ingredient": "shallots" },
+        { "amount": "to taste", "ingredient": "turmeric or curry" },
+        { "amount": "to taste", "ingredient": "marjoram" },
+        { "amount": "to taste", "ingredient": "chives" },
+        { "amount": "to taste", "ingredient": "sweet paprika" },
+        { "amount": "to taste", "ingredient": "salt" },
+        { "amount": "to taste", "ingredient": "pepper" },
+        { "amount": "to taste", "ingredient": "olive oil" },
+        { "amount": "a piece", "ingredient": "butter" }
+      ],
+      "instructions": [
+        "Cut the chicken breast into strips and fry them in hot oil. Remove them from the pan and sauté the chopped shallots in the same oil. Cut the canned pineapple into pieces and add them to the onions. Add all the spices and sauté for a minute to blend the flavors.",
+        "Add the washed rice and sauté for 2 minutes with the pineapple and onions. Pour in the pineapple juice and water and add the fried chicken strips. There should be enough water to cover the rice.",
+        "Cook for about 15 minutes, adding water as needed. When the rice is cooked, remove from heat, add butter, and mix well. Let it rest for five minutes, then serve the risotto on a plate. Top with a slice of pineapple."
+      ]
+    },
+    {
+      "name": "Sweet and Sour Sauce ala Uncle Ben's",
+      "prep_time": "10 min",
+      "cook_time": "30 min",
+      "total_time": "40 min",
+      "ingredients": [
+        { "amount": "1", "ingredient": "onion" },
+        { "amount": "5 cloves", "ingredient": "garlic" },
+        { "amount": "2", "ingredient": "tomatoes" },
+        { "amount": "1", "ingredient": "bell pepper" },
+        { "amount": "5 small", "ingredient": "baby carrots" },
+        { "amount": "1 can", "ingredient": "pineapple" },
+        { "amount": "0.5 tsp", "ingredient": "pepper" },
+        { "amount": "0.5 tsp", "ingredient": "Vegeta (seasoning)" },
+        { "amount": "2 tbsp", "ingredient": "chopped parsley" },
+        { "amount": "200ml", "ingredient": "orange juice" },
+        { "amount": "100ml", "ingredient": "water" },
+        { "amount": "2 tbsp", "ingredient": "honey" },
+        { "amount": "3 tbsp", "ingredient": "ketchup" },
+        { "amount": "3 tbsp", "ingredient": "white vinegar" },
+        { "amount": "1 tsp", "ingredient": "ground chili (optional)" }
+      ],
+      "instructions": [
+        "Sauté the onion, then add garlic and chopped carrots. Add pepper, Vegeta, chopped bell pepper, and tomatoes, sauté a little, then add honey, vinegar, parsley, water, and ketchup. Cook for 20 minutes.",
+        "Then, transfer some pieces of carrots and bell peppers (about 5 tablespoons) to another bowl. Add 5 tablespoons of pineapple and all the juice from the can to the sauce, and blend with an immersion blender. Return the bell peppers and carrots to the sauce, add the remaining pineapple, and chili if desired, then cook for another 10 minutes.",
+        "This prepared sauce can be stored in jars and refrigerated. It can be served cold or warm."
+      ]
+    },
+        {
+          "name": "Juicy Chicken Rolls",
+          "prep_time": "15 min",
+          "cook_time": "20 min",
+          "total_time": "35 min",
+          "ingredients": [
+            { "amount": "150-180g", "ingredient": "chicken breast" },
+            { "amount": "1 slice", "ingredient": "prosciutto" },
+            { "amount": "1 slice", "ingredient": "cheese" },
+            { "amount": "a little", "ingredient": "mustard" },
+            { "amount": "60g", "ingredient": "couscous" }
+          ],
+          "instructions": [
+            "Pound the chicken breasts as thinly as possible. Season the steak (with paprika, salt, and pepper) and place a slice of prosciutto and cheese on it, along with a little mustard. Roll up the steak (to prevent it from unrolling, secure it with toothpicks in several places). Place the rolls on a baking sheet and bake in the oven at 180°C (350°F) for about 20 minutes or until browned.",
+            "Meanwhile, prepare the couscous according to the instructions (salt it and avoid overcooking). Serve."
+          ]
+        },
+        {
+          "name": "Couscous with Vegetable Sauce",
+          "prep_time": "15 min",
+          "cook_time": "35 min",
+          "total_time": "50 min",
+          "ingredients": [
+            { "amount": "1/2", "ingredient": "brown onion" },
+            { "amount": "1", "ingredient": "leek" },
+            { "amount": "1", "ingredient": "bell pepper (red)" },
+            { "amount": "1", "ingredient": "eggplant" },
+            { "amount": "1", "ingredient": "zucchini" },
+            { "amount": "1", "ingredient": "fresh chili (optional)" },
+            { "amount": "6 sprigs", "ingredient": "fresh thyme or 1 tsp dried thyme" },
+            { "amount": "2", "ingredient": "fresh tomatoes" },
+            { "amount": "400ml", "ingredient": "tomato puree" },
+            { "amount": "to taste", "ingredient": "salt" },
+            { "amount": "to taste", "ingredient": "pepper" },
+            { "amount": "to taste", "ingredient": "olive oil" },
+            { "amount": "200g", "ingredient": "couscous" },
+            { "amount": "300ml", "ingredient": "boiling water" },
+            { "amount": "1 pinch", "ingredient": "salt" },
+            { "amount": "to taste", "ingredient": "pepper" },
+            { "amount": "2 tbsp", "ingredient": "olive oil" },
+            { "amount": "a small handful", "ingredient": "fresh parsley (optional)" }
+          ],
+          "instructions": [
+            "Heat oil in a saucepan and sauté the onion and leek. Once softened, add diced bell pepper and chopped chili and continue sautéing. Then add sliced eggplant, zucchini, and diced fresh tomatoes and cook until the vegetables are wilted.",
+            "As soon as the vegetables soften and the liquid in the pan decreases, add enough tomato puree to cover all the vegetables, along with thyme, salt, and pepper. Stir well and cook until the sauce thickens, about 15 minutes.",
+            "Towards the end of the sauce cooking time, prepare the couscous. In a bowl, add couscous, salt, 1 tablespoon of olive oil, and pour over boiling water. Cover and let sit for 5 minutes to absorb the water.",
+            "Once the couscous has absorbed the water, heat the remaining tablespoon of olive oil in a pan and fluff the couscous with a fork. Sprinkle with chopped parsley and freshly ground pepper, then mix well. Stir the couscous into the sauce, garnish with additional thyme or parsley if desired, and serve."
+          ]
+        },
+        {
+          "name": "Spanish Tortilla Baked in the Oven",
+          "prep_time": "20 min",
+          "cook_time": "30 min",
+          "total_time": "50 min",
+          "ingredients": [
+            { "amount": "4-5 large", "ingredient": "potatoes" },
+            { "amount": "1", "ingredient": "onion" },
+            { "amount": "5-6", "ingredient": "eggs" },
+            { "amount": "to taste", "ingredient": "salt" },
+            { "amount": "to taste", "ingredient": "pepper" },
+            { "amount": "to taste", "ingredient": "olive oil or other vegetable oil" }
+          ],
+          "instructions": [
+            "Prepare the potatoes: Peel the potatoes and cut them into thin slices. Also finely chop the onion.",
+            "Fry the potatoes and onion: Heat oil in a large pan and add the potato slices and chopped onion. Fry over medium heat until the potatoes are soft but not overly browned.",
+            "Prepare the eggs: In a separate bowl, whisk the eggs and add salt and pepper to taste.",
+            "Combine: Drain excess oil from the pan with potatoes and onions, then pour the beaten eggs over the potatoes and onions, mixing well.",
+            "Bake: Transfer the mixture to a greased round baking dish or ovenproof skillet. Bake in a preheated oven at 180°C (350°F) for about 20-30 minutes or until the tortilla is firm and golden brown.",
+            "Serve: Once the tortilla is baked, remove it from the oven, let it cool slightly, then cut into wedges or slices. Enjoy your Spanish tortilla!"
+          ]
+        },
+        {
+          "name": "Lentils with Tomato",
+          "prep_time": "10 min",
+          "cook_time": "40 min",
+          "total_time": "50 min",
+          "ingredients": [
+            { "amount": "600g", "ingredient": "red lentils" },
+            { "amount": "100g", "ingredient": "onion" },
+            { "amount": "2 large", "ingredient": "ripe tomatoes" },
+            { "amount": "to taste", "ingredient": "salt" }
+          ],
+          "instructions": [
+            "Cook the lentils: Cook the lentils with a bay leaf and a piece of onion. Once the lentils are partially cooked, add salt and cook until fully tender.",
+            "Prepare the onion and tomatoes: Peel and finely chop the onion. Sauté the onion in olive oil, then add the cooked lentils and peeled, chopped ripe tomatoes. Simmer for another 30 minutes, adding salt and pepper to taste."
+          ]
+        },
+        {
+          "name": "Quesadilla: Folded Tortilla with Cheese and Broccoli",
+          "prep_time": "15 min",
+          "cook_time": "5 min",
+          "total_time": "20 min",
+          "ingredients": [
+            { "amount": "1/4 head", "ingredient": "broccoli" },
+            { "amount": "1 handful", "ingredient": "cheese (edam, cheddar, or any melting cheese)" },
+            { "amount": "1 piece", "ingredient": "butter" },
+            { "amount": "1 clove", "ingredient": "garlic" },
+            { "amount": "1", "ingredient": "tortilla (whole wheat or regular)" },
+            { "amount": "to taste", "ingredient": "salt" },
+            { "amount": "to taste", "ingredient": "pepper" }
+          ],
+          "instructions": [
+            "Prepare broccoli, garlic butter, and cheese: Cut the broccoli into florets, rinse, and blanch – in a pan, add a little water and cook the broccoli for a few minutes until softened. Chop the softened broccoli. Melt butter in a small pan, then heat the chopped garlic in it. Once fragrant, strain the butter. If short on time, you can apply a little butter directly to the pan when cooking the tortilla and sprinkle garlic powder on the broccoli if desired. Grate the cheese.",
+            "Assemble the tortilla: Spread the butter mixture on one side of the tortilla, then flip and on the inner half of the tortilla, first spread most of the cheese, add half of the broccoli, season with salt and pepper, and then top with the remaining cheese. Fold the tortilla.",
+            "Cook the tortilla: Transfer the tortilla to a pan on the stove and cover (to melt the cheese). Cook for about two minutes. Once the cheese melts and the bottom of the tortilla is golden, flip and cook the other side.",
+            "Serve: Transfer the cooked tortilla to a cutting board, cut into pieces, and serve immediately. It pairs well with a bit of sour cream or Greek yogurt, and is also great with a bowl of salad or a plate of soup."
+          ]
+        },
+        {
+          "name": "Lentil and Pumpkin Croquettes",
+          "prep_time": "20 min",
+          "cook_time": "30 min",
+          "total_time": "50 min",
+          "ingredients": [
+            { "amount": "100g", "ingredient": "red lentils" },
+            { "amount": "1/2", "ingredient": "small hokkaido pumpkin" },
+            { "amount": "a large handful", "ingredient": "grated cheese (e.g., Emmental)" },
+            { "amount": "1 small", "ingredient": "onion" },
+            { "amount": "1", "ingredient": "egg" },
+            { "amount": "1/2 cup", "ingredient": "flour" },
+            { "amount": "1 cup", "ingredient": "bread crumbs" },
+            { "amount": "to taste", "ingredient": "salt" },
+            { "amount": "to taste", "ingredient": "pepper" },
+            { "amount": "for frying", "ingredient": "oil" }
+          ],
+          "instructions": [
+            "Prepare the ingredients: Peel and chop the pumpkin into small cubes, then steam until soft. Cook the lentils according to package instructions. Fry chopped onion in a little oil until soft.",
+            "Combine: Mix the steamed pumpkin, cooked lentils, and fried onion in a large bowl. Mash until smooth, then stir in grated cheese. Season with salt and pepper.",
+            "Form and coat: Shape the mixture into small croquettes. Roll each croquette in flour, then dip into beaten egg, and finally coat with bread crumbs.",
+            "Fry: Heat oil in a pan and fry the croquettes until golden brown on all sides. Drain on paper towels and serve."
+          ]
+        }
+      ]
+
+    
+      
+  
+    }
