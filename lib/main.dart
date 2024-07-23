@@ -1,10 +1,11 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'profile.dart';
-import 'recepies.dart';
+import 'profile.dart'  as profile;
+import 'recipies.dart';
 import 'shopping_cart.dart';
 import 'storage.dart';
+import 'login.dart';
 
 void main() {
   runApp(MyApp());
@@ -70,11 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
         case 1:
          page = FavoritesPage();
         case 2:
-          page = Recepies();
+          page = Login();
         case 3:
-          page = Recepies();
+          page = Recipies();
         case 4:
-          page = Profile();
+          page = profile.Profile();
         default:
           page = FavoritesPage();
       }
