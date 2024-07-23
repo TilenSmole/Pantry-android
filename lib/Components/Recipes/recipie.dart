@@ -8,7 +8,7 @@ class Recepie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-                resizeToAvoidBottomInset : true,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
             title: Column(
           children: [
@@ -18,8 +18,8 @@ class Recepie extends StatelessWidget {
             ),
           ],
         )),
-        body:
-        SingleChildScrollView(child:          Column(
+        body: SingleChildScrollView(
+            child: Column(
           crossAxisAlignment:
               CrossAxisAlignment.start, // Aligns text to the start
           children: <Widget>[
@@ -37,14 +37,27 @@ class Recepie extends StatelessWidget {
               "Total time: ${recipe["total_time"] ?? "Unknown"}",
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
-            for (var ingredient in recipe["ingredients"])
-              Text(ingredient["amount"] + " " + ingredient["ingredient"]),
-            SizedBox(height: 8), // Adds space between texts
-            for (var instruction in recipe["instructions"])
-              Text(instruction ),
-           
+              if (recipe["ingredients"] is List)
+              ...(
+                recipe["ingredients"] as List
+              ).map(
+                (ingredient) {
+                  // Assuming each ingredient is a map with "amount" and "ingredient"
+                    return Text("${ingredient["amount"] ?? ""} ${ingredient["ingredient"] ?? ""}");
+                },
+              ),
+            SizedBox(height: 8),
+            if (recipe["instructions"] is List)
+              ...(recipe["instructions"] as List).map(
+                (instruction) {
+                  if (instruction is String) {
+                    return Text(instruction);
+                  } else {
+                    return Text("Invalid instruction data");
+                  }
+                },
+              ),
           ],
-        ))
-    );
+        )));
   }
 }

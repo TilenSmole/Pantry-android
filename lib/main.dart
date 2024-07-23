@@ -110,12 +110,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
-              label: 'Profile',
+              label: 'Profile',    
+         
             ),
           ],
-          currentIndex: selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: _onItemTapped,
+  currentIndex: selectedIndex,
+  selectedItemColor: Colors.amber[800], // Color for selected item
+  unselectedItemColor: Colors.grey[600], // Color for unselected items
+        onTap: _onItemTapped,
         ));
   }
 }

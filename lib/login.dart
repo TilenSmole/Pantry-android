@@ -22,8 +22,10 @@ class Login extends StatelessWidget {
 
       if (response.statusCode == 200) {
 
-        // Extract the JWT token from the response
-        final String? token = response.body;
+        final Map<String, dynamic> responseJson = jsonDecode(response.body);
+
+      // Extract the token from the JSON object
+      final String? token = responseJson['token'];
 
         if (token != null) {
           // Save the token using flutter_secure_storage
