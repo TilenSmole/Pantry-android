@@ -3,11 +3,18 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'main.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  @override
+  _LoginState createState() => _LoginState();
+}
+class _LoginState extends  State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final storage = FlutterSecureStorage();
+  var isLogedIn = false;
+
 
   Future<void> login(String email, String password) async {
     try {
@@ -17,20 +24,24 @@ class Login extends StatelessWidget {
         body:
             jsonEncode(<String, String>{'email': email, 'password': password}),
       );
-      print(response.statusCode );
-            print( jsonDecode(response.body));
+      print(response.statusCode);
+      print(jsonDecode(response.body));
 
       if (response.statusCode == 200) {
-
         final Map<String, dynamic> responseJson = jsonDecode(response.body);
 
-      // Extract the token from the JSON object
-      final String? token = responseJson['token'];
+        // Extract the token from the JSON object
+        final String? token = responseJson['token'];
 
         if (token != null) {
           // Save the token using flutter_secure_storage
           await storage.write(key: 'jwt_token', value: token);
           print('Token saved successfully');
+          print("yes nik");
+         Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MyApp()), // Adjust this to navigate to your desired home page
+          );
         } else {
           throw Exception('Token not found in response');
         }
@@ -71,6 +82,7 @@ class Login extends StatelessWidget {
               final email = _emailController.text;
               final password = _passwordController.text;
               login(email, password);
+                
             },
           ),
         ],

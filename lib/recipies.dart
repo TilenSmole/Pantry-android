@@ -28,7 +28,6 @@ class _RecipiesState extends State<Recipies> {
 
       // Decode the JSON data
       final data = json.decode(response);
-      print('JSON Data: data');
 
       // Update the state with the data
       setState(() {
@@ -46,21 +45,18 @@ class _RecipiesState extends State<Recipies> {
     print("Fetching recipes..."); // Debug print statement
 
     try {
-      final response = await http.get(Uri.parse(
-          'http://192.168.1.179:5000/recipes')); // Update URL if needed
-
+      final response =
+          await http.get(Uri.parse('http://192.168.1.179:5000/recipes'));
+      final Map<String, dynamic> data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        final List<dynamic> recipes = jsonDecode(response.body);
+        print('Raw JSON response2: ${data['Recipies']}');
 
-        print('Raw JSON response: ${response.body}');
         setState(() {
-          for (var recipe in recipes) {
-            _items.add(recipe);
-          }
+          _items +=    data['Recipies']; // Assign the recipes to your state variable
         });
 
         // Print the data to the console
-        print('Fetched recipes: $_items');
+        print('Fetched Recipes: ${data['Recipies']}');
       } else {
         // If the server returns an error, throw an exception
         throw Exception('Failed to load recipes');
@@ -90,10 +86,14 @@ class _RecipiesState extends State<Recipies> {
           padding: const EdgeInsets.all(8.0),
           child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddRecipe()),
-                );
+                print("fadsf");
+
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddRecipe()),
+                  );
+                });
               },
               splashColor: Colors.green,
               highlightColor: Colors.blue,
@@ -113,11 +113,12 @@ class _RecipiesState extends State<Recipies> {
               for (var recipe in _items)
                 InkWell(
                     onTap: () {
+                      print(recipe);
+
                       Navigator.push(
                           context,
-                           MaterialPageRoute(
-                              builder: (context) =>
-                                   Recepie(recipe: recipe)));
+                          MaterialPageRoute(
+                              builder: (context) => Recepie(recipe: recipe)));
                     },
                     child: Card(
                       child: Center(

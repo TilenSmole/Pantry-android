@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import './Components/load_token.dart' as load_token;
 import 'login.dart';
+import './Components/logout.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
@@ -70,9 +72,21 @@ class _ProfileState extends State<Profile> {
       ),
       body: Center(
         child: token != null
-            ? Text(
-          'WELCOME: ${_user["id"] == null ? "loading" : _user["username"].toString()} !',
-          style: TextStyle(fontSize: 24),
+            ? Column(
+              children: [
+                 Text( 'WELCOME: ${_user["id"] == null ? "loading" : _user["username"].toString()} !',
+          style: TextStyle(fontSize: 24)),
+          InkWell(onTap: () {
+            logout();
+            Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => super.widget));
+          },
+          child: Text("LOGOUT" ),
+          ) 
+              ]
+             
         )
             : Padding(
                 padding: const EdgeInsets.all(8.0),

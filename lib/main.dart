@@ -67,14 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
       switch (selectedIndex) {
         case 0:
-          page = GeneratorPage();
+          page = ShoppingCart();
         case 1:
-         page = FavoritesPage();
-        case 2:
           page = Login();
-        case 3:
+        case 2:
           page = Recipies();
-        case 4:
+        case 3:
           page = profile.Profile();
         default:
           page = FavoritesPage();
@@ -97,16 +95,12 @@ class _MyHomePageState extends State<MyHomePage> {
               label: 'Shopping List',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long),
-              label: 'Recipes',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.kitchen),
               label: 'Storage',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'School2',
+              icon: Icon(Icons.receipt_long),
+              label: 'Recipes',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),

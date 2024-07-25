@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart'; // For rootBundle
+import 'package:http/http.dart' as http;
+import '../load_token.dart' as load_token;
 
 class AddRecipe extends StatefulWidget {
   @override
@@ -10,20 +11,26 @@ class AddRecipe extends StatefulWidget {
 }
 
 class _AddRecipeState extends State<AddRecipe> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _instructionsController = TextEditingController();
+  final TextEditingController _prep_timeController = TextEditingController();
+  final TextEditingController _cook_timeController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _recipeNameController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _ingreientController = TextEditingController();
+
   final FocusNode _focusNode = FocusNode();
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   List<String> _filteredSuggestions = [];
   List<String> _allSuggestions = [];
   List<String> _selectedFoods = [];
+  String? token;
 
   @override
   void initState() {
     super.initState();
-    _recipeNameController.addListener(_updateSuggestions);
+    _ingreientController.addListener(_updateSuggestions);
     setFood('Vegetables.json', 'vegetables');
     setFood('Fruits.json', 'fruits');
     setFood('Condiments.json', 'condiments');
@@ -41,6 +48,7 @@ class _AddRecipeState extends State<AddRecipe> {
         _showOverlay();
       }
     });
+    _loadToken();
   }
 
   Future<void> setFood(String fileName, String key) async {
@@ -61,10 +69,10 @@ class _AddRecipeState extends State<AddRecipe> {
       }).toList();
 
       // Update the state
-         setState(() {
-      _allSuggestions.addAll(names);
-    });
-
+      setState(() {
+        _allSuggestions.addAll(names);
+      });
+  	  print(_allSuggestions );
       print("Loaded names from $fileName: $names"); // For debugging purposes
     } catch (e) {
       print('Error loading or parsing JSON: $e');
@@ -80,6 +88,7 @@ class _AddRecipeState extends State<AddRecipe> {
     });
 
     if (_filteredSuggestions.isNotEmpty) {
+      print("klicem");
       _showOverlay();
     } else {
       _removeOverlay();
@@ -123,8 +132,9 @@ class _AddRecipeState extends State<AddRecipe> {
                       setState(() {
                         _recipeNameController.text =
                             _filteredSuggestions[index];
-                            _selectedFoods.add(_recipeNameController.text);
-                        _filteredSuggestions = []; // Clear suggestions after selection
+                        _selectedFoods.add('{amount: ${_amountController.text}, ingredient: ${_filteredSuggestions[index]} }');
+                        _filteredSuggestions =
+                            []; // Clear suggestions after selection
                       });
                       _removeOverlay();
                     },
@@ -136,6 +146,47 @@ class _AddRecipeState extends State<AddRecipe> {
         ),
       ),
     );
+  }
+
+Future<void> _loadToken() async {
+    final loadedToken = await load_token.loadToken();
+    setState(() {
+      token = loadedToken;
+    });
+    
+  }
+
+
+  Future<void> uploadRecipe() async {
+    try {
+     print(_selectedFoods);
+      final response = await http.post(
+        Uri.parse('http://192.168.1.179:5000/recipes/add-recipe-mobile'),
+        headers: { 'Authorization': 'Bearer ${token}',
+          'Content-Type': 'application/json'},
+        body:
+            jsonEncode({'title': _nameController.text, 'ingredients': _selectedFoods,
+            'instructions': _instructionsController.text, 'prep_time': _prep_timeController.text,
+            'cook_time': _cook_timeController.text
+            }),
+      );
+
+    
+
+      print(response.statusCode);
+      print(jsonDecode(response.body));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseJson = jsonDecode(response.body);
+
+        // Extract the token from the JSON object
+        final String? token = responseJson['token'];
+      } else {
+        throw Exception('Failed to load recipes');
+      }
+    } catch (e) {
+      print('Error fetching recipes: $e');
+    }
   }
 
   @override
@@ -154,7 +205,7 @@ class _AddRecipeState extends State<AddRecipe> {
                   child: CompositedTransformTarget(
                     link: _layerLink,
                     child: TextFormField(
-                      controller: _recipeNameController,
+                      controller: _ingreientController,
                       focusNode: _focusNode,
                       decoration: InputDecoration(
                         hintText: 'Enter the name of the recipe',
@@ -166,7 +217,7 @@ class _AddRecipeState extends State<AddRecipe> {
                 Expanded(
                   flex: 35,
                   child: TextFormField(
-                    controller: _emailController,
+                    controller: _amountController,
                     decoration: InputDecoration(
                       border: UnderlineInputBorder(),
                       labelText: 'Enter quantity',
@@ -175,29 +226,37 @@ class _AddRecipeState extends State<AddRecipe> {
                 ),
               ],
             ),
-                 ..._selectedFoods.map((selected) => ListTile(
-            title: Text(selected),
-            // Optionally add more properties or actions
-          )).toList(),
-
+            ..._selectedFoods
+                .map((selected) => ListTile(
+                      title: Text(selected),
+                      // Optionally add more properties or actions
+                    ))
+                .toList(),
             TextFormField(
-              
-              controller: _emailController,
+              controller: _prep_timeController,
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
-                labelText: 'Enter your email',
+                labelText: 'Enter prep time',
               ),
             ),
             TextFormField(
-              controller: _passwordController,
+              controller: _cook_timeController,
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
-                labelText: 'Enter your password',
+                labelText: 'Enter cook time',
+              ),
+            ),
+                TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Enter name',
               ),
             ),
             SizedBox(
               height: 120,
               child: TextField(
+                controller: _instructionsController,
                 maxLines: null,
                 expands: true,
                 keyboardType: TextInputType.multiline,
@@ -210,7 +269,7 @@ class _AddRecipeState extends State<AddRecipe> {
             ElevatedButton(
               child: Text("Submit"),
               onPressed: () {
-                // Handle submit action
+                uploadRecipe();
               },
             ),
           ],
