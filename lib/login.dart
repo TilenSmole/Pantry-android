@@ -40,7 +40,7 @@ class _LoginState extends  State<Login> {
           print("yes nik");
          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MyApp()), // Adjust this to navigate to your desired home page
+            MaterialPageRoute(builder: (context) => MyHomePage()), // Adjust this to navigate to your desired home page
           );
         } else {
           throw Exception('Token not found in response');

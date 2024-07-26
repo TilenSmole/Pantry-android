@@ -1,57 +1,73 @@
 import 'package:flutter/material.dart';
-
-
-import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'Components/load_token.dart' as load_token;
+import 'dart:convert';
 
-class Profile extends StatelessWidget {
-  // Fetch recipes function
-  Future<List<dynamic>> fetchRecipes() async {
-  print("Fetching recipes..."); // Debug print statement
-
-  final response = await http.get(Uri.parse('http://192.168.1.179:5000/recipes')); // Update URL if needed
-
-  if (response.statusCode == 200) {
-    // If the server returns a 200 OK response, parse the JSON
-    return jsonDecode(response.body) as List<dynamic>; // Parse response as list
-  } else {
-    // If the server returns an error, throw an exception
-    throw Exception('Failed to load recipes');
-  }
+class Storage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => CreateStorageState();
 }
 
+class CreateStorageState extends State<Storage> {
+  List _storage = [];
+  String? token;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken().then((_) {
+      fetchStorage();
+    });
+  }
+
+  Future<void> _loadToken() async {
+    final loadedToken = await load_token.loadToken();
+    setState(() {
+      token = loadedToken;
+    });
+  }
+
+  Future<void> fetchStorage() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.179:5000/storage'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _storage = data["storage"];
+        });
+      } else {
+        throw Exception('Failed to load storage data');
+      }
+    } catch (e) {
+      print('Error fetching storage data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile Page'),
+        title: Text('Storage Page'),
       ),
       body: Center(
-        child: FutureBuilder<List<dynamic>>(
-          future: fetchRecipes(), // Call fetchRecipes
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // Show loading indicator
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}'); // Display error message
-            } else if (snapshot.hasData) {
-              // Display fetched data
-              return Text(
-                'Recipes: ${snapshot.data}',
-                style: TextStyle(fontSize: 24),
-              );
-            } else {
-              return Text('No data'); // Handle no data case
-            }
-          },
-        ),
+        child: _storage.isEmpty
+            ? Text('No items in storage')
+            : ListView.builder(
+                itemCount: _storage.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_storage[index].toString()),
+                  );
+                },
+              ),
       ),
     );
   }
 }
-
-void main() => runApp(MaterialApp(
-  home: Profile(),
-));
