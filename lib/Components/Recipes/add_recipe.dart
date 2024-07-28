@@ -88,7 +88,6 @@ class _AddRecipeState extends State<AddRecipe> {
     });
 
     if (_filteredSuggestions.isNotEmpty) {
-      print("klicem");
       _showOverlay();
     } else {
       _removeOverlay();
@@ -133,7 +132,7 @@ class _AddRecipeState extends State<AddRecipe> {
                         _recipeNameController.text =
                             _filteredSuggestions[index];
                         _selectedFoods.add('{amount: ${_amountController.text}, ingredient: ${_filteredSuggestions[index]} }');
-                        _filteredSuggestions =
+                       _filteredSuggestions  =
                             []; // Clear suggestions after selection
                       });
                       _removeOverlay();

@@ -52,7 +52,8 @@ class _RecipiesState extends State<Recipies> {
         print('Raw JSON response2: ${data['Recipies']}');
 
         setState(() {
-          _items +=    data['Recipies']; // Assign the recipes to your state variable
+          _items +=
+              data['Recipies']; // Assign the recipes to your state variable
         });
 
         // Print the data to the console
@@ -70,65 +71,72 @@ class _RecipiesState extends State<Recipies> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(30),
-          child: Text(
-            "Recipes",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
-        Text(
-          "here you can find all the available Recipies",
-          style: TextStyle(fontSize: 15),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: InkWell(
-              onTap: () {
-                print("fadsf");
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: Text(
+                "Recipes",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Text(
+              "here you can find all the available Recipies",
+              style: TextStyle(fontSize: 15),
+            ),
+           
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                children: <Widget>[
+                  for (var recipe in _items)
+                    InkWell(
+                        onTap: () {
+                          print(recipe);
 
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddRecipe()),
-                  );
-                });
-              },
-              splashColor: Colors.green,
-              highlightColor: Colors.blue,
-              child: Column(children: [
-                Icon(
-                  Icons.add,
-                  size: 40,
-                  color: Colors.orange,
-                ),
-                Text("ADD A RECIPE")
-              ])),
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Recepie(recipe: recipe)));
+                        },
+                        child: Card(
+                          child: Center(
+                            child: Text(recipe["name"] ?? "unknown"),
+                          ),
+                        ))
+                ],
+              ),
+            )
+          ],
         ),
-        Expanded(
-          child: GridView.count(
-            crossAxisCount: 2,
-            children: <Widget>[
-              for (var recipe in _items)
-                InkWell(
-                    onTap: () {
-                      print(recipe);
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Recepie(recipe: recipe)));
-                    },
-                    child: Card(
-                      child: Center(
-                        child: Text(recipe["name"] ?? "unknown"),
-                      ),
-                    ))
-            ],
+       floatingActionButton:GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddRecipe()),
+            );
+          },
+          child: 
+        Container(
+        
+          height: 75.0,
+          width: 75.0,
+             decoration: BoxDecoration(
+            color: Colors.orange,
+            shape: BoxShape.circle, // Make the container circular
           ),
+          
+          child: Center(child: 
+            Icon(
+              Icons.add,
+              size: 40,
+              color: const Color.fromARGB(255, 0, 0, 0),
+            ),
+
+          )),
+        
         )
-      ],
-    ));
+    );
+        
   }
 }

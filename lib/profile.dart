@@ -48,8 +48,8 @@ class _ProfileState extends State<Profile> {
       if (response.statusCode == 200) {
         print('Raw JSON response: ${response.body}');
         setState(() {
-          _user = jsonDecode(response.body) as Map<String, dynamic>; ;
-          ;
+          _user = jsonDecode(response.body) as Map<String, dynamic>; 
+          
         });
         // Print the data to the console
 

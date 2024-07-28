@@ -37,7 +37,6 @@ class _LoginState extends  State<Login> {
           // Save the token using flutter_secure_storage
           await storage.write(key: 'jwt_token', value: token);
           print('Token saved successfully');
-          print("yes nik");
          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => MyHomePage()), // Adjust this to navigate to your desired home page
