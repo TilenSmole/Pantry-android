@@ -13,7 +13,7 @@ class ShoppingCart extends StatefulWidget {
 
 class CreateShoppingCartState extends State<ShoppingCart> {
   List shopping_cart = [];
-
+  LayerLink _newLayerController = LayerLink();
   TextEditingController _newItemController = TextEditingController();
   TextEditingController _newQtntyItemController = TextEditingController();
   Map<int, TextEditingController> _controllersQTY = {};
@@ -21,7 +21,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   Map<int, FocusNode> _focusNodesQTY = {};
   Map<int, FocusNode> _focusNodesITM = {};
   Map<String, List<String>> suggestions = {};
-  List<String> _filteredSuggestions = ["apple", "banana", "Apple"];
+  List<String> _filteredSuggestions = [];
   List<String> _allSuggestions = [];
   List<String> _selectedFoods = [];
   var openInput = false;
@@ -30,24 +30,37 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   String? token;
   OverlayEntry? _overlayEntry;
   Map<int, LayerLink> _layerLinks = {};
-
+  late ScrollController _scrollController;
   @override
   void initState() {
+            _newItemController.addListener(_updateSuggestions2);
+    _scrollController = ScrollController();
     super.initState();
     setFood('Vegetables.json', 'vegetables');
-
+    setFood('Fruits.json', 'fruits');
+    setFood('Condiments.json', 'condiments');
+    setFood('Dairy.json', 'dairy');
+    setFood('Grains.json', 'grains');
+    setFood('Legumes.json', 'legumes');
+    setFood('Meat.json', 'meat');
+    setFood('Nuts and Seeds.json', 'nuts');
+    setFood('Seafood.json', 'seafood');
+    setFood('Spices and Herbs.json', 'spicesHerbs');
     _loadToken().then((_) {
       getItems();
     });
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus) {
-        closeTypingField();
+          _removeOverlay();
       } else {
         openInputTypingField();
+                _showOverlay2();
+
       }
     });
-  _layerLinks[-1] = LayerLink();
+    _layerLinks[-1] = LayerLink();
     loadFood();
+
   }
 
   Future<void> setFood(String fileName, String key) async {
@@ -71,18 +84,15 @@ class CreateShoppingCartState extends State<ShoppingCart> {
       setState(() {
         _allSuggestions.addAll(names);
       });
-      print(_allSuggestions);
-      print("Loaded names from $fileName: $names"); // For debugging purposes
+      // print(_allSuggestions);
+      //print("Loaded names from $fileName: $names"); // For debugging purposes
     } catch (e) {
       print('Error loading or parsing JSON: $e');
     }
   }
 
-  void _showOverlay(int? itemId) {
-
+  void _showOverlay(int itemId) {
     print("Showing overlay");
-    print(_filteredSuggestions.length);
-  print(itemId != null ? itemId : null);
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
     }
@@ -90,48 +100,107 @@ class CreateShoppingCartState extends State<ShoppingCart> {
     Overlay.of(context)?.insert(_overlayEntry!);
   }
 
- OverlayEntry _createOverlayEntry(int? itemId) {
-  print("creating overlay");
+  OverlayEntry _createOverlayEntry(int itemId) {
+    if (!_layerLinks.containsKey(itemId)) {
+      print("LayerLink for itemId $itemId is missing");
+      return OverlayEntry(
+          builder: (context) => Text(
+              "data") // SizedBox.shrink(), // Empty widget if link is missing
+          );
+    }
+    print("creating overlay");
 
-  // Use the default layer link if itemId is null
-  LayerLink link = itemId == null ? _layerLinks[-1]! : _layerLinks[itemId]!;
-  return OverlayEntry(
-    builder: (context) => Positioned(
-      width: MediaQuery.of(context).size.width,
-      child: CompositedTransformFollower(
-        link: link,
-        showWhenUnlinked: false,
-        offset: Offset(0, 60), // Adjust the vertical offset as needed
-        child: Material(
-          elevation: 4.0,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 200, // Maximum height for the suggestions list
-            ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: _filteredSuggestions.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_filteredSuggestions[index]),
-                  onTap: () {
-                    setState(() {
-                      print("konec");
-                      _filteredSuggestions  =  []; // Clear suggestions after selection
-                    });
-                    _removeOverlay();
-                  },
-                );
-              },
+    LayerLink link = _layerLinks[itemId]!;
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: MediaQuery.of(context).size.width,
+        child: CompositedTransformFollower(
+          link: link,
+          showWhenUnlinked: false,
+          offset: Offset(0, 60), // Adjust the vertical offset as needed
+          child: Material(
+            elevation: 4.0,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: 200, // Maximum height for the suggestions list
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _filteredSuggestions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_filteredSuggestions[index]),
+                    onTap: () {
+                      setState(() {
+                        print(_controllersITM[itemId]?.text);
+                        _controllersITM[itemId]?.text =
+                            _filteredSuggestions[index];
+                        _filteredSuggestions =
+                            []; // Clear suggestions after selection
+                      });
+                      _removeOverlay();
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+void _showOverlay2() {
+    print("Showing overlay");
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+    }
+    _overlayEntry = _createOverlayEntry2();
+    Overlay.of(context)?.insert(_overlayEntry!);
+  }
 
+  OverlayEntry _createOverlayEntry2() {
+  
+    print("creating overlay");
 
+    LayerLink link =  _newLayerController;
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: MediaQuery.of(context).size.width,
+        child: CompositedTransformFollower(
+          link: link,
+          showWhenUnlinked: false,
+          offset: Offset(0, 60), // Adjust the vertical offset as needed
+          child: Material(
+            elevation: 4.0,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: 200, // Maximum height for the suggestions list
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _filteredSuggestions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_filteredSuggestions[index]),
+                    onTap: () {
+                      setState(() {
+                        _newItemController.text =
+                            _filteredSuggestions[index];
+                        _filteredSuggestions =
+                            []; // Clear suggestions after selection
+                      });
+                      _removeOverlay();
+                      
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
   Future<void> loadFood() async {
     IngredientLoader loader = IngredientLoader();
     await Future.delayed(Duration(seconds: 1)); // Give it some time to load
@@ -140,8 +209,6 @@ class CreateShoppingCartState extends State<ShoppingCart> {
 
   Future<void> updateItem(int index, String id) async {
     try {
-      print('$index index');
-
       // Extract values as strings
       var amount = _controllersQTY[index]?.text ?? '';
       var ingredient = _controllersITM[index]?.text ?? '';
@@ -187,7 +254,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
         },
       );
 
-      print(response.body);
+      //   print(response.body);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -213,8 +280,8 @@ class CreateShoppingCartState extends State<ShoppingCart> {
               }
               var controller = TextEditingController(text: amountText);
 
-              print(
-                  'Initialized _controllersQTY[${item['id']}] with text: ${controller.text}');
+              //  print(
+              //      'Initialized _controllersQTY[${item['id']}] with text: ${controller.text}');
               return controller;
             },
           );
@@ -238,9 +305,9 @@ class CreateShoppingCartState extends State<ShoppingCart> {
               }
 
               var controller = TextEditingController(text: ingredientText);
-              controller.addListener(_updateSuggestions);
-              print(
-                  'Initialized _controllersITM[${item['id']}] with text: ${controller.text}');
+              controller.addListener(() => _updateSuggestions(item['id']));
+              //   print(
+              //       'Initialized _controllersITM[${item['id']}] with text: ${controller.text}');
               return controller;
             },
           );
@@ -275,15 +342,14 @@ class CreateShoppingCartState extends State<ShoppingCart> {
             },
           );
 
-          _layerLinks = Map.fromIterable(
-            shopping_cart,
-            key: (item) => item['id'] as int,
-            value: (item) => LayerLink(),
-          );
-          _layerLinks[-1] = LayerLink();
+          _layerLinks = {
+            for (var item in shopping_cart) item['id'] as int: LayerLink()
+          };
         });
+        print(_layerLinks);
+        print("_layerLinks");
 
-        print(data["items"]);
+        //  print(data["items"]);
       } else {
         throw Exception('Failed to load items');
       }
@@ -292,23 +358,34 @@ class CreateShoppingCartState extends State<ShoppingCart> {
     }
   }
 
-void _updateSuggestions() {
-  print("Updating suggestions");
-  setState(() {
-    String inputText = "a";//_newItemController.text.toLowerCase();
-    if (inputText.isEmpty) {
-      _filteredSuggestions = [];
-    } else {
-      _filteredSuggestions = _allSuggestions
-          .where((suggestion) =>
-              suggestion.toLowerCase().contains(inputText))
-          .toList();
-    }
-  });
-  _showOverlay(null); // Show the overlay with the default layer link
-}
-
-
+  void _updateSuggestions(int itemId) {
+    print("Updating suggestions");
+    setState(() {
+      String inputText = _controllersITM[itemId]?.text.toLowerCase() ?? '';
+      if (inputText.isEmpty) {
+        _filteredSuggestions = [];
+      } else {
+        _filteredSuggestions = _allSuggestions
+            .where((suggestion) => suggestion.toLowerCase().contains(inputText))
+            .toList();
+      }
+    });
+    _showOverlay(itemId); // Show the overlay with the itemId's layer link
+  }
+ void _updateSuggestions2() {
+    print("Updating suggestions");
+    setState(() {
+      String inputText = _newItemController.text.toLowerCase() ?? '';
+      if (inputText.isEmpty) {
+        _filteredSuggestions = [];
+      } else {
+        _filteredSuggestions = _allSuggestions
+            .where((suggestion) => suggestion.toLowerCase().contains(inputText))
+            .toList();
+      }
+    });
+    _showOverlay2(); 
+  }
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
@@ -364,9 +441,6 @@ void _updateSuggestions() {
 
   Future<void> delete(_itemID, index) async {
     try {
-      print("fasfsda${token}");
-      print(_itemID);
-
       final response = await http.delete(
         Uri.parse('http://192.168.1.179:5000/shopping-list/delete-item-mobile'),
         headers: {
@@ -395,9 +469,6 @@ void _updateSuggestions() {
 
   Future<void> bought(_itemID, index) async {
     try {
-      print("fasfsda${token}");
-      print(_itemID);
-
       final response = await http.put(
         Uri.parse(
             'http://192.168.1.179:5000/storage/add-item-from-sList-mobile'),
@@ -411,9 +482,6 @@ void _updateSuggestions() {
       );
 
       if (response.statusCode == 200) {
-        print("bought");
-        print(shopping_cart);
-
         setState(() {
           final item = shopping_cart.firstWhere((item) => item['id'] == _itemID,
               orElse: () => null);
@@ -428,7 +496,6 @@ void _updateSuggestions() {
       print('Error fetching recipes: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -474,7 +541,6 @@ void _updateSuggestions() {
                                           itemBuilder: (context, index) {
                                             if (index == shopping_cart.length) {
                                               return ListTile(
-                                                
                                                 title: Row(
                                                   children: [
                                                     if (openText)
@@ -482,14 +548,17 @@ void _updateSuggestions() {
                                                         onTap: () {
                                                           openInputTypingField();
                                                         },
-                                                        child: Text(
-                                                            "click here to add a new item"),
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.only(left: 20),
+                                                          child: Text(
+                                                              "click here to add a new item"),
+                                                        ),
                                                       ),
                                                     if (openInput)
                                                       Row(
                                                         children: [
                                                           Container(
-                                                              width: 50,
+                                                              width: 60,
                                                               child:
                                                                   TextFormField(
                                                                 controller:
@@ -499,34 +568,50 @@ void _updateSuggestions() {
                                                                   border:
                                                                       UnderlineInputBorder(),
                                                                   labelText:
-                                                                      'Enter Qnty here',
+                                                                      'Qnty',
                                                                 ),
                                                               )),
-                                                          Container(
-                                                            width: 100,
-                                                            child:
-                                                                CompositedTransformTarget(
-                                                              link:   _layerLinks[-1]!, 
-                                                              child:
-                                                                  TextFormField(
-                                                                controller:
-                                                                    _newItemController,
-                                                                focusNode:
-                                                                    _focusNode,
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  border:
-                                                                      UnderlineInputBorder(),
-                                                                  labelText:
-                                                                      'Enter item here',
-                                                                ),
-                                                                onChanged:  (text) {
-                                                                  _updateSuggestions(); // This updates _filteredSuggestions
-                                                                  _showOverlay(  shopping_cart[ index]  [ 'id']); // Show the overlay when text changes
+                                                        SingleChildScrollView (
+                                                                   controller: _scrollController,
+                                                                   
+        scrollDirection: Axis.vertical,
+                                                          child: Container(
+                                                            width: 190,
+                                                            child: CompositedTransformTarget(
+                                                              link: _newLayerController,
+                                                              child: GestureDetector(
+                                                                onTap: () {
+                                                                  _scrollController.animateTo(
+                                                                    _scrollController.position.maxScrollExtent,
+                                                                    duration: const Duration(milliseconds: 500),
+                                                                    curve: Curves.easeInOut,
+                                                                  );
                                                                 },
+                                                                child: TextFormField(
+                                                                  controller: _newItemController,
+                                                                  focusNode: _focusNode,
+                                                                  decoration: const InputDecoration(
+                                                                    border: UnderlineInputBorder(),
+                                                                    labelText: 'Item',
+                                                                  ),
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
+                                                        ),
+
+                                                          IconButton(
+                                                            icon: Icon(
+                                                                Icons.check),
+                                                            onPressed: () {
+                                                                      closeTypingField();
+
+                                                            },
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    left:
+                                                                        25), // Adjust the padding value as needed
+                                                          )
                                                         ],
                                                       ),
                                                   ],
@@ -584,19 +669,23 @@ void _updateSuggestions() {
                                                               Container(
                                                                 width: 190,
                                                                 child:
-                                                                    TextFormField(
-                                                                  controller:
-                                                                      _controllersITM[
-                                                                          item[
-                                                                              'id']],
-                                                                  focusNode:
-                                                                      _focusNodesITM[
-                                                                          item[
-                                                                              'id']],
-                                                                  decoration:
-                                                                      InputDecoration(
-                                                                    border:
-                                                                        UnderlineInputBorder(),
+                                                                    CompositedTransformTarget(
+                                                                  link: _layerLinks[
+                                                                      item[
+                                                                          'id']]!, // Use the LayerLink associated with the item ID
+                                                                  child:
+                                                                      TextFormField(
+                                                                    controller:
+                                                                        _controllersITM[
+                                                                            item['id']],
+                                                                    focusNode:
+                                                                        _focusNodesITM[
+                                                                            item['id']],
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      border:
+                                                                          UnderlineInputBorder(),
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
@@ -657,7 +746,6 @@ void _updateSuggestions() {
                                   itemCount: shopping_cart.length,
                                   itemBuilder: (context, index) {
                                     final item = shopping_cart[index];
-                                    print(item);
                                     if (item["checked"]) {
                                       var divided = item['item'].split(",");
                                       var amount = divided[0].trim().split(" ");
