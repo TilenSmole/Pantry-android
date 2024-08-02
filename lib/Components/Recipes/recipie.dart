@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'caloriesCalculator.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 class Recepie extends StatelessWidget {
   final Map<String, dynamic> recipe;
 
@@ -29,6 +29,50 @@ class Recepie extends StatelessWidget {
               CrossAxisAlignment.start, // Aligns text to the start
           children: <Widget>[
             SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(left: 17.0, bottom: 10),
+              child: Row(
+                children: [
+            CircularOrangeButton(
+                    icon: Icons.outdoor_grill,
+                    onPressed: () { 
+                      // Handle button press
+                    },
+                  ),
+                 
+                  CircularOrangeButton(
+                    icon: Icons.edit,
+                    onPressed: () {
+                      // Handle button press
+                    },
+                  ),
+                  CircularOrangeButton(
+                    icon: Icons.notes,
+                    onPressed: () {
+                      // Handle button press
+                    },
+                  ),
+                  CircularOrangeButton(
+                    icon: Icons.add,
+                    onPressed: () {
+                      // Handle button press
+                    },
+                  ),
+                  CircularOrangeButton(
+                    icon: Icons.add_box,
+                    onPressed: () {
+                      // Handle button press
+                    },
+                  ),
+                  CircularOrangeButton(
+                    icon: Icons.share,
+                    onPressed: () {
+                      // Handle button press
+                    },
+                  ),
+                ],
+              ),
+            ),
             Container(
               margin: const EdgeInsets.only(left: 20, top: 3),
               decoration: new BoxDecoration(
@@ -103,7 +147,7 @@ List<Widget> _parseInstructions(String instructions) {
     return Padding(
       padding: const EdgeInsets.only(top: 4.0, left: 20.0),
       child: Text(
-        "${instruction.trim()}.", 
+        "${instruction.trim()}.",
         style: TextStyle(fontSize: 20),
       ),
     );
@@ -158,6 +202,31 @@ class IngredientsSection extends StatelessWidget {
             return SizedBox
                 .shrink(); // Return an empty widget for non-map items
           }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class CircularOrangeButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  CircularOrangeButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 215, 184, 152),
+          shape: BoxShape.circle, // Circular shape
+        ),
+        child: IconButton(
+          icon: Icon(icon,
+              size: 25.0, color: Colors.white), // White icon color for contrast
+          onPressed: onPressed,
         ),
       ),
     );

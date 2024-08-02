@@ -43,7 +43,7 @@ class CreateStorageState extends State<Storage> {
           _storage = data["storage"];
         });
       } else {
-        throw Exception('Failed to load storage data');
+        print( Exception('Failed to load storage data'));
       }
     } catch (e) {
       print('Error fetching storage data: $e');

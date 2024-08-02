@@ -33,7 +33,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   late ScrollController _scrollController;
   @override
   void initState() {
-            _newItemController.addListener(_updateSuggestions2);
+    _newItemController.addListener(_updateSuggestions2);
     _scrollController = ScrollController();
     super.initState();
     setFood('Vegetables.json', 'vegetables');
@@ -51,16 +51,14 @@ class CreateShoppingCartState extends State<ShoppingCart> {
     });
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus) {
-          _removeOverlay();
+        _removeOverlay();
       } else {
         openInputTypingField();
-                _showOverlay2();
-
+        _showOverlay2();
       }
     });
     _layerLinks[-1] = LayerLink();
     loadFood();
-
   }
 
   Future<void> setFood(String fileName, String key) async {
@@ -75,7 +73,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
       // Extract the list based on the provided key
       List<dynamic> items = data[key];
 
-      // Extract item names, ensure the value is a String
+      // Extract item names, ensure the value is a String 
       List<String> names = items.map((item) {
         return item["name"].toString(); // Change "name" if the key is different
       }).toList();
@@ -149,7 +147,8 @@ class CreateShoppingCartState extends State<ShoppingCart> {
       ),
     );
   }
-void _showOverlay2() {
+
+  void _showOverlay2() {
     print("Showing overlay");
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
@@ -159,10 +158,9 @@ void _showOverlay2() {
   }
 
   OverlayEntry _createOverlayEntry2() {
-  
     print("creating overlay");
 
-    LayerLink link =  _newLayerController;
+    LayerLink link = _newLayerController;
     return OverlayEntry(
       builder: (context) => Positioned(
         width: MediaQuery.of(context).size.width,
@@ -184,13 +182,11 @@ void _showOverlay2() {
                     title: Text(_filteredSuggestions[index]),
                     onTap: () {
                       setState(() {
-                        _newItemController.text =
-                            _filteredSuggestions[index];
+                        _newItemController.text = _filteredSuggestions[index];
                         _filteredSuggestions =
                             []; // Clear suggestions after selection
                       });
                       _removeOverlay();
-                      
                     },
                   );
                 },
@@ -201,6 +197,7 @@ void _showOverlay2() {
       ),
     );
   }
+
   Future<void> loadFood() async {
     IngredientLoader loader = IngredientLoader();
     await Future.delayed(Duration(seconds: 1)); // Give it some time to load
@@ -210,8 +207,8 @@ void _showOverlay2() {
   Future<void> updateItem(int index, String id) async {
     try {
       // Extract values as strings
-      var amount = _controllersQTY[index]?.text ?? '';
-      var ingredient = _controllersITM[index]?.text ?? '';
+      var amount = _controllersQTY[index]?.text ?? 'default';
+      var ingredient = _controllersITM[index]?.text ?? 'default';
 
       final response = await http.put(
         Uri.parse(
@@ -221,7 +218,9 @@ void _showOverlay2() {
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          'item': '["amount: ${amount}", "ingredient: ${ingredient} "]',
+          'amount': amount,
+          'ingredient': ingredient,
+
           'id': id
         }),
       );
@@ -257,7 +256,7 @@ void _showOverlay2() {
       //   print(response.body);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-
+        print(data);
         setState(() {
           shopping_cart = data["items"];
 
@@ -265,11 +264,11 @@ void _showOverlay2() {
             shopping_cart,
             key: (item) => item['id'] as int,
             value: (item) {
-              var itemText = item['item'] ?? '';
-              var amountText = '';
+              // var itemText = item['item'] ?? '';
+              //  var amountText = '';
 
               // Safely parse amount from the item text
-              if (itemText.contains(',')) {
+              /* if (itemText.contains(',')) {
                 var parts = itemText.split(',');
                 if (parts.length > 1) {
                   var amountPart = parts[0].split(' ');
@@ -277,8 +276,8 @@ void _showOverlay2() {
                     amountText = amountPart[1].replaceAll('"', '');
                   }
                 }
-              }
-              var controller = TextEditingController(text: amountText);
+              }*/
+              var controller = TextEditingController(text: item["amount"]);
 
               //  print(
               //      'Initialized _controllersQTY[${item['id']}] with text: ${controller.text}');
@@ -290,11 +289,11 @@ void _showOverlay2() {
             shopping_cart,
             key: (item) => item['id'] as int,
             value: (item) {
-              var itemText = item['item'] ?? '';
-              var ingredientText = '';
+              //  var itemText = item['item'] ?? '';
+              //  var ingredientText = '';
 
               // Safely parse ingredient from the item text
-              if (itemText.contains(',')) {
+              /*  if (itemText.contains(',')) {
                 var parts = itemText.split(',');
                 if (parts.length > 1) {
                   var ingredientPart = parts[1].trim().split(' ');
@@ -302,9 +301,9 @@ void _showOverlay2() {
                     ingredientText = ingredientPart[1];
                   }
                 }
-              }
+              }*/
 
-              var controller = TextEditingController(text: ingredientText);
+              var controller = TextEditingController(text: item["ingredient"]);
               controller.addListener(() => _updateSuggestions(item['id']));
               //   print(
               //       'Initialized _controllersITM[${item['id']}] with text: ${controller.text}');
@@ -351,7 +350,7 @@ void _showOverlay2() {
 
         //  print(data["items"]);
       } else {
-        throw Exception('Failed to load items');
+        print( Exception('Failed to load items'));
       }
     } catch (e) {
       print('Error fetching items: $e');
@@ -372,7 +371,8 @@ void _showOverlay2() {
     });
     _showOverlay(itemId); // Show the overlay with the itemId's layer link
   }
- void _updateSuggestions2() {
+
+  void _updateSuggestions2() {
     print("Updating suggestions");
     setState(() {
       String inputText = _newItemController.text.toLowerCase() ?? '';
@@ -384,8 +384,9 @@ void _showOverlay2() {
             .toList();
       }
     });
-    _showOverlay2(); 
+    _showOverlay2();
   }
+
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
@@ -403,8 +404,8 @@ void _showOverlay2() {
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          'item':
-              '["amount: ${_newQtntyItemController.text}", "ingredient: ${_newItemController.text} "]',
+          'amount': _newQtntyItemController.text,
+          'ingredient': _newItemController.text,
         }),
       );
 
@@ -527,193 +528,194 @@ void _showOverlay2() {
                             ),
                             SizedBox(
                               height: 500, // give height
-                              child: shopping_cart.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                          "No items in your shopping cart"))
-                                  : Container(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 20),
-                                        child: ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: shopping_cart.length + 1,
-                                          itemBuilder: (context, index) {
-                                            if (index == shopping_cart.length) {
-                                              return ListTile(
-                                                title: Row(
+                              child: Container(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 20),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: shopping_cart.length+1,
+                                    itemBuilder: (context, index) {
+                                      if (index == shopping_cart.length) {
+                                        return ListTile(
+                                          title: Row(
+                                            children: [
+                                              if (openText)
+                                                InkWell(
+                                                  onTap: () {
+                                                    openInputTypingField();
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 20),
+                                                    child: Text(
+                                                        "click here to add a new item"),
+                                                  ),
+                                                ),
+                                              if (openInput)
+                                                Row(
                                                   children: [
-                                                    if (openText)
-                                                      InkWell(
-                                                        onTap: () {
-                                                          openInputTypingField();
-                                                        },
-                                                        child: Padding(
-                                                          padding: const EdgeInsets.only(left: 20),
-                                                          child: Text(
-                                                              "click here to add a new item"),
-                                                        ),
-                                                      ),
-                                                    if (openInput)
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                              width: 60,
-                                                              child:
-                                                                  TextFormField(
-                                                                controller:
-                                                                    _newQtntyItemController,
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  border:
-                                                                      UnderlineInputBorder(),
-                                                                  labelText:
-                                                                      'Qnty',
-                                                                ),
-                                                              )),
-                                                        SingleChildScrollView (
-                                                                   controller: _scrollController,
-                                                                   
-        scrollDirection: Axis.vertical,
-                                                          child: Container(
-                                                            width: 190,
-                                                            child: CompositedTransformTarget(
-                                                              link: _newLayerController,
-                                                              child: GestureDetector(
-                                                                onTap: () {
-                                                                  _scrollController.animateTo(
-                                                                    _scrollController.position.maxScrollExtent,
-                                                                    duration: const Duration(milliseconds: 500),
-                                                                    curve: Curves.easeInOut,
-                                                                  );
-                                                                },
-                                                                child: TextFormField(
-                                                                  controller: _newItemController,
-                                                                  focusNode: _focusNode,
-                                                                  decoration: const InputDecoration(
-                                                                    border: UnderlineInputBorder(),
-                                                                    labelText: 'Item',
-                                                                  ),
-                                                                ),
+                                                    Container(
+                                                        width: 60,
+                                                        child: TextFormField(
+                                                          controller:
+                                                              _newQtntyItemController,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                            border:
+                                                                UnderlineInputBorder(),
+                                                            labelText: 'Qnty',
+                                                          ),
+                                                        )),
+                                                    SingleChildScrollView(
+                                                      controller:
+                                                          _scrollController,
+                                                      scrollDirection:
+                                                          Axis.vertical,
+                                                      child: Container(
+                                                        width: 190,
+                                                        child:
+                                                            CompositedTransformTarget(
+                                                          link:
+                                                              _newLayerController,
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () {
+                                                              _scrollController
+                                                                  .animateTo(
+                                                                _scrollController
+                                                                    .position
+                                                                    .maxScrollExtent,
+                                                                duration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            500),
+                                                                curve: Curves
+                                                                    .easeInOut,
+                                                              );
+                                                            },
+                                                            child:
+                                                                TextFormField(
+                                                              controller:
+                                                                  _newItemController,
+                                                              focusNode:
+                                                                  _focusNode,
+                                                              decoration:
+                                                                  const InputDecoration(
+                                                                border:
+                                                                    UnderlineInputBorder(),
+                                                                labelText:
+                                                                    'Item',
                                                               ),
                                                             ),
                                                           ),
                                                         ),
-
-                                                          IconButton(
-                                                            icon: Icon(
-                                                                Icons.check),
-                                                            onPressed: () {
-                                                                      closeTypingField();
-
-                                                            },
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    left:
-                                                                        25), // Adjust the padding value as needed
-                                                          )
-                                                        ],
                                                       ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(Icons.check),
+                                                      onPressed: () {
+                                                        closeTypingField();
+                                                      },
+                                                      padding: EdgeInsets.only(
+                                                          left:
+                                                              25), // Adjust the padding value as needed
+                                                    )
                                                   ],
                                                 ),
-                                              );
-                                            }
-                                            final item = shopping_cart[index];
-                                            var divided =
-                                                item['item'].split(",");
-                                            if (divided.length > 1 &&
-                                                !item["checked"]) {
-                                              var amount =
+                                            ],
+                                          ),
+                                        );
+                                      }
+                                      final item = shopping_cart[index]!;
+                                      /* var divided =
+                                                item['item'].split(",");*/
+                                      if (item.length > 1 && !item["checked"]) {
+                                        /*var amount =
                                                   divided[0].trim().split(" ");
                                               amount = amount[1].split('"');
                                               var ingredient =
-                                                  divided[1].trim().split(" ");
-                                              if (amount.length > 1) {
-                                                return ListTile(
-                                                  title: SingleChildScrollView(
-                                                    scrollDirection:
-                                                        Axis.horizontal,
+                                                  divided[1].trim().split(" ");*/
+                                        if (item.length > 1) {
+                                          return ListTile(
+                                            title: SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Row(
+                                                children: [
+                                                  IconButton(
+                                                    icon: Icon(Icons
+                                                        .check_box_outline_blank),
+                                                    onPressed: () {
+                                                      bought(item['id'], index);
+                                                    },
+                                                  ),
+                                                  Container(
+                                                    width: 250,
                                                     child: Row(
                                                       children: [
-                                                        IconButton(
-                                                          icon: Icon(Icons
-                                                              .check_box_outline_blank),
-                                                          onPressed: () {
-                                                            bought(item['id'],
-                                                                index);
-                                                          },
-                                                        ),
                                                         Container(
-                                                          width: 250,
-                                                          child: Row(
-                                                            children: [
-                                                              Container(
-                                                                width: 60,
-                                                                child:
-                                                                    TextFormField(
-                                                                  controller:
-                                                                      _controllersQTY[
-                                                                          item[
-                                                                              'id']],
-                                                                  focusNode:
-                                                                      _focusNodesQTY[
-                                                                          item[
-                                                                              'id']],
-                                                                  decoration:
-                                                                      InputDecoration(
-                                                                    border:
-                                                                        UnderlineInputBorder(),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Container(
-                                                                width: 190,
-                                                                child:
-                                                                    CompositedTransformTarget(
-                                                                  link: _layerLinks[
-                                                                      item[
-                                                                          'id']]!, // Use the LayerLink associated with the item ID
-                                                                  child:
-                                                                      TextFormField(
-                                                                    controller:
-                                                                        _controllersITM[
-                                                                            item['id']],
-                                                                    focusNode:
-                                                                        _focusNodesITM[
-                                                                            item['id']],
-                                                                    decoration:
-                                                                        InputDecoration(
-                                                                      border:
-                                                                          UnderlineInputBorder(),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
+                                                          width: 60,
+                                                          child: TextFormField(
+                                                            controller:
+                                                                _controllersQTY[
+                                                                    item['id']],
+                                                            focusNode:
+                                                                _focusNodesQTY[
+                                                                    item['id']],
+                                                            decoration:
+                                                                InputDecoration(
+                                                              border:
+                                                                  UnderlineInputBorder(),
+                                                            ),
                                                           ),
                                                         ),
-                                                        IconButton(
-                                                          icon: Icon(
-                                                              Icons.delete),
-                                                          onPressed: () {
-                                                            delete(item['id'],
-                                                                index);
-                                                          },
-                                                          padding: EdgeInsets.only(
-                                                              left:
-                                                                  25), // Adjust the padding value as needed
-                                                        )
+                                                        Container(
+                                                          width: 190,
+                                                          child:
+                                                              CompositedTransformTarget(
+                                                            link: _layerLinks[item[
+                                                                'id']]!, // Use the LayerLink associated with the item ID
+                                                            child:
+                                                                TextFormField(
+                                                              controller:
+                                                                  _controllersITM[
+                                                                      item[
+                                                                          'id']],
+                                                              focusNode:
+                                                                  _focusNodesITM[
+                                                                      item[
+                                                                          'id']],
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                border:
+                                                                    UnderlineInputBorder(),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ],
                                                     ),
                                                   ),
-                                                );
-                                              }
-                                            }
-                                            return SizedBox.shrink();
-                                          },
-                                        ),
-                                      ),
-                                    ),
+                                                  IconButton(
+                                                    icon: Icon(Icons.delete),
+                                                    onPressed: () {
+                                                      delete(item['id'], index);
+                                                    },
+                                                    padding: EdgeInsets.only(
+                                                        left:
+                                                            25), // Adjust the padding value as needed
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                      return SizedBox.shrink();
+                                    },
+                                  ),
+                                ),
+                              ),
                             )
                           ],
                         )),
@@ -721,7 +723,7 @@ void _showOverlay2() {
                       children: [
                         Container(
                           margin: const EdgeInsets.only(
-                              left: 7, right: 7, top: 50, bottom: 10),
+                              left: 7, right: 7, top: 50, bottom: 40),
                           decoration: new BoxDecoration(
                             borderRadius: new BorderRadius.circular(16.0),
                             color: Color.fromARGB(255, 224, 152, 80),
@@ -747,16 +749,16 @@ void _showOverlay2() {
                                   itemBuilder: (context, index) {
                                     final item = shopping_cart[index];
                                     if (item["checked"]) {
-                                      var divided = item['item'].split(",");
+                                      /*9var divided = item['item'].split(",");
                                       var amount = divided[0].trim().split(" ");
                                       amount = amount[1].split('"');
                                       var ingredient =
-                                          divided[1].trim().split(" ");
+                                          divided[1].trim().split(" ");*/
                                       return ListTile(
                                         title: Row(
                                           children: [
                                             Text(
-                                                "${amount[0]} ${ingredient[1]}",
+                                                "${item["amount"]} ${item["ingredient"]}",
                                                 style: TextStyle(
                                                     decoration: TextDecoration
                                                         .lineThrough)),

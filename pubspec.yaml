@@ -20,7 +20,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_svg: ^1.0.3  
   flutter_lints: ^2.0.0
 
 flutter:
@@ -38,3 +38,4 @@ flutter:
     - FOODS/Seafood.json
     - FOODS/Spices and Herbs.json
     - RECIPES/recipes.json
+    - assets/cooking_24px.svg
