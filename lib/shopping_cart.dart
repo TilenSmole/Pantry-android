@@ -20,10 +20,8 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   Map<int, TextEditingController> _controllersITM = {};
   Map<int, FocusNode> _focusNodesQTY = {};
   Map<int, FocusNode> _focusNodesITM = {};
-  Map<String, List<String>> suggestions = {};
   List<String> _filteredSuggestions = [];
   List<String> _allSuggestions = [];
-  List<String> _selectedFoods = [];
   var openInput = false;
   var openText = true;
   final FocusNode _focusNode = FocusNode();
@@ -58,7 +56,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
       }
     });
     _layerLinks[-1] = LayerLink();
-    loadFood();
+
   }
 
   Future<void> setFood(String fileName, String key) async {
@@ -198,11 +196,6 @@ class CreateShoppingCartState extends State<ShoppingCart> {
     );
   }
 
-  Future<void> loadFood() async {
-    IngredientLoader loader = IngredientLoader();
-    await Future.delayed(Duration(seconds: 1)); // Give it some time to load
-    suggestions = loader.allSuggestions;
-  }
 
   Future<void> updateItem(int index, String id) async {
     try {

@@ -9,15 +9,10 @@ class caloriesCalculator {
 
 
   caloriesCalculator( this.ingredients) {
-  loadFood().then((_) => calculate());
+  //loadFood().then((_) => calculate());
   }
 
-  Future<void> loadFood() async {
-    IngredientLoader loader = IngredientLoader();
-    await Future.delayed(Duration(seconds: 1)); // Give it some time to load
-    data = loader.allSuggestions;
-  }
-
+ 
 
 
   void calculate() {

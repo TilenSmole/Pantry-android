@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 class IngredientLoader {
-  Map<String, List<String>> _allSuggestions = {};
+  List<String> _allSuggestions = [];
 
   IngredientLoader() {
     _init();
@@ -33,21 +33,17 @@ class IngredientLoader {
       List<dynamic> items = data[key];
 
       // Extract item names and related info, ensure the value is a List<String>
-      Map<String, List<String>> extractedData = {
-        for (var item in items.cast<Map<String, dynamic>>()) 
-          item["name"].toString().toLowerCase(): item.entries
-              .where((entry) => entry.key.toLowerCase() != "name")
-              .map((entry) => entry.value.toString())
-              .toList()
-      };
+      List<String> names = items.map((item) {
+        return item["name"].toString(); // Change "name" if the key is different
+      }).toList();
 
       // Add the extracted data to the suggestions map
-      _allSuggestions.addAll(extractedData);
+      _allSuggestions.addAll(names);
 
     } catch (e) {
       print('Error loading or parsing JSON: $e');
     }
   }
 
-  Map<String, List<String>> get allSuggestions => _allSuggestions;
+  List<String> get allSuggestions => _allSuggestions;
 }
