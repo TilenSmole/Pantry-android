@@ -28,15 +28,18 @@ class CreateStorageState extends State<Storage> {
   Map<String, LayerLink> _layerLinks = {};
   OverlayEntry? _overlayEntry;
   final FocusNode _focusNode = FocusNode();
-  Map<int, bool> openClose = {};
+  Map<String, bool> openClose = {};
 
-  final LayerLink _AddItemLink = LayerLink();
+  //final LayerLink _AddItemLink = LayerLink();
   final FocusNode _addCategoryFocusNode = FocusNode();
 
   final TextEditingController _itemController = TextEditingController();
   final TextEditingController _ingredientController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
+
+  final FocusNode _addAmountFocusNode = FocusNode();
+  final FocusNode _addIngredientFocusNode = FocusNode();
 
   final FocusNode _addItemFocusNode = FocusNode();
   final LayerLink _addItemLayerLink = LayerLink();
@@ -204,7 +207,11 @@ class CreateStorageState extends State<Storage> {
       );
 
       if (response.statusCode == 200) {
-        print("Update successful");
+            final Map<String, dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _storage = data["storage"];
+        });
+                      loadFridge();
         _controllersQTY[index]?.text = amount;
         _controllersITM[index]?.text = ingredient;
       } else {
@@ -235,6 +242,18 @@ class CreateStorageState extends State<Storage> {
 
       if (response.statusCode == 200) {
         print("Update successful");
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        print(data["storage"]);
+        setState(() {
+          _storage.add(data["storage"]);
+          categories = [];
+          _ingredientController.text = "";
+          _amountController.text = "";
+          _categoryController.text = "";
+          _removeOverlay();
+        });
+                  loadFridge();
+
       } else {
         throw Exception('Failed to update item');
       }
@@ -244,11 +263,15 @@ class CreateStorageState extends State<Storage> {
   }
 
   Future<void> loadFridge() async {
-    var cat = "";
+ _controllersQTY = {};
+_controllersITM = {};
+_focusNodesQTY = {};
+ _focusNodesITM = {};
+ _layerLinks = {};
+ openClose = {};
+ items = {};
     for (var item in _storage) {
-      print(item['category']);
-      if (item['category'].length > 0) {
-        print(item);
+      if (item != null && item['category']!.isNotEmpty) {
         for (var category in item['category']) {
           if (items.containsKey(category)) {
             items[category]!.add(item);
@@ -273,6 +296,8 @@ class CreateStorageState extends State<Storage> {
           _focusNodesQTY[item["id"].toString() + category] = focusNode;
           _focusNodesITM[item["id"].toString() + category] = focusNode;
           _layerLinks[item["id"].toString() + category] = LayerLink();
+                openClose[item["id"].toString() + category] = false;
+
         }
       } else {
         if (items.containsKey("default")) {
@@ -296,12 +321,12 @@ class CreateStorageState extends State<Storage> {
         _focusNodesQTY[item["id"].toString() + "default"] = focusNode;
         _focusNodesITM[item["id"].toString() + "default"] = focusNode;
         _layerLinks[item["id"].toString() + "default"] = LayerLink();
+              openClose[item["id"].toString() + "default"] = false;
+
       }
 
-      openClose[item["id"]] = false;
     }
 
-    print(_layerLinks);
   }
 
   Future<void> delete(int itemID, String index, item) async {
@@ -323,9 +348,12 @@ class CreateStorageState extends State<Storage> {
 
       if (response.statusCode == 200) {
         print("deleted");
+        final Map<String, dynamic> data = jsonDecode(response.body);
         setState(() {
-          _storage.remove(item);
+          _storage = data["storage"];
         });
+                      loadFridge();
+
       } else {
         print('Failed to delete from storage');
       }
@@ -375,7 +403,7 @@ class CreateStorageState extends State<Storage> {
                     ),
                     TextFormField(
                       controller: _amountController,
-                      focusNode: _focusNode,
+                      focusNode: _addAmountFocusNode,
                       decoration: InputDecoration(
                         hintText: 'Enter the amount',
                         border: UnderlineInputBorder(),
@@ -383,7 +411,7 @@ class CreateStorageState extends State<Storage> {
                     ),
                     TextFormField(
                       controller: _ingredientController,
-                      focusNode: _focusNode,
+                      focusNode: _addIngredientFocusNode,
                       decoration: InputDecoration(
                         hintText: 'Enter the ingredient',
                         border: UnderlineInputBorder(),
@@ -484,19 +512,18 @@ class CreateStorageState extends State<Storage> {
                                                     Expanded(
                                                       child: Row(
                                                         children: [
-                                                          openClose[item[
-                                                                      'id']] ==
+                                                          openClose[item['id'].toString()+  category] ==
                                                                   true
                                                               ? Container(
-                                                                  width: 60,
+                                                                  width: 80,
                                                                   child:
                                                                       TextFormField(
                                                                     controller: _controllersQTY[
                                                                         item['id'].toString() +
                                                                             category],
-                                                                    focusNode: _focusNodesQTY[
+                                                               /*     focusNode: _focusNodesQTY[
                                                                         item['id'].toString() +
-                                                                            category],
+                                                                            category],*/
                                                                     decoration:
                                                                         InputDecoration(
                                                                       border:
@@ -505,16 +532,15 @@ class CreateStorageState extends State<Storage> {
                                                                   ),
                                                                 )
                                                               : Container(),
-                                                          openClose[item[
-                                                                      'id']] ==
+                                                          openClose[item['id'].toString() +  category] ==
                                                                   true
                                                               ? Container(
-                                                                  width: 190,
+                                                                  width: 170,
                                                                   child:
                                                                       CompositedTransformTarget(
                                                                     link: _layerLinks[
                                                                         item['id'].toString() +
-                                                                            category]!, // Use the LayerLink associated with the item ID
+                                                                            category]!, 
                                                                     child:
                                                                         TextFormField(
                                                                       controller:
@@ -533,21 +559,21 @@ class CreateStorageState extends State<Storage> {
                                                                 )
                                                               : Text(item[
                                                                       "amount"] +
-                                                                  "x " +
+                                                                  " x " +
                                                                   item[
                                                                       "ingredient"]),
                                                         ],
                                                       ),
                                                     ),
-                                                    openClose[item['id']] ==
+                                                    openClose[item['id'].toString() +  category] ==
                                                             false
                                                         ? IconButton(
                                                             icon: Icon(
                                                                 Icons.edit),
                                                             onPressed: () {
                                                               setState(() {
-                                                                openClose[item[
-                                                                        'id']] =
+                                                                openClose[item['id'].toString() +
+                                                                              category] =
                                                                     true;
                                                               });
                                                             },
@@ -557,8 +583,8 @@ class CreateStorageState extends State<Storage> {
                                                                 Icons.close),
                                                             onPressed: () {
                                                               setState(() {
-                                                                openClose[item[
-                                                                        'id']] =
+                                                                openClose[item['id'].toString() +
+                                                                              category] =
                                                                     false;
                                                               });
                                                               ;
@@ -567,7 +593,8 @@ class CreateStorageState extends State<Storage> {
                                                   ],
                                                 ),
                                                 subtitle: openClose[
-                                                            item['id']] ==
+                                                            item['id'].toString() +
+                                                                              category] ==
                                                         true
                                                     ? Row(
                                                         children: [
