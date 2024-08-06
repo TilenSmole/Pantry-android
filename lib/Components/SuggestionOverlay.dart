@@ -17,10 +17,6 @@ class SuggestionOverlay {
     required this.layerLink,
   });
 
-  @override
-  void initState() {
-    loadFood();
-  }
 
 Future<void> loadFood() async {
           print("loadFood ");
@@ -41,6 +37,7 @@ Future<void> loadFood() async {
     _filteredSuggestions = allSuggestions.where((suggestion) {
       return suggestion.toLowerCase().contains(query);
     }).toList();
+
 
     if (_filteredSuggestions.isNotEmpty) {
       showOverlay();
@@ -92,7 +89,7 @@ Future<void> loadFood() async {
                     title: Text(_filteredSuggestions[index]),
                     onTap: () {
                       textController.text = _filteredSuggestions[index];
-                      onSuggestionSelected(_filteredSuggestions[index]);
+                      //onSuggestionSelected(_filteredSuggestions[index]);
                       _filteredSuggestions =
                           []; // Clear suggestions after selection
                       removeOverlay();
