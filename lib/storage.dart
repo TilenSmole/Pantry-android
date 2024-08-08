@@ -713,10 +713,15 @@ newCategories = temp;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
         appBar: AppBar(
           title: Text('YOUR STORAGE'),
         ),
-        body: SingleChildScrollView(
+        body:items.isEmpty
+          ? Center(
+              child:
+                  CircularProgressIndicator()) 
+          : SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             children: [

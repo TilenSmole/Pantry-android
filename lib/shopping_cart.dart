@@ -494,7 +494,12 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+
+      body: shopping_cart.isEmpty
+          ? Center(
+              child:
+                  CircularProgressIndicator()) // Show a loading indicator until data is available
+          : SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
@@ -507,7 +512,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
                             left: 7, right: 7, top: 50, bottom: 10),
                         decoration: new BoxDecoration(
                           borderRadius: new BorderRadius.circular(16.0),
-                          color: Color.fromARGB(255, 224, 152, 80),
+                          color: const Color.fromARGB(255, 220, 186, 135),
                         ),
                         child: Column(
                           children: [
@@ -719,7 +724,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
                               left: 7, right: 7, top: 50, bottom: 40),
                           decoration: new BoxDecoration(
                             borderRadius: new BorderRadius.circular(16.0),
-                            color: Color.fromARGB(255, 224, 152, 80),
+                            color: const Color.fromARGB(255, 220, 186, 135),
                           ),
                           child: Column(
                             children: [
