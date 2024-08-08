@@ -74,7 +74,7 @@ import 'package:http/http.dart' as http;
   }
 
 
- Future<int?> addNote(String note, String recipeID,String token ) async {
+ Future<List<dynamic>?> addNote(String note, int recipeID,String token ) async {
     try {
       final response = await http.post(
         Uri.parse('http://192.168.1.179:5000/notes/add-note'),
@@ -89,15 +89,15 @@ import 'package:http/http.dart' as http;
         }),
       );
             
-      print(response.statusCode);
-      print(jsonDecode(response.body));
+
 
       if (response.statusCode == 200) {
-       // final Map<String, dynamic> responseJson = jsonDecode(response.body);
+         final Map<String, dynamic> data = jsonDecode(response.body);
+      
 
-        // Extract the token from the JSON object
-       // final String? token = responseJson['token'];
-       return 1;
+        return  data["notes"];
+
+
       } else {
         throw Exception('Failed to load recipes');
       }
@@ -109,7 +109,7 @@ import 'package:http/http.dart' as http;
 
 
 
-  Future<int?> deleteNote(String note, String recipeID,String token ) async {
+  Future<List<dynamic>?> deleteNote(int noteId, int recipeID,String token ) async {
     try {
       final response = await http.delete(
         Uri.parse('http://192.168.1.179:5000/notes/delete-note'),
@@ -118,21 +118,19 @@ import 'package:http/http.dart' as http;
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          'note': note,
+          'noteId': noteId,
           'recipeID': recipeID,
 
         }),
       );
             
-      print(response.statusCode);
-      print(jsonDecode(response.body));
+
 
       if (response.statusCode == 200) {
-       // final Map<String, dynamic> responseJson = jsonDecode(response.body);
+         final Map<String, dynamic> data = jsonDecode(response.body);
+      
 
-        // Extract the token from the JSON object
-       // final String? token = responseJson['token'];
-       return 1;
+        return  data["notes"];
       } else {
         throw Exception('Failed to load recipes');
       }
@@ -143,7 +141,7 @@ import 'package:http/http.dart' as http;
   }
 
 
-  Future<int?> editNote(String newNote, String recipeID, String noteId,String token ) async {
+  Future<List<dynamic>?> editNote(String newNote, int recipeID, String noteId,String token ) async {
     try {
       final response = await http.put(
         Uri.parse('http://192.168.1.179:5000/notes/edit-note'),
@@ -159,15 +157,13 @@ import 'package:http/http.dart' as http;
         }),
       );
             
-      print(response.statusCode);
-      print(jsonDecode(response.body));
+
 
       if (response.statusCode == 200) {
-       // final Map<String, dynamic> responseJson = jsonDecode(response.body);
+         final Map<String, dynamic> data = jsonDecode(response.body);
+      
 
-        // Extract the token from the JSON object
-       // final String? token = responseJson['token'];
-       return 1;
+        return  data["notes"];
       } else {
         throw Exception('Failed to load recipes');
       }
@@ -178,10 +174,10 @@ import 'package:http/http.dart' as http;
   }
 
 
-Future<int?> getNotes( String recipeID,String token ) async {
+Future<List<dynamic>?> getNotes( int recipeID,String?  token ) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.179:5000/notes/delete-note'),
+        Uri.parse('http://192.168.1.179:5000/notes/'),
         headers: {
           'Authorization': 'Bearer ${token}',
           'Content-Type': 'application/json'
@@ -192,15 +188,19 @@ Future<int?> getNotes( String recipeID,String token ) async {
         }),
       );
             
-      print(response.statusCode);
-      print(jsonDecode(response.body));
+     // print(response.statusCode);
+     // print(jsonDecode(response.body));
 
       if (response.statusCode == 200) {
-       // final Map<String, dynamic> responseJson = jsonDecode(response.body);
+       
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        print(data["notes"]);
+                print(data);
 
-        // Extract the token from the JSON object
-       // final String? token = responseJson['token'];
-       return 1;
+        return  data["notes"];
+      
+
+       
       } else {
         print('Failed to upload to a shopping list from a recipe');
       }
