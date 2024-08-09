@@ -141,7 +141,7 @@ import 'package:http/http.dart' as http;
   }
 
 
-  Future<List<dynamic>?> editNote(String newNote, int recipeID, String noteId,String token ) async {
+  Future<List<dynamic>?> editNote(String newNote, int recipeID, int noteId,String token ) async {
     try {
       final response = await http.put(
         Uri.parse('http://192.168.1.179:5000/notes/edit-note'),
@@ -150,7 +150,7 @@ import 'package:http/http.dart' as http;
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          'note': newNote,
+          'newNote': newNote,
           'recipeID': recipeID,
           'noteId' : noteId
 

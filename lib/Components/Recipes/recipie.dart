@@ -1,5 +1,5 @@
 import 'dart:ffi';
-
+import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'caloriesCalculator.dart';
@@ -30,6 +30,16 @@ class RecepieState extends State<Recepie> {
   Map<int, FocusNode> _notesFocusNode = {};
 
   List<dynamic>? notes = [];
+  List<dynamic>? shoppingList = [];
+
+  bool cook = false;
+
+  //add selected items
+  List<bool> _checkedValues = [];
+  static List<String> _selectedValues = [];
+  Map<int, TextEditingController> _amountsController = {};
+
+
 
   Future<void> _loadToken() async {
     final loadedToken = await load_token.loadToken();
@@ -66,6 +76,7 @@ class RecepieState extends State<Recepie> {
   void initState() {
     super.initState();
     _loadToken();
+    _checkedValues = List<bool>.filled(recipe["ingredients"].length, false);
   }
 
   void _showAddNoteOverlay() {
@@ -168,7 +179,7 @@ class RecepieState extends State<Recepie> {
                                     Container(
                                       height: 200,
                                       child: ListTile(
-                                            contentPadding: EdgeInsets.zero,
+                                        contentPadding: EdgeInsets.zero,
                                         title: TextFormField(
                                           controller:
                                               _notesController[note['id']],
@@ -185,21 +196,24 @@ class RecepieState extends State<Recepie> {
                                     ),
                                     IconButton(
                                       icon: Icon(Icons.delete),
-                                      onPressed: ()  async{
-                                          notes = await API.deleteNote(
-                                              note["id"], recipe["id"], token!);
-                                          _addNoteController.text = "";
-                                          _changeOverlay(false);
-                                      
+                                      onPressed: () async {
+                                        notes = await API.deleteNote(
+                                            note["id"], recipe["id"], token!);
+                                        _addNoteController.text = "";
+                                        _changeOverlay(false);
                                       },
                                     ),
-                                     IconButton(
+                                    IconButton(
                                       icon: Icon(Icons.check),
-                                      onPressed: ()  async{
-                                          notes = await API.editNote(_notesController[note["id"]]!.text, recipe["id"],note['id'], token!);
-                                          _addNoteController.text = "";
-                                          _changeOverlay(false);
-                                      
+                                      onPressed: () async {
+                                        notes = await API.editNote(
+                                            _notesController[note["id"]]!.text,
+                                            recipe["id"],
+                                            note['id'],
+                                            token!);
+                                        _addNoteController.text = "";
+                                        _changeOverlay(false);
+                                        print("object");
                                       },
                                     ),
                                   ],
@@ -213,19 +227,27 @@ class RecepieState extends State<Recepie> {
                                 children: [
                                   editNote
                                       ? Column()
-                                      : Text(
-                                          note["note"],
-                                          style: TextStyle(fontSize: 16),
+                                      : Column(
+                                          children: [
+                                            Text(
+                                              note["note"],
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                            Text(
+                                              "-----------------------------",
+                                            ),
+                                          ],
                                         ),
                                 ],
                               ),
                             ),
                       ] else
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: Row(
+                        Flexible(
+                          child: Column(
                             children: [
-                              Expanded(
+                              Container(
+                                width: 200,
+                                height: 200,
                                 child: TextFormField(
                                   controller: _addNoteController,
                                   focusNode: _addNotefocusNode,
@@ -279,6 +301,81 @@ class RecepieState extends State<Recepie> {
     );
   }
 
+  void _addSelectedSList() {
+    print("_showAddNoteOverlay");
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+    }
+    _overlayEntry = _addSelectedSListOverlayEntry();
+    Overlay.of(context)!.insert(_overlayEntry!);
+  }
+
+  OverlayEntry _addSelectedSListOverlayEntry() {
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: MediaQuery.of(context).size.width / 1.3,
+        top: MediaQuery.of(context).size.height / 3.5,
+        left: MediaQuery.of(context).size.width / 8,
+        child: Material(
+          elevation: 4.0,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 400, // Maximum height for the suggestions list
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text("SELECT INGRIDIENTS "),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        setState(() {
+                          _removeOverlay();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: recipe["ingredients"].length,
+                    itemBuilder: (context, index) {
+                      return CheckboxListTile(
+                          key: ValueKey(index),
+                          title: Text(recipe["ingredients"][index]),
+                          value: _checkedValues[index],
+                          onChanged: (bool? newValue) {
+                            _checkedValues[index] = newValue ?? false;
+                            if (_checkedValues[index] == true) {
+                              _selectedValues.add(recipe["ingredients"][index]);
+                            } else if (_checkedValues[index] == false &&
+                                _selectedValues
+                                    .contains(recipe["ingredients"][index])) {
+                              _selectedValues.remove(recipe["ingredients"][index]);
+                            }
+                          });
+                    },
+                  ),
+                ),
+                  IconButton(
+                      icon: Icon(Icons.check),
+                      onPressed: () {
+                        setState(() {
+                        //  API.addToSList();
+                          _removeOverlay();
+                        });
+                      },
+                    ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -325,16 +422,15 @@ class RecepieState extends State<Recepie> {
                             },
                           ),
                           CircularOrangeButton(
-                            icon: Icons.add,
+                            icon: (!addedToList ? Icons.add : Icons.done),
                             onPressed: () {
-                              // Handle button press
+                              _addSelectedSList();
                             },
                           ),
                           !addedToList
                               ? CircularOrangeButton(
                                   icon: Icons.add_box,
                                   onPressed: () async {
-                                    print(recipe);
                                     int? result = await API.addToSList(
                                         recipe["ingredients"],
                                         recipe["amounts"],
@@ -385,13 +481,13 @@ class RecepieState extends State<Recepie> {
                             ),
                             SizedBox(height: 8), // Adds space between texts
                             Text(
-                              "Total time: ${recipe["total_time"] ?? "Unknown"}", // Fixed key from "cook_time" to "total_time"
+                              "Total time: ${recipe["total_time"] ?? "Unknown"}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              "TOTAL CALORIES: ${caloriesCalculator(recipe["ingredients"]).getCalories() ?? "Unknown"}", // Fixed key from "cook_time" to "total_time"
+                              "TOTAL CALORIES: ${caloriesCalculator(recipe["ingredients"]).getCalories() ?? "Unknown"}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
                             ),
@@ -430,7 +526,13 @@ class RecepieState extends State<Recepie> {
           ],
         ),
         floatingActionButton: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            API.cook(recipe["ingredients"], recipe["amounts"], token!);
+            KeepScreenOn.turnOn();
+            setState(() {
+              cook = true;
+            });
+          },
           child: Container(
               height: 60.0,
               width: 60.0,
@@ -440,7 +542,7 @@ class RecepieState extends State<Recepie> {
               ),
               child: Center(
                 child: Icon(
-                  Icons.microwave,
+                  !cook ? Icons.microwave : Icons.done,
                   size: 20,
                   color: const Color.fromARGB(255, 0, 0, 0),
                 ),
