@@ -822,11 +822,13 @@ newCategories = temp;
                                                                     ),
                                                                   ),
                                                                 )
-                                                              : Text(item[
-                                                                      "amount"] +
-                                                                  " x " +
-                                                                  item[
-                                                                      "ingredient"]),
+                                                              : Flexible(
+                                                                child: Text(item[
+                                                                        "amount"] +
+                                                                    " x " +
+                                                                    item[
+                                                                        "ingredient"]),
+                                                              ),
                                                         ],
                                                       ),
                                                     ),

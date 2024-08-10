@@ -7,14 +7,22 @@ import './API/recipeAPI.dart' as API;
 import '../load_token.dart' as load_token;
 
 class Recepie extends StatefulWidget {
-  final Map<String, dynamic> recipe;
+  Map<String, dynamic> recipe = {
+    'name': 'Unknown Recipe',
+    'ingredients': [], // Default to an empty list
+    'amounts': [], // Default to an empty list
+    'instructions': 'No instructions available',
+    'cook_time': '0', // Default cooking time
+    'prep_time': '0', // Default preparation time
+    'imageUrl': '', // Default to an empty string or placeholder image URL
+  };
   Recepie({Key? key, required this.recipe}) : super(key: key);
   @override
   State<StatefulWidget> createState() => RecepieState(recipe);
 }
 
 class RecepieState extends State<Recepie> {
-  final Map<String, dynamic> recipe;
+  Map<String, dynamic> recipe;
   RecepieState(this.recipe);
   String? token;
   bool addedToList = false;
@@ -36,10 +44,25 @@ class RecepieState extends State<Recepie> {
 
   //add selected items
   List<bool> _checkedValues = [];
-  static List<String> _selectedValues = [];
+  Map<int, String> _selectedAmounts = {};
+  Map<int, String> _selectedIngredients = {};
   Map<int, TextEditingController> _amountsController = {};
+  Map<int, FocusNode> _amountsFocusNode = {};
+  bool canEditSelect = false;
 
+  //freeze
+  TextEditingController _freezePortionsCategory = TextEditingController();
+  FocusNode _freezePortionsCategoryfocusNode = FocusNode();
 
+  List<dynamic>? freezerCategories = [];
+  final TextEditingController _freezePortions = TextEditingController();
+
+  //edit main
+  bool edit = false;
+  TextEditingController _prepTimeController = TextEditingController();
+  FocusNode _prepTimefocusNode = FocusNode();
+  TextEditingController _cookTimeController = TextEditingController();
+  FocusNode _cookTimefocusNode = FocusNode();
 
   Future<void> _loadToken() async {
     final loadedToken = await load_token.loadToken();
@@ -75,8 +98,75 @@ class RecepieState extends State<Recepie> {
   @override
   void initState() {
     super.initState();
-    _loadToken();
+    _loadToken().then((_) {
+      _cookTimefocusNode.addListener(() {
+        if (!_cookTimefocusNode.hasFocus) {
+          if (_cookTimeController.text.length != null) {
+            updateCookTime();
+          }
+        }
+      });
+
+      _prepTimeController.text = recipe["prep_time"];
+      _cookTimeController.text = recipe["cook_time"];
+      _prepTimefocusNode.addListener(() {
+        // Assuming you have the following function
+        if (!_prepTimefocusNode.hasFocus) {
+          if (_prepTimeController.text.isNotEmpty) {
+            updatePrepTime();
+          }
+        }
+      });
+    });
+
     _checkedValues = List<bool>.filled(recipe["ingredients"].length, false);
+
+    var i = 0;
+    for (var amount in recipe["amounts"]) {
+      var controller = TextEditingController(text: amount);
+      setState(() {
+        _amountsController[i++] = controller;
+      });
+    }
+    _freezePortionsCategory.text = "freezer";
+    _freezePortionsCategoryfocusNode.addListener(() {
+      if (!_freezePortionsCategoryfocusNode.hasFocus) {
+        if (_freezePortionsCategory.text.length != null) {
+          setState(() {
+            freezerCategories!.add(_freezePortionsCategory.text);
+            _freezePortionsCategory.text = "";
+          });
+          _freezeOverlay();
+        }
+      }
+    });
+  }
+
+  void updatePrepTime() async {
+    var result = await API.edit_prep_time(
+      recipe["id"],
+      int.parse(_prepTimeController.text),
+      token!,
+    );
+    if (result == 0) {
+      setState(() {
+        recipe["prep_time"] = _prepTimeController.text;
+        edit = false;
+      });
+    }
+  }
+
+  void updateCookTime() async {
+    var result = await API.edit_cook_time(
+        recipe["id"],
+        int.parse(_cookTimeController.text) ,
+        token!) ;
+    if (result == 0) {
+      setState(() {
+        recipe["cook_time"] = _cookTimeController.text;
+        edit = false;
+      });
+    }
   }
 
   void _showAddNoteOverlay() {
@@ -310,6 +400,82 @@ class RecepieState extends State<Recepie> {
     Overlay.of(context)!.insert(_overlayEntry!);
   }
 
+  void _freezeOverlay() {
+    print("_showAddNoteOverlay");
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+    }
+    _overlayEntry = _freezeOverlayEntry();
+    Overlay.of(context)!.insert(_overlayEntry!);
+  }
+
+  OverlayEntry _freezeOverlayEntry() {
+    return OverlayEntry(
+        builder: (context) => Positioned(
+            width: MediaQuery.of(context).size.width / 1.3,
+            top: MediaQuery.of(context).size.height / 3.5,
+            left: MediaQuery.of(context).size.width / 8,
+            child: Material(
+                elevation: 4.0,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text("FREEZING"),
+                            Spacer(),
+                            IconButton(
+                              icon: Icon(Icons.close),
+                              onPressed: () {
+                                setState(() {
+                                  _removeOverlay();
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        TextFormField(
+                            controller: _freezePortions,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: 'Enter the amount',
+                              border: OutlineInputBorder(),
+                            )),
+                        TextFormField(
+                            controller: _freezePortionsCategory,
+                            focusNode: _freezePortionsCategoryfocusNode,
+                            decoration: InputDecoration(
+                              hintText: 'Enter categories',
+                              border: OutlineInputBorder(),
+                            )),
+                        Text("Choosen categories:"),
+                        if (freezerCategories != null) ...[
+                          for (var category in freezerCategories!)
+                            Text(category),
+                        ],
+                        IconButton(
+                          icon: Icon(Icons.check),
+                          onPressed: () {
+                            setState(() {
+                              API.freezeItem(_freezePortions.text,
+                                  recipe["name"], freezerCategories, token);
+                              _removeOverlay();
+                            });
+                            KeepScreenOn.turnOn();
+                            setState(() {
+                              cook = true;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ))));
+  }
+
   OverlayEntry _addSelectedSListOverlayEntry() {
     return OverlayEntry(
       builder: (context) => Positioned(
@@ -328,6 +494,15 @@ class RecepieState extends State<Recepie> {
                   children: [
                     Text("SELECT INGRIDIENTS "),
                     IconButton(
+                      icon: Icon(!canEditSelect ? Icons.edit : Icons.edit_note),
+                      onPressed: () {
+                        setState(() {
+                          canEditSelect = !canEditSelect;
+                          _addSelectedSList();
+                        });
+                      },
+                    ),
+                    IconButton(
                       icon: Icon(Icons.close),
                       onPressed: () {
                         setState(() {
@@ -339,41 +514,99 @@ class RecepieState extends State<Recepie> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    shrinkWrap: true,
                     itemCount: recipe["ingredients"].length,
                     itemBuilder: (context, index) {
                       return CheckboxListTile(
                           key: ValueKey(index),
-                          title: Text(recipe["ingredients"][index]),
+                          title: Row(
+                            children: [
+                              canEditSelect
+                                  ? Expanded(
+                                      child: TextFormField(
+                                          controller: _amountsController[index],
+                                          focusNode: _addNotefocusNode,
+                                          decoration: InputDecoration(
+                                            hintText: 'Enter your note',
+                                            border: OutlineInputBorder(),
+                                          )),
+                                    )
+                                  : Text(recipe["amounts"][index] + "   "),
+                              Text(recipe["ingredients"][index]),
+                            ],
+                          ),
                           value: _checkedValues[index],
                           onChanged: (bool? newValue) {
                             _checkedValues[index] = newValue ?? false;
                             if (_checkedValues[index] == true) {
-                              _selectedValues.add(recipe["ingredients"][index]);
+                              _selectedIngredients[index] =
+                                  recipe["ingredients"][index];
+                              _selectedAmounts[index] =
+                                  _amountsController[index] != null
+                                      ? _amountsController[index]!.text
+                                      : "";
                             } else if (_checkedValues[index] == false &&
-                                _selectedValues
-                                    .contains(recipe["ingredients"][index])) {
-                              _selectedValues.remove(recipe["ingredients"][index]);
+                                _selectedIngredients.containsKey(index)) {
+                              _selectedIngredients.remove(index);
+                              _selectedAmounts.remove(index);
                             }
+                            _addSelectedSList();
                           });
                     },
                   ),
                 ),
-                  IconButton(
-                      icon: Icon(Icons.check),
-                      onPressed: () {
-                        setState(() {
-                        //  API.addToSList();
-                          _removeOverlay();
-                        });
-                      },
-                    ),
+                IconButton(
+                  icon: Icon(Icons.check),
+                  onPressed: () {
+                    setState(() {
+                      List<String> amounts = [];
+                      List<String> ingredients = [];
+
+                      // Iterating over the map using for-in
+                      for (var entry in _selectedAmounts.entries) {
+                        var key = entry.key;
+                        var value = entry.value;
+
+                        amounts.add(_selectedAmounts[key]!);
+                        ingredients.add(_selectedIngredients[key]!);
+                      }
+
+                      API.addToSList(ingredients, amounts, token!);
+                      _removeOverlay();
+                      _checkedValues = [];
+                      _selectedAmounts = {};
+                      _selectedIngredients = {};
+                      _checkedValues = List<bool>.filled(
+                          recipe["ingredients"].length, false);
+                    });
+                  },
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  String calucateTime(var type) {
+    return (int.parse(recipe[type]) < 60)
+        ? "${recipe[type]} min"
+        : "${(int.parse(recipe[type]) / 60).toStringAsFixed(2)} hours";
+  }
+
+  String totalTime() {
+    return recipe["prep_time"] != null && recipe["cook_time"] != null
+        ? int.parse(recipe["prep_time"]) + int.parse(recipe["cook_time"]) > 60
+            ? (((int.parse(recipe["prep_time"]) +
+                                int.parse(recipe["cook_time"])) /
+                            60)
+                        .toStringAsFixed(2))
+                    .toString() +
+                " hours"
+            : (int.parse(recipe["prep_time"]) + int.parse(recipe["cook_time"]))
+                    .toString() +
+                " min"
+        : "Undefined";
   }
 
   @override
@@ -406,13 +639,16 @@ class RecepieState extends State<Recepie> {
                           CircularOrangeButton(
                             icon: Icons.archive,
                             onPressed: () {
-                              // Handle button press
+                              _freezeOverlay();
                             },
                           ),
+                          // if(recipe["userid"] == )
                           CircularOrangeButton(
-                            icon: Icons.edit,
+                            icon: (!edit ? Icons.edit : Icons.edit_note),
                             onPressed: () {
-                              // Handle button press
+                              setState(() {
+                                edit = !edit;
+                              });
                             },
                           ),
                           CircularOrangeButton(
@@ -468,25 +704,58 @@ class RecepieState extends State<Recepie> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            !edit
+                                ? Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start, // Ensures alignment to the start
+                                    children: [
+                                      Text(
+                                        "Preparation time: ${recipe["prep_time"]?.toString() ?? "Unknown"} min",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Cooking time: ${recipe["cook_time"]?.toString() ?? "Unknown"} min",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      TextFormField(
+                                        controller: _prepTimeController,
+                                        focusNode: _prepTimefocusNode,
+                                        decoration: InputDecoration(
+                                          border: UnderlineInputBorder(),
+                                          labelText:
+                                              'Enter preparation time [min]',
+                                        ),
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      TextFormField(
+                                        controller: _cookTimeController,
+                                        focusNode: _cookTimefocusNode,
+                                        decoration: InputDecoration(
+                                          border: UnderlineInputBorder(),
+                                          labelText:
+                                              'Enter preparation time [min]',
+                                        ),
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
                             Text(
-                              "Preparation time: ${recipe["prep_time"] ?? "Unknown"}",
-                              style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(height: 8), // Adds space between texts
-                            Text(
-                              "Cooking time: ${recipe["cook_time"] ?? "Unknown"}",
-                              style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(height: 8), // Adds space between texts
-                            Text(
-                              "Total time: ${recipe["total_time"] ?? "Unknown"}",
+                              "Total time: ${totalTime() ?? "Unknown"}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(height: 10),
-                            Text(
+                             Text(
                               "TOTAL CALORIES: ${caloriesCalculator(recipe["ingredients"]).getCalories() ?? "Unknown"}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
