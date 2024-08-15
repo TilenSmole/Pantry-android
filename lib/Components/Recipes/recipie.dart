@@ -6,6 +6,12 @@ import 'caloriesCalculator.dart';
 import './API/recipeAPI.dart' as API;
 import '../load_token.dart' as load_token;
 
+import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+
+
 class Recepie extends StatefulWidget {
   Map<String, dynamic> recipe = {
     'name': 'Unknown Recipe',
@@ -63,6 +69,12 @@ class RecepieState extends State<Recepie> {
   FocusNode _prepTimefocusNode = FocusNode();
   TextEditingController _cookTimeController = TextEditingController();
   FocusNode _cookTimefocusNode = FocusNode();
+  TextEditingController _instructionsController = TextEditingController();
+
+  Map<int, TextEditingController> _controllersQTY = {};
+  Map<int, TextEditingController> _controllersITM = {};
+  Map<String, FocusNode> _focusNodesQTY = {};
+  Map<String, FocusNode> _focusNodesITM = {};
 
   Future<void> _loadToken() async {
     final loadedToken = await load_token.loadToken();
@@ -90,15 +102,16 @@ class RecepieState extends State<Recepie> {
         });
       }
     }
-
-    print("_notesController");
-    print(_notesController);
   }
 
   @override
   void initState() {
     super.initState();
+    print(recipe["id"]);
+
     _loadToken().then((_) {
+      _prepTimeController.text = recipe["prep_time"];
+      _cookTimeController.text = recipe["cook_time"];
       _cookTimefocusNode.addListener(() {
         if (!_cookTimefocusNode.hasFocus) {
           if (_cookTimeController.text.length != null) {
@@ -106,17 +119,24 @@ class RecepieState extends State<Recepie> {
           }
         }
       });
-
-      _prepTimeController.text = recipe["prep_time"];
-      _cookTimeController.text = recipe["cook_time"];
       _prepTimefocusNode.addListener(() {
-        // Assuming you have the following function
         if (!_prepTimefocusNode.hasFocus) {
           if (_prepTimeController.text.isNotEmpty) {
             updatePrepTime();
           }
         }
       });
+      _instructionsController.text = recipe["instructions"];
+      for (var i = 0; i < recipe["ingredients"].length; i++) {
+        var controller = TextEditingController(text: recipe["ingredients"][i]);
+        controller.addListener(() => _updateIngredient(i));
+        _controllersITM[i] = controller;
+        var controller2 = TextEditingController(text: recipe["amounts"][i]);
+        controller2.addListener(() => _updateIngredient(i));
+
+        _controllersQTY[i] = controller2;
+
+      }
     });
 
     _checkedValues = List<bool>.filled(recipe["ingredients"].length, false);
@@ -142,6 +162,103 @@ class RecepieState extends State<Recepie> {
     });
   }
 
+  void _updateIngredient(int index) {
+      recipe["ingredients"][index] =  _controllersITM[index]!.text;
+      recipe["amounts"][index] =  _controllersQTY[index]!.text;
+  }
+
+Future<void> createAndSharePdf() async {
+  final pdf = pw.Document();
+
+  pdf.addPage(
+    pw.Page(
+      build: (pw.Context context) {
+        return pw.Column(
+          children: [
+            pw.Text(
+              recipe["title"].toString(),
+              style: pw.TextStyle(
+                fontSize: 24,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+            pw.SizedBox(height: 20),
+            pw.Text(
+               "Preparation time: ${recipe["prep_time"]?.toString() ?? "Unknown"} min",
+              style: pw.TextStyle(
+                fontSize: 16,
+              ),
+            ),
+             pw.Text(
+               "Cooking time: ${recipe["cook_time"]?.toString() ?? "Unknown"} min",
+              style: pw.TextStyle(
+                fontSize: 16,
+              ),
+            ),
+             pw.Text(
+                "Total time: ${totalTime() ?? "Unknown"}",
+              style: pw.TextStyle(
+                fontSize: 16,
+              ),
+            ),
+            pw.Container(
+              child:  pw.Column(
+                children: [
+                  for(var i = 0; i < recipe["ingredients"].length; i++ )
+                    pw.Text(recipe["amounts"][i] + " " +recipe["ingredients"][i]),
+                ],
+              ),
+            ),
+              pw.Text(
+                 recipe["instructions"],
+              style: pw.TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+
+  // Save and share the PDF file
+  await Printing.sharePdf(
+    bytes: await pdf.save(),
+    filename: '$recipe["title].pdf', 
+  );
+}
+
+
+
+  void updateInstructions() async {
+    var result = await API.editInstructions(
+      recipe["id"],
+      _instructionsController.text,
+      token!,
+    );
+    if (result == 0) {
+      setState(() {
+        recipe["instructions"] = _instructionsController.text;
+        edit = false;
+      });
+    }
+  }
+
+  void updateIngredients() async {
+    var result = await API.editIngredients(
+      recipe["id"],
+      recipe["ingredients"],
+      recipe["amounts"],
+      token!,
+    );
+    if (result == 0) {
+      setState(() {
+        recipe["instructions"] = _instructionsController.text;
+        edit = false;
+      });
+    }
+  }
+
   void updatePrepTime() async {
     var result = await API.edit_prep_time(
       recipe["id"],
@@ -158,9 +275,7 @@ class RecepieState extends State<Recepie> {
 
   void updateCookTime() async {
     var result = await API.edit_cook_time(
-        recipe["id"],
-        int.parse(_cookTimeController.text) ,
-        token!) ;
+        recipe["id"], int.parse(_cookTimeController.text), token!);
     if (result == 0) {
       setState(() {
         recipe["cook_time"] = _cookTimeController.text;
@@ -686,7 +801,7 @@ class RecepieState extends State<Recepie> {
                           CircularOrangeButton(
                             icon: Icons.share,
                             onPressed: () {
-                              // Handle button press
+                               createAndSharePdf();
                             },
                           ),
                         ],
@@ -704,6 +819,7 @@ class RecepieState extends State<Recepie> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            
                             !edit
                                 ? Column(
                                     crossAxisAlignment: CrossAxisAlignment
@@ -755,7 +871,7 @@ class RecepieState extends State<Recepie> {
                                   fontSize: 15, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(height: 10),
-                             Text(
+                            Text(
                               "TOTAL CALORIES: ${caloriesCalculator(recipe["ingredients"]).getCalories() ?? "Unknown"}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
@@ -766,9 +882,59 @@ class RecepieState extends State<Recepie> {
                       ),
                     ),
                     SizedBox(height: 8),
-                    IngredientsSection(
-                        ingredients: recipe["ingredients"],
-                        amounts: recipe["amounts"]),
+                    !edit
+                        ? IngredientsSection(
+                            ingredients: recipe["ingredients"],
+                            amounts: recipe["amounts"])
+                        : Container(
+                          margin: const EdgeInsets.only(left: 20, top: 3, right: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
+        color: Color.fromARGB(255, 215, 184, 152),
+      ),
+                          child: Column(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.check),
+                                  onPressed: () async {
+                                    updateIngredients();
+                                  },
+                                ),
+                                ListView.builder(
+                                   physics:
+                                                NeverScrollableScrollPhysics(), 
+                                    shrinkWrap: true,
+                                    itemCount: recipe["ingredients"].length,
+                                    itemBuilder: (context, index) {
+                                      final item = recipe["ingredients"][index];
+                                      return ListTile(
+                                        title: Row(
+                                          children: [
+                                            Flexible(
+                                                child: TextFormField(
+                                                  controller:
+                                                      _controllersQTY[index],
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        UnderlineInputBorder(),
+                                                  ),
+                                                )),
+                                            Flexible(
+                                                child: TextFormField(
+                                                  controller:
+                                                      _controllersITM[index],
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        UnderlineInputBorder(),
+                                                  ),
+                                                )),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                              ],
+                            ),
+                        ),
                     SizedBox(height: 8),
                     Container(
                         width: MediaQuery.sizeOf(context).width - 40,
@@ -783,8 +949,33 @@ class RecepieState extends State<Recepie> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ..._parseInstructions(
-                                  recipe["instructions"] ?? ""),
+                              if (!edit)
+                                ..._parseInstructions(
+                                    recipe["instructions"] ?? "")
+                              else
+                                Column(
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.check),
+                                      onPressed: () async {
+                                        updateInstructions();
+                                      },
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: null,
+                                        controller: _instructionsController,
+                                        decoration: InputDecoration(
+                                          border: UnderlineInputBorder(),
+                                          labelText: 'Enter instructions',
+                                        ),
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                             ],
                           ),
                         )),
@@ -840,6 +1031,38 @@ class IngredientsSection extends StatelessWidget {
   final List<dynamic> amounts;
 
   IngredientsSection({required this.ingredients, required this.amounts});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 20, top: 3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
+        color: Color.fromARGB(255, 215, 184, 152),
+      ),
+      width: MediaQuery.sizeOf(context).width - 40,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 15, bottom: 15),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          for (var i = 0; i < ingredients.length; i++)
+            Container(
+              margin: const EdgeInsets.only(left: 20, top: 3),
+              child: Text(
+                "${amounts[i] != null ? amounts[i] : ""} x ${ingredients[i] != null ? ingredients[i] : ""}",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+        ]),
+      ),
+    );
+  }
+}
+
+class editIngredientsSection extends StatelessWidget {
+  final List<dynamic> ingredients;
+  final List<dynamic> amounts;
+
+  editIngredientsSection({required this.ingredients, required this.amounts});
 
   @override
   Widget build(BuildContext context) {

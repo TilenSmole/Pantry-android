@@ -258,6 +258,7 @@ Future<int> edit_cook_time(
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
+        'recipeId': recipeId,
         'cook_time': cook_time,
       }),
     );
@@ -285,6 +286,7 @@ Future<int> edit_prep_time(
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
+        'recipeId': recipeId,
         'prep_time': prep_time,
       }),
     );
@@ -302,7 +304,6 @@ Future<int> edit_prep_time(
 Future<int> editInstructions(
   int recipeId,
   String instructions,
-  String imageUrl,
   String token,
 ) async {
   try {
@@ -313,6 +314,7 @@ Future<int> editInstructions(
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
+        'recipeId': recipeId,
         'instructions': instructions,
       }),
     );
@@ -331,7 +333,6 @@ Future<int> editIngredients(
   int recipeId,
   List<dynamic> ingredients,
   List<dynamic> amounts,
-  String imageUrl,
   String token,
 ) async {
   try {
@@ -342,6 +343,7 @@ Future<int> editIngredients(
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
+        'recipeId': recipeId,
         'ingredients': ingredients,
         'amounts': amounts,
       }),

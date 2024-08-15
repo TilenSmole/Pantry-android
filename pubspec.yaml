@@ -17,6 +17,8 @@ dependencies:
   provider: ^6.0.0
   http: ^1.2.2
   field_suggestion: ^0.2.5
+  pdf: ^3.6.1
+  printing: ^5.10.0
   
 
 dev_dependencies:

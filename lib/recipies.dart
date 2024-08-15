@@ -100,7 +100,7 @@ class _RecipiesState extends State<Recipies> {
         print('Fetched Recipes: ${data['Recipies']}');
       } else {
         // If the server returns an error, throw an exception
-        throw Exception('Failed to load recipes');
+        print('Failed to load recipes');
       }
     } catch (e) {
       print('Error fetching recipes: $e');
