@@ -305,7 +305,6 @@ Future<void> createAndSharePdf() async {
   }
 
   OverlayEntry _createAddNoteOverlayEntry() {
-    print("_createAddNoteOverlayEntry");
 
     return OverlayEntry(
       builder: (context) => Positioned(

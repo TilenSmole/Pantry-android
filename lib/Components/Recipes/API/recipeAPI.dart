@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For rootBundle
 import 'package:http/http.dart' as http;
 
-Future<int?> addToSList(List ingredients, List amounts, String token) async {
+Future<int?> addToSList(List ingredients, List amounts, String token) async { 
   try {
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/storage/add-to-shopping-list'),
