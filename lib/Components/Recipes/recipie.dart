@@ -107,7 +107,6 @@ class RecepieState extends State<Recepie> {
   @override
   void initState() {
     super.initState();
-    print(recipe["id"]);
 
     _loadToken().then((_) {
       _prepTimeController.text = recipe["prep_time"];
@@ -785,7 +784,6 @@ Future<void> createAndSharePdf() async {
                                         recipe["ingredients"],
                                         recipe["amounts"],
                                         token!);
-                                    print(result);
                                     if (result == 0) {
                                       setState(() {
                                         addedToList = true;

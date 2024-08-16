@@ -9,10 +9,12 @@ class caloriesCalculator {
 
 
   caloriesCalculator( this.ingredients) {
-  //loadFood().then((_) => calculate());
+//  loadFood().then((_) => calculate());
   }
 
- 
+  loadFood(){
+    
+  }
 
 
   void calculate() {
@@ -31,6 +33,8 @@ class caloriesCalculator {
   }
 
   num getCalories() {
+
+
     return total;
   }
 }

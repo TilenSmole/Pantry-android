@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import './Components/profile/notes.dart';
+import './Components/profile/analyser.dart';
 
 
 
@@ -80,7 +81,7 @@ class _ProfileState extends State<Profile> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Login()),
+                        MaterialPageRoute(builder: (context) => Analyser()),
                       );
                     },
                     child: Text(

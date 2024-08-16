@@ -18,10 +18,13 @@ class _notesState extends State<Notes> {
   OverlayEntry? _overlayEntry;
   LayerLink _newLayerController = LayerLink();
   TextEditingController _newNoteController = TextEditingController();
+
+  List<bool> _checkedValues = [];
+  Map<int, TextEditingController> _notesControllers = {};
+
   @override
   void initState() {
     super.initState();
-
     _loadToken();
   }
 
@@ -40,9 +43,15 @@ class _notesState extends State<Notes> {
     print("result");
     setState(() {
       notes = result;
+      _checkedValues = List<bool>.filled(notes.length, false);
     });
 
-    print(notes);
+    for (var note in notes) {
+      var controller = TextEditingController(text: note["note"]);
+      setState(() {
+        _notesControllers[note["id"]] = controller;
+      });
+    }
   }
 
   void _removeOverlay() {
@@ -67,9 +76,22 @@ class _notesState extends State<Notes> {
     });
   }
 
-  OverlayEntry _createOverlayEntry() {
-    print("creating overlay");
+  void editNote(int index , var noteId) async {
+    if (_notesControllers[noteId]!.text.isNotEmpty) {
+      print(_notesControllers[noteId]!.text);
+            print(noteId);
 
+            var result =
+          await API.editNote(_notesControllers[noteId]!.text, noteId, token!);
+         _checkedValues[index] =
+                                              !_checkedValues[index];
+      setState(() {
+        notes = result;
+      });
+    }
+  }
+
+  OverlayEntry _createOverlayEntry() {
     LayerLink link = _newLayerController;
     return OverlayEntry(
       builder: (context) => Positioned(
@@ -135,33 +157,108 @@ class _notesState extends State<Notes> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('YOUR COOKING  NOTES'),
+          title: Text('YOUR COOKING  NOTES'),backgroundColor: Colors.orange,
         ),
-        body: Column(
-          children: [
-            Flexible(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: notes.length,
-                  itemBuilder: (context, index) {
-                    final note = notes[index];
-                    final noteText =
-                        note['note'] ?? 'No note'; 
-                    return Container(
-                      margin: const EdgeInsets.only(
-                          bottom: 20, left: 20, right: 20),
-                      decoration: BoxDecoration(boxShadow: [
-                        
-                      ], border: Border.all(color: Colors.orange),
-                       borderRadius: BorderRadius.all(Radius.circular(15))
-                      ),
-                      child: ListTile(
-                        title: Text(noteText.toString()), // Display note text
-                      ),
-                    );
-                  }),
-            ),
-          ],
+        body: Container(
+            margin: const EdgeInsets.only(
+                                top: 20),
+          child: Column(
+            
+            children: [
+              Flexible(
+                
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final note = notes[index];
+                      final noteText = note['note'] ?? 'No note';
+                      return _checkedValues[index]
+                          ? Container(
+                              margin: const EdgeInsets.only(
+                                  bottom: 20, left: 20, right: 20),
+                              decoration: BoxDecoration(
+                                  color:  const Color.fromARGB(255, 235, 206, 162),
+                                  boxShadow: [],
+                                  border: Border.all(color: Colors.orange),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15))),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Spacer(),
+                                      IconButton(
+                                        icon: Icon(Icons.close),
+                                        onPressed: () {
+                                          setState(() {
+                                            _checkedValues[index] =
+                                                !_checkedValues[index];
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      ListTile(
+                                          title: TextFormField(
+                                        controller: _notesControllers[note['id']],
+                                        decoration: InputDecoration(
+                                          border: UnderlineInputBorder(),
+                                        ),
+                                        maxLines: 5,
+                                        minLines: 2,
+                                        keyboardType: TextInputType.multiline,
+                                      )),
+                                      IconButton(
+                                        icon: Icon(Icons.check),
+                                        onPressed: () {
+                                          setState(() {
+                                            editNote(index, note["id"]);
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Container(
+                              margin: const EdgeInsets.only(
+                                  bottom: 20, left: 20, right: 20),
+                              decoration: BoxDecoration(
+                                  boxShadow: [],
+                                  border: Border.all(color: Colors.orange),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15))),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Spacer(),
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () {
+                                          setState(() {
+                                            _checkedValues[index] =
+                                                !_checkedValues[index];
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  ListTile(
+                                    title: Text(
+                                        noteText.toString()), // Display note text
+                                  ),
+                                ],
+                              ),
+                            );
+                    }),
+              ),
+            ],
+          ),
         ),
         floatingActionButton: GestureDetector(
           onTap: () {

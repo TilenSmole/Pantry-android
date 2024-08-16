@@ -61,7 +61,7 @@ Future<List<dynamic>?> deleteNote(int noteId, String token) async {
   }
 }
 
-Future<List<dynamic>?> editNote(
+Future<List<Map<String, dynamic>>> editNote(
     String newNote, int noteId, String token) async {
   try {
     final response = await http.put(
@@ -75,14 +75,21 @@ Future<List<dynamic>?> editNote(
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
+   List<dynamic> notesList = data["notes"];
 
-      return data["notes"];
+      List<Map<String, dynamic>> typedNotesList =
+          List<Map<String, dynamic>>.from(notesList);
+
+      return typedNotesList;
     } else {
       throw Exception('Failed to load recipes');
     }
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return [
+    {"id": 0, "note": "failed to load", "userId": 1},
+  ];
 }
 
 Future<List<Map<String, dynamic>>> getNotes(String? token) async {
