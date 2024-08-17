@@ -39,7 +39,7 @@ class _notesState extends State<Notes> {
   }
 
   void getNote() async {
-    var result = await await API.getNotes(token);
+    var result =  await API.getNotes(token);
     print("result");
     setState(() {
       notes = result;

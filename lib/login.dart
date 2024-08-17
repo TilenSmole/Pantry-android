@@ -4,19 +4,22 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
-class _LoginState extends  State<Login> {
+
+class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final storage = FlutterSecureStorage();
   var isLogedIn = false;
 
-
   Future<void> login(String email, String password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     try {
       final response = await http.post(
         Uri.parse('http://192.168.1.179:5000/login'),
@@ -30,16 +33,20 @@ class _LoginState extends  State<Login> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseJson = jsonDecode(response.body);
 
-        // Extract the token from the JSON object
-        final String? token = responseJson['token'];
+        final String token = responseJson['token'];
+
+        await prefs.setString('token', token);
+
 
         if (token != null) {
           // Save the token using flutter_secure_storage
           await storage.write(key: 'jwt_token', value: token);
           print('Token saved successfully');
-         Navigator.pushReplacement(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MyHomePage()), // Adjust this to navigate to your desired home page
+            MaterialPageRoute(
+                builder: (context) =>
+                    MyHomePage()), // Adjust this to navigate to your desired home page
           );
         } else {
           throw Exception('Token not found in response');
@@ -81,7 +88,6 @@ class _LoginState extends  State<Login> {
               final email = _emailController.text;
               final password = _passwordController.text;
               login(email, password);
-                
             },
           ),
         ],

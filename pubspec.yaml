@@ -19,7 +19,7 @@ dependencies:
   field_suggestion: ^0.2.5
   pdf: ^3.6.1
   printing: ^5.10.0
-  
+  shared_preferences: ^2.1.1
 
 dev_dependencies:
   flutter_test:

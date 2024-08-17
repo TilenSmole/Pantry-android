@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'Components/Recipes/recipie.dart';
-import 'package:http/http.dart' as http;
 import 'Components/Recipes/add_recipe.dart';
 import 'Components/Recipes/selectCriteria.dart';
+import 'Components/Recipes/API/recipes.API.dart' as API;
 
 class Recipies extends StatefulWidget {
   @override
@@ -12,9 +12,8 @@ class Recipies extends StatefulWidget {
 }
 
 class _RecipiesState extends State<Recipies> {
-  List _recipes = [];
-  List _DisplayRecipes = [];
-
+  List<dynamic> _recipes = [];
+  List<dynamic> _DisplayRecipes = [];
 
   static List<String> _selectedValues = [];
 
@@ -40,23 +39,19 @@ class _RecipiesState extends State<Recipies> {
         _DisplayRecipes = _recipes;
       } else {
         _DisplayRecipes = _recipes
-            .where((recipe) => recipe["name"].toLowerCase().contains(inputText.toLowerCase()))
+            .where((recipe) =>
+                recipe["name"].toLowerCase().contains(inputText.toLowerCase()))
             .toList();
 
-
-      for (var recipe in _recipes) {
-        for (var ingredient in recipe["ingredients"]) {
-          if ( ingredient.toLowerCase().contains(inputText..toLowerCase())) {
-            if (!_DisplayRecipes.contains(recipe)) {
-              _DisplayRecipes.add(recipe);
+        for (var recipe in _recipes) {
+          for (var ingredient in recipe["ingredients"]) {
+            if (ingredient.toLowerCase().contains(inputText..toLowerCase())) {
+              if (!_DisplayRecipes.contains(recipe)) {
+                _DisplayRecipes.add(recipe);
+              }
             }
           }
         }
-      }
-    
-
-
-
       }
     });
     // _showOverlay(mapId, itemId);
@@ -76,13 +71,17 @@ class _RecipiesState extends State<Recipies> {
         }
       }
     }
-    
   }
 
   Future<void> fetchRecipes() async {
-    print("Fetching recipes..."); // Debug print statement
+    _recipes = await  API.fetchRecipes();
 
-    try {
+  setState(() {
+      _DisplayRecipes =_recipes;
+          });
+
+
+    /*try {
       final response =
           await http.get(Uri.parse('http://192.168.1.179:5000/recipes'));
       final Map<String, dynamic> data = jsonDecode(response.body);
@@ -104,111 +103,114 @@ class _RecipiesState extends State<Recipies> {
       }
     } catch (e) {
       print('Error fetching recipes: $e');
-    }
+    }*/
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: _recipes.isEmpty
-          ? Center(
-              child:
-                  CircularProgressIndicator()) // Show a loading indicator until data is available
-          : Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(30),
-              child: Text(
-                "Recipes",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 20, right: 20),
-              child: TextFormField(
-                  focusNode: _searchFocusNode,
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Search',
-                    suffixIcon: Icon(Icons.search),
-                  )),
-            ),
-            Row(
-              children: [
-                TextButton(
-                  style: ButtonStyle(
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.blue),
+            ? Center(
+                child:
+                    CircularProgressIndicator()) // Show a loading indicator until data is available
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(30),
+                    child: Text(
+                      "Recipes",
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  onPressed: () async {
-                    // Await the result from the selectCriteria screen
-                    final result = await Navigator.push<List<String>>(
-                      context,
-                      MaterialPageRoute(builder: (context) => selectCriteria()),
-                    );
+                  Container(
+                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    child: TextFormField(
+                        focusNode: _searchFocusNode,
+                        controller: _searchController,
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Search',
+                          suffixIcon: Icon(Icons.search),
+                        )),
+                  ),
+                  Row(
+                    children: [
+                      TextButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.blue),
+                        ),
+                        onPressed: () async {
+                          // Await the result from the selectCriteria screen
+                          final result = await Navigator.push<List<String>>(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => selectCriteria()),
+                          );
 
-                    if (result != null) {
-                      setState(() {
-                        _selectedValues = result; // Update selected items
-                      });
-                      _updateSuggestionsIngredients();
-                      print("Selected items: $_selectedValues");
-                    }
-                  },
-                  child: Text('Advanced search'),
-                ),
-                TextButton(
-                  style: ButtonStyle(
-                    foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.blue),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _DisplayRecipes = _recipes;
-           _searchController.text = "";
-             _searchFocusNode.unfocus(); 
-                    _selectedValues = [];
-                    });
-                    ;
-                  },
-                  child: Text('Clear parameters'),
-                ),
-              ],
-            ),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 3,
-                children: <Widget>[
-                  for (var recipe in _DisplayRecipes)
-                    InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Recepie(recipe: recipe)));
+                          if (result != null) {
+                            setState(() {
+                              _selectedValues = result; // Update selected items
+                            });
+                            _updateSuggestionsIngredients();
+                            print("Selected items: $_selectedValues");
+                          }
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 4, right: 4),
-                          child: Card(
-                            color: const Color.fromARGB(255, 220, 186, 135),
-                            child: Center(
+                        child: Text('Advanced search'),
+                      ),
+                      TextButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.blue),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _DisplayRecipes = _recipes;
+                            _searchController.text = "";
+                            _searchFocusNode.unfocus();
+                            _selectedValues = [];
+                          });
+                          ;
+                        },
+                        child: Text('Clear parameters'),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      children: <Widget>[
+                        for (var recipe in _DisplayRecipes)
+                          InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Recepie(recipe: recipe)));
+                              },
                               child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Text(recipe["name"] ?? "unknown"),
-                              ),
-                            ),
-                          ),
-                        ))
+                                padding:
+                                    const EdgeInsets.only(left: 4, right: 4),
+                                child: Card(
+                                  color:
+                                      const Color.fromARGB(255, 220, 186, 135),
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Text(recipe["name"] ?? "unknown"),
+                                    ),
+                                  ),
+                                ),
+                              ))
+                      ],
+                    ),
+                  )
                 ],
               ),
-            )
-          ],
-        ),
         floatingActionButton: GestureDetector(
           onTap: () {
-
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AddRecipe()),

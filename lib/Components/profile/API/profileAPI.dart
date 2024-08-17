@@ -110,7 +110,13 @@ Future<List<Map<String, dynamic>>> getNotes(String? token) async {
           List<Map<String, dynamic>>.from(notesList);
 
       return typedNotesList;
-    } else {
+    }else if(response.statusCode == 404){
+
+
+
+    }
+    
+     else {
       print('Failed to upload to a shopping list from a recipe');
     }
   } catch (e) {
