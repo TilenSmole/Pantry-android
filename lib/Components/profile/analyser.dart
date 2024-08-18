@@ -18,7 +18,6 @@ class Analyser extends StatefulWidget {
 
 class _analyserState extends State<Analyser> {
   List _recipes = [];
-  String? token;
   List _storage = [];
 
   Map<int, String> _analyse = {};
@@ -26,15 +25,6 @@ class _analyserState extends State<Analyser> {
   @override
   void initState() {
     super.initState();
-    _loadToken();
-  }
-
-  Future<void> _loadToken() async {
-    final loadedToken = await load_token.loadToken();
-
-    setState(() {
-      token = loadedToken;
-    });
     getRecipes().then((_) {
       getstorage().then((_) {
         getstorage();
@@ -43,6 +33,7 @@ class _analyserState extends State<Analyser> {
     });
   }
 
+  
   getRecipes() async {
     var result = await await API.fetchRecipes();
     setState(() {
@@ -51,7 +42,7 @@ class _analyserState extends State<Analyser> {
   }
 
   getstorage() async {
-    var result = await await StorageAPI.fetchStorage(token!);
+    var result = await await StorageAPI.fetchStorage();
     setState(() {
       _storage = result;
     });

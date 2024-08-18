@@ -60,7 +60,6 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   }
 
   Future<void> setFood(String fileName, String key) async {
-    print(key);
     try {
       // Load the JSON file from assets
       final String response = await rootBundle.loadString('FOODS/$fileName');

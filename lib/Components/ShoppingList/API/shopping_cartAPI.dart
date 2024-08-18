@@ -79,9 +79,12 @@ Future<void> bought(int itemID) async {
         'id': itemID,
       }),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode == 404) {
+      await prefs.setBool('isSyncedItems', false);
+    }
+    else if (response.statusCode != 200) {
       print("ERROR marking as bought in shopping list");
-    } 
+    }
   } catch (e) {
     print('Error fetching storage data: $e');
   }
@@ -89,7 +92,6 @@ Future<void> bought(int itemID) async {
 
 Future<void> updateStorageLocal(List shopping_cart) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setBool('isSyncedItems', false);
 
   await prefs.setString('items', jsonEncode(shopping_cart));
 }
@@ -108,9 +110,12 @@ Future<void> delete(int itemID) async {
         'id': itemID,
       }),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode == 404) {
+      await prefs.setBool('isSyncedItems', false);
+    }
+    else if (response.statusCode != 200) {
       print("ERROR deleting from shopping list");
-    } 
+    }
   } catch (e) {
     print('Error fetching storage data: $e');
   }
@@ -121,47 +126,51 @@ Future<void> uploadItem(String amount, String ingredient) async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-        Uri.parse(
-            'http://192.168.1.179:5000/shopping-list/add-a-shopping-list-mobile'),
-        headers: {
-          'Authorization': 'Bearer ${token}',
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode({
-          'amount':amount,
-          'ingredient': ingredient,
-        }),
-      );
-    if (response.statusCode != 200) {
+      Uri.parse(
+          'http://192.168.1.179:5000/shopping-list/add-a-shopping-list-mobile'),
+      headers: {
+        'Authorization': 'Bearer ${token}',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'amount': amount,
+        'ingredient': ingredient,
+      }),
+    );
+    if (response.statusCode == 404) {
+      await prefs.setBool('isSyncedItems', false);
+    }
+    else if (response.statusCode != 200) {
       print("ERROR uploading to the shopping list");
-    } 
+    }
   } catch (e) {
     print('Error fetching storage data: $e');
   }
 }
-
-
 
 Future<void> updateItem(String amount, String ingredient, int id) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
     final response = await http.put(
-        Uri.parse(
-            'http://192.168.1.179:5000/shopping-list/update-a-shopping-list-mobile'),
-        headers: {
-          'Authorization': 'Bearer ${token}',
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode({
-          'id': id,
-          'amount':amount,
-          'ingredient': ingredient,
-        }),
-      );
-    if (response.statusCode != 200) {
+      Uri.parse(
+          'http://192.168.1.179:5000/shopping-list/update-a-shopping-list-mobile'),
+      headers: {
+        'Authorization': 'Bearer ${token}',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'id': id,
+        'amount': amount,
+        'ingredient': ingredient,
+      }),
+    );
+    if (response.statusCode == 404) {
+      await prefs.setBool('isSyncedItems', false);
+    }
+    else if (response.statusCode != 200) {
       print("ERROR updating item in the shopping list");
-    } 
+    }
   } catch (e) {
     print('Error fetching storage data: $e');
   }
