@@ -124,7 +124,6 @@ Future<void> updateItem(int itemID, String amount, ingredient) async {
   }
 }
 
-
 Future<void> addANewItem(String amount, String ingredient, List categories) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
