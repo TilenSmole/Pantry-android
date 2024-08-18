@@ -6,6 +6,7 @@ import 'storage.dart';
 import 'login.dart';
 
 void main() {
+    WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 

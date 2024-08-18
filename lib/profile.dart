@@ -8,8 +8,7 @@ import 'dart:convert';
 import 'dart:async';
 import './Components/profile/notes.dart';
 import './Components/profile/analyser.dart';
-
-
+import './Components/SNYC/syncAPI.dart' as API;
 
 class Profile extends StatefulWidget {
   @override
@@ -86,6 +85,17 @@ class _ProfileState extends State<Profile> {
                     },
                     child: Text(
                       "RECIPE ANALYSER",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      API.uploadItems();
+                      API.uploadStorage();
+                      API.fetchRecipes();
+                    },
+                    child: Text(
+                      "synchronize",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),

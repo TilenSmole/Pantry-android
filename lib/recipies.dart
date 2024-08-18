@@ -23,7 +23,7 @@ class _RecipiesState extends State<Recipies> {
   @override
   void initState() {
     super.initState();
-    fetchRecipes();
+     fetchRecipes();
     _searchController.addListener(_updateSuggestions);
   }
 
@@ -31,8 +31,6 @@ class _RecipiesState extends State<Recipies> {
     print("Updating suggestions");
     setState(() {
       String inputText = _searchController.text.toLowerCase();
-      print("inputText");
-      print(inputText);
       _DisplayRecipes = [];
 
       if (inputText.isEmpty) {
@@ -74,36 +72,12 @@ class _RecipiesState extends State<Recipies> {
   }
 
   Future<void> fetchRecipes() async {
-    _recipes = await  API.fetchRecipes();
+    _recipes = await  API.getStorageLocal();//  API.fetchRecipes();
 
   setState(() {
       _DisplayRecipes =_recipes;
           });
 
-
-    /*try {
-      final response =
-          await http.get(Uri.parse('http://192.168.1.179:5000/recipes'));
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        print('Raw JSON response2: ${data['Recipies']}');
-
-        setState(() {
-          setState(() {
-            _recipes = data['Recipies'];
-            _DisplayRecipes = data['Recipies'];
-          });
-        });
-
-        // Print the data to the console
-        print('Fetched Recipes: ${data['Recipies']}');
-      } else {
-        // If the server returns an error, throw an exception
-        print('Failed to load recipes');
-      }
-    } catch (e) {
-      print('Error fetching recipes: $e');
-    }*/
   }
 
   @override

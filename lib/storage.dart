@@ -17,7 +17,7 @@ class CreateStorageState extends State<Storage> {
   List _storage = [];
   Map<String, List<Map<String, dynamic>>> items =
       {}; //all items with key being a category and value other stuff ot the item
-  String? token;
+
   Map<String, TextEditingController> _controllersQTY = {};
   Map<String, TextEditingController> _controllersITM = {};
   Map<String, FocusNode> _focusNodesQTY = {};
@@ -59,10 +59,8 @@ class CreateStorageState extends State<Storage> {
   void initState() {
     loadFood();
     super.initState();
-    _loadToken().then((_) {
-      fetchStorage().then((_) {
-        loadFridge();
-      });
+    fetchStorage().then((_) {
+      loadFridge();
     });
 
     _suggestionOverlay = SuggestionOverlay(
@@ -82,11 +80,9 @@ class CreateStorageState extends State<Storage> {
     _addItemFocusNode.addListener(() {
       if (!_focusNode.hasFocus) {
         if (_itemController.text.length > 0) {
-          print("dodajam");
-          print(_itemController.text);
-
-          newCategories.add(_itemController.text);
-          print(newCategories);
+          setState(() {
+            newCategories.add(_itemController.text);
+          });
 
           _itemController.text = "";
         }
@@ -207,15 +203,9 @@ class CreateStorageState extends State<Storage> {
     _overlayEntry = null;
   }
 
-  Future<void> _loadToken() async {
-    final loadedToken = await load_token.loadToken();
-    setState(() {
-      token = loadedToken;
-    });
-  }
-
   Future<void> fetchStorage() async {
-    _storage = await API.fetchStorage();
+    //_storage = await API.fetchStorage();
+   _storage =   await API.getStorageLocal();
     setState(() {
       _storage = _storage;
     });
@@ -234,7 +224,7 @@ class CreateStorageState extends State<Storage> {
   Future<void> updateItem(String index, int itemID) async {
     var amount = _controllersQTY[index]?.text ?? 'default';
     var ingredient = _controllersITM[index]?.text ?? 'default';
-    API.updateItem(itemID, amount, ingredient);
+   // API.updateItem(itemID, amount, ingredient);
 
     var itemIndex = findIndex(itemID);
 
@@ -249,38 +239,19 @@ class CreateStorageState extends State<Storage> {
     API.updateStorageLocal(_storage);
   }
 
-  Future<void> updateCategory(List<dynamic> category, String id) async {
-    try {
-      // Extract values as strings
-      //  var amount = _controllersQTY[index]?.text ?? 'default';
-      // var category = _controllersITM[index]?.text ?? 'default';
+  Future<void> updateCategory(List<dynamic> category, String itemID) async {
+    //API.updateCategory(category, itemID);
 
-      final response = await http.put(
-        Uri.parse('http://192.168.1.179:5000/storage/update-storage-mobile2'),
-        headers: {
-          'Authorization': 'Bearer ${token}',
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode({
-          'id': id,
-          'category': category,
-        }),
-      );
+    var itemIndex = findIndex(int.parse(itemID));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        setState(() {
-          _storage = data["storage"];
-        });
+    setState(() {
+      if (itemIndex != -1) {
+        _storage[itemIndex]["category"] = category;
         loadFridge();
-        // _controllersQTY[index]?.text = amount;
-        //_controllersITM[index]?.text = ingredient;
-      } else {
-        throw Exception('Failed to update item');
       }
-    } catch (e) {
-      print('Error updating item: $e');
-    }
+    });
+
+    API.updateStorageLocal(_storage);
   }
 
   Future<void> addANewItem() async {
@@ -290,7 +261,7 @@ class CreateStorageState extends State<Storage> {
 
     var amount = _amountController.text ?? 'default';
     var ingredient = _ingredientController.text ?? 'default';
-    API.addANewItem(amount, ingredient, categories);
+   // API.addANewItem(amount, ingredient, categories);
 
     final Map<String, dynamic> item = {
       'id': idItem - 1,
@@ -306,10 +277,10 @@ class CreateStorageState extends State<Storage> {
       categories = [];
       _removeOverlay();
       loadFridge();
+      
     });
 
     API.updateStorageLocal(_storage);
-
   }
 
   Future<void> loadFridge() async {
@@ -374,7 +345,7 @@ class CreateStorageState extends State<Storage> {
   }
 
   Future<void> delete(int itemID, int index, key, String category) async {
-    API.delete(itemID);
+    //API.delete(itemID);
 
     var itemIndex = findIndex(itemID);
 
@@ -509,10 +480,6 @@ class CreateStorageState extends State<Storage> {
           var newItem = _controllersCTGY[id + category.toString()]?.text;
 
           for (var i = 0; i < newCategories.length; i++) {
-            print(newCategories[i]);
-
-            print((i.toString() + category.toString()));
-            print((id.toString() + category.toString()));
             if ((id.toString() + newCategories[i]) ==
                 (id.toString() + category.toString())) {
               newCategories[i] =
@@ -608,11 +575,13 @@ class CreateStorageState extends State<Storage> {
                                             (id.toString() +
                                                 category.toString())) {
                                           continue;
-                                        } else
-                                          temp.add(newCategories[i]);
+                                        } else {
+                                            temp.add(newCategories[i]);
+                                          
+                                        }
                                       }
-
-                                      newCategories = temp;
+                                        newCategories = temp;
+                                      
                                       updateCategory(
                                           newCategories, id.toString());
                                       _removeOverlay();
@@ -639,9 +608,7 @@ class CreateStorageState extends State<Storage> {
                         child: IconButton(
                           icon: Icon(Icons.done),
                           onPressed: () {
-                            // Handle save action
                             setState(() {
-                              print("fas");
                               updateCategory(newCategories, id.toString());
                               _removeOverlay();
                             });

@@ -210,7 +210,9 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   }
 
   Future<void> getItems() async {
-    shopping_cart = await API.getItems();
+   // shopping_cart = await API.getItems();
+    shopping_cart = await API.getStorageLocal();
+    print("klicen");
 
     setState(() {
       _controllersQTY = Map.fromIterable(
@@ -312,7 +314,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
 
     int idItem = idItemStr != null ? int.parse(idItemStr) : 0;
 
-    API.uploadItem(_newQtntyItemController.text, _newItemController.text);
+    //API.uploadItem(_newQtntyItemController.text, _newItemController.text);
 
     final Map<String, dynamic> item = {
       'id': idItem - 1,
@@ -359,7 +361,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   }
 
   Future<void> delete(_itemID, index) async {
-    API.delete(_itemID);
+    //API.delete(_itemID);
 
     setState(() {
       shopping_cart.removeAt(index);
@@ -371,7 +373,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   }
 
   Future<void> bought(_itemID, index) async {
-    API.bought(_itemID);
+    //API.bought(_itemID);
 
     setState(() {
       final item = shopping_cart.firstWhere((item) => item['id'] == _itemID,
@@ -387,11 +389,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: shopping_cart.isEmpty
-          ? Center(
-              child:
-                  CircularProgressIndicator()) // Show a loading indicator until data is available
-          : SingleChildScrollView(
+      body:  SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
                 children: [

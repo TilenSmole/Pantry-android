@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
   final bool isSyncedRecipes = prefs.getBool('isSyncedRecipes') ?? false;
 
     try {
-      
       final response = await http.get(Uri.parse('http://192.168.1.179:5000/recipes'));
       if (response.statusCode == 200) {
               final Map<String, dynamic> data = jsonDecode(response.body);
@@ -35,3 +34,29 @@ import 'package:shared_preferences/shared_preferences.dart';
     }
     return [];
   }
+
+Future<List<dynamic>> getStorageLocal() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+   String? items = prefs.getString('recipes');
+  if (items != null) {
+    try {
+      final decodedData = jsonDecode(items);
+      print(decodedData);
+      if (decodedData is List<dynamic>) {
+        return decodedData;
+      } else {
+        print('Unexpected data type: ${decodedData.runtimeType}');
+        return [];
+      }
+    } catch (e) {
+      // Handle JSON decoding errors
+      print('Error decoding JSON: $e');
+      return [];
+    }
+  } else {
+    // Handle the case where items is null
+    return [];
+  }
+
+}
+
