@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For rootBundle
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 Future<List<dynamic>> fetchStorage() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   final bool isSyncedStorage = prefs.getBool('isSyncedStorage') ?? false;
-
   try {
     if (!isSyncedStorage) {
       final String? storage = prefs.getString('storage');
