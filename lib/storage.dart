@@ -312,8 +312,6 @@ class CreateStorageState extends State<Storage> {
 
   }
 
-
-
   Future<void> loadFridge() async {
     _controllersQTY = {};
     _controllersITM = {};
