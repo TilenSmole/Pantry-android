@@ -79,7 +79,9 @@ Future<void> updateStorageLocal(List shopping_cart) async {
   print(shopping_cart);
   await prefs.setString('items', jsonEncode(shopping_cart));
      String? items = prefs.getString('items');
-  print(items);
+
+
+  print("new item $items");
 
 }
 

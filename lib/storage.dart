@@ -91,7 +91,6 @@ class CreateStorageState extends State<Storage> {
 
     _addCategoryFocusNode.addListener(() {
       if (!_focusNode.hasFocus) {
-        print("objectfasdddd");
         if (_categoryController.text.length > 0) {
           categories.add(_categoryController.text);
           _categoryController.text = "";

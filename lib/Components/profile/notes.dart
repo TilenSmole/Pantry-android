@@ -39,7 +39,7 @@ class _notesState extends State<Notes> {
   }
 
   void getNote() async {
-    var result =  await API.getNotes(token);
+    var result = await API.getNotesLocal(token);// await API.getNotes(token);
     print("result");
     setState(() {
       notes = result;
@@ -69,11 +69,8 @@ class _notesState extends State<Notes> {
   }
 
   void addNote() async {
-    var result = await API.addNote(_newNoteController.text, token!);
-
-    setState(() {
-      notes = result;
-    });
+    await API.addNotesLocal(_newNoteController.text, token!);//await API.addNote(_newNoteController.text, token!);
+    getNote();
   }
 
   void editNote(int index , var noteId) async {
@@ -81,15 +78,31 @@ class _notesState extends State<Notes> {
       print(_notesControllers[noteId]!.text);
             print(noteId);
 
-            var result =
-          await API.editNote(_notesControllers[noteId]!.text, noteId, token!);
-         _checkedValues[index] =
-                                              !_checkedValues[index];
-      setState(() {
-        notes = result;
-      });
+            var result =  await API.editNoteLocal(_notesControllers[noteId]!.text, noteId, token!);//API.editNote(_notesControllers[noteId]!.text, noteId, token!);
+
+
+
+         _checkedValues[index] = !_checkedValues[index];
+     
+  getNote();
+
     }
   }
+
+ void deleteNote(int index , var noteId) async {
+    if (_notesControllers[noteId]!.text.isNotEmpty) {
+    
+
+            var result =  await API.deleteNoteLocal( noteId, token!);//API.editNote(_notesControllers[noteId]!.text, noteId, token!);
+
+         _checkedValues[index] = !_checkedValues[index];
+     
+  getNote();
+
+    }
+  }
+
+
 
   OverlayEntry _createOverlayEntry() {
     LayerLink link = _newLayerController;
@@ -188,6 +201,14 @@ class _notesState extends State<Notes> {
                                   Row(
                                     children: [
                                       Spacer(),
+                                       IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: () {
+                                          setState(() {
+                                            deleteNote(index, note["id"]);
+                                          });
+                                        },
+                                      ),
                                       IconButton(
                                         icon: Icon(Icons.close),
                                         onPressed: () {
@@ -197,6 +218,7 @@ class _notesState extends State<Notes> {
                                           });
                                         },
                                       ),
+                                      
                                     ],
                                   ),
                                   Column(
@@ -219,6 +241,7 @@ class _notesState extends State<Notes> {
                                           });
                                         },
                                       ),
+                                      
                                     ],
                                   ),
                                 ],

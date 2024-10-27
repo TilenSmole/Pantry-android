@@ -375,14 +375,20 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   Future<void> bought(_itemID, index) async {
     //API.bought(_itemID);
 
-    setState(() {
-      final item = shopping_cart.firstWhere((item) => item['id'] == _itemID,
-          orElse: () => null);
-      if (item != null) {
-        item['checked'] = true;
-      }
-    });
-
+setState(() {
+  final item = shopping_cart.firstWhere(
+    (item) => item['id'] == _itemID,
+    orElse: () {
+      final newItem = {'id': _itemID, 'checked': true};
+      shopping_cart.add(newItem);
+      return newItem;
+    },
+  );
+  
+  if (item != null) {
+    item['checked'] = true;
+  }
+});
     API.updateStorageLocal(shopping_cart);
   }
 

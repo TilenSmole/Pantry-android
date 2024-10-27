@@ -146,7 +146,7 @@ Future<List<dynamic>?> editNote(
 Future<List<dynamic>?> getNotes(int recipeID, String? token) async {
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/notes/'),
+      Uri.parse('http://192.168.1.179:5000/notes'),
       headers: {
         'Authorization': 'Bearer ${token}',
         'Content-Type': 'application/json'
@@ -166,7 +166,7 @@ Future<List<dynamic>?> getNotes(int recipeID, String? token) async {
 
       return data["notes"];
     } else {
-      print('Failed to upload to a shopping list from a recipe');
+      print('Failed to upload to a shopping list from recipe');
     }
   } catch (e) {
     print('Error fetching recipes: $e');

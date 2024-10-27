@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For rootBundle
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<Map<String, dynamic>>> addNote(String note, String token) async {
   try {
@@ -19,7 +20,7 @@ Future<List<Map<String, dynamic>>> addNote(String note, String token) async {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
-            List<dynamic> notesList = data["notes"];
+      List<dynamic> notesList = data["notes"];
 
       List<Map<String, dynamic>> typedNotesList =
           List<Map<String, dynamic>>.from(notesList);
@@ -31,7 +32,7 @@ Future<List<Map<String, dynamic>>> addNote(String note, String token) async {
   } catch (e) {
     print('Error fetching recipes: $e');
   }
-   return [
+  return [
     {"id": 0, "note": "failed to load", "userId": 1},
   ];
 }
@@ -75,7 +76,7 @@ Future<List<Map<String, dynamic>>> editNote(
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
-   List<dynamic> notesList = data["notes"];
+      List<dynamic> notesList = data["notes"];
 
       List<Map<String, dynamic>> typedNotesList =
           List<Map<String, dynamic>>.from(notesList);
@@ -103,21 +104,19 @@ Future<List<Map<String, dynamic>>> getNotes(String? token) async {
     );
 
     if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
       final Map<String, dynamic> data = jsonDecode(response.body);
-      print(data["notes"]);
-      List<dynamic> notesList = data["notes"];
-      List<Map<String, dynamic>> typedNotesList =
-          List<Map<String, dynamic>>.from(notesList);
+      if (data.containsKey("notes") && data["notes"] is List) {
+        List<dynamic> notesList = data["notes"];
+        List<Map<String, dynamic>> typedNotesList =
+            List<Map<String, dynamic>>.from(
+                notesList.map((note) => Map<String, dynamic>.from(note)));
 
-      return typedNotesList;
-    }else if(response.statusCode == 404){
-
-
-
-    }
-    
-     else {
-      print('Failed to upload to a shopping list from a recipe');
+        return typedNotesList;
+      }
+    } else if (response.statusCode == 404) {
+    } else {
+      print('Failed to');
     }
   } catch (e) {
     print('Error fetching recipes: $e');
@@ -125,4 +124,100 @@ Future<List<Map<String, dynamic>>> getNotes(String? token) async {
   return [
     {"id": 0, "note": "failed to load", "userId": 1},
   ];
+}
+
+Future<List<Map<String, dynamic>>> getNotesLocal(String? token) async {
+  try {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? notes = prefs.getString('notes');
+    if (notes != null) {
+      try {
+        print(notes);
+        final decodedData = jsonDecode(notes);
+        if (decodedData is List<dynamic>) {
+          return decodedData
+              .map((note) => note as Map<String, dynamic>)
+              .toList();
+        }
+      } catch (e) {
+        print('Error decoding JSON: $e');
+        return [];
+      }
+    } else {
+      return [];
+    }
+  } catch (e) {
+    print('Error fetching recipes: $e');
+  }
+  return [
+    {"id": 0, "note": "failed to load", "userId": 1},
+  ];
+}
+
+Future<void> addNotesLocal(String note, String token) async {
+  try {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? notes = prefs.getString('notes');
+    String? idItemStr = prefs.getString('idItem');
+    int idItem = idItemStr != null ? int.parse(idItemStr) : 0;
+
+    if (notes != null) {
+      try {
+        final decodedData = jsonDecode(notes);
+        decodedData.map((note) => note as Map<String, dynamic>).toList();
+        decodedData.add({"id": idItem - 1, "note": note, "userId": 1});
+        await prefs.setString('notes', jsonEncode(decodedData));
+        await prefs.setString('idItem', (idItem - 1).toString());
+      } catch (e) {
+        print('Error decoding JSON: $e');
+      }
+    }
+  } catch (e) {
+    print('Error accessing SharedPreferences: $e');
+  }
+}
+
+Future<void> deleteNoteLocal(int noteId, String token) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? notes = prefs.getString('notes');
+  if (notes != null) {
+    List<Map<String, dynamic>>  temp = []; 
+    try {
+      final decodedData = jsonDecode(notes);
+      decodedData.forEach((note) {
+          if(!(note['id'] == noteId)){
+            temp.add(note);
+          }
+      });
+      await prefs.setString('notes', jsonEncode(temp));
+
+    } catch (e) {
+      print('Error fetching recipes: $e');
+    }
+  }
+}
+
+
+Future<void> editNoteLocal(String newNote, int noteId, String token) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? notes = prefs.getString('notes');
+  if (notes != null) {
+    List<Map<String, dynamic>>  temp = []; 
+    try {
+      final decodedData = jsonDecode(notes);
+      decodedData.forEach((note) {
+          if((note['id'] == noteId)){
+            note['note'] =  newNote;
+            temp.add(note);
+          }
+          else{
+           temp.add(note);
+          }
+      });
+      await prefs.setString('notes', jsonEncode(temp));
+
+    } catch (e) {
+      print('Error fetching recipes: $e');
+    }
+  }
 }
