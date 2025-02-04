@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import './Components/load_token.dart' as load_token;
 import 'login.dart';
 import './Components/logout.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:async';
 import './Components/profile/notes.dart';
 import './Components/profile/analyser.dart';

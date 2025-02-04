@@ -102,7 +102,7 @@ class _AddRecipeState extends State<AddRecipe> {
       _overlayEntry!.remove();
     }
     _overlayEntry = _createOverlayEntry();
-    Overlay.of(context)!.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _removeOverlay() {
@@ -170,7 +170,7 @@ _selectedIngridients.add(_filteredSuggestions[index]);
       final response = await http.post(
         Uri.parse('http://192.168.1.179:5000/recipes/add-recipe-mobile'),
         headers: {
-          'Authorization': 'Bearer ${token}',
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json'
         },
         body: jsonEncode({

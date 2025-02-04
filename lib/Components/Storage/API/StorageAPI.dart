@@ -34,13 +34,20 @@ Future<List<dynamic>> fetchStorage() async {
 
 Future<void> updateStorageLocal(List storage) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-
   await prefs.setString('storage', jsonEncode(storage));
 }
 
-Future<List<dynamic>> getStorageLocal() async {
+Future<void> resetStorageLocal() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-   String? items = prefs.getString('storage');
+  // Remove the 'storage' key to reset the storage to null
+  await prefs.remove('storage');
+}
+
+Future<List<dynamic>> getStorageLocal() async {
+
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+   //await prefs.remove('storage');
+  String? items = prefs.getString('storage');
   if (items != null) {
     try {
       final decodedData = jsonDecode(items);
@@ -57,11 +64,13 @@ Future<List<dynamic>> getStorageLocal() async {
       return [];
     }
   } else {
-    // Handle the case where items is null
+    print('Storage is null or not found');
+    // If the storage is null, return an empty list
     return [];
   }
-
 }
+
+
 
 
 
@@ -74,7 +83,7 @@ Future<void> delete(int itemID) async {
       Uri.parse(
           'http://192.168.1.179:5000/storage/delete-storage-item-mobile/'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -100,7 +109,7 @@ Future<void> updateItem(int itemID, String amount, ingredient) async {
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/storage/update-storage-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -128,7 +137,7 @@ Future<void> addANewItem(
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/storage/add-storage-item-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode(
@@ -151,7 +160,7 @@ Future<void> updateCategory(List<dynamic> category, String id) async {
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/storage/update-storage-mobile2'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({

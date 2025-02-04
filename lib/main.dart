@@ -39,16 +39,12 @@ class _MyHomePageState extends State<MyHomePage> {
       switch (selectedIndex) {
         case 0:
           page = ShoppingCart();
-          break;
         case 1:
           page = Storage();
-          break;
         case 2:
           page = Recipies();
-          break;
         case 3:
           page = profile.Profile();
-          break;
         default:
           page = ShoppingCart();
       }

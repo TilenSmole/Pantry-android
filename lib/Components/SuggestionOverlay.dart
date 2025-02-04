@@ -53,7 +53,7 @@ Future<void> loadFood() async {
     _overlayEntry?.remove();
 
     _overlayEntry = _createOverlayEntry();
-    Overlay.of(context)!.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void removeOverlay() {

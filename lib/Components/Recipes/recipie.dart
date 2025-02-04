@@ -113,10 +113,8 @@ class RecepieState extends State<Recepie> {
       _cookTimeController.text = recipe["cook_time"];
       _cookTimefocusNode.addListener(() {
         if (!_cookTimefocusNode.hasFocus) {
-          if (_cookTimeController.text.length != null) {
-            updateCookTime();
-          }
-        }
+          updateCookTime();
+                }
       });
       _prepTimefocusNode.addListener(() {
         if (!_prepTimefocusNode.hasFocus) {
@@ -150,14 +148,12 @@ class RecepieState extends State<Recepie> {
     _freezePortionsCategory.text = "freezer";
     _freezePortionsCategoryfocusNode.addListener(() {
       if (!_freezePortionsCategoryfocusNode.hasFocus) {
-        if (_freezePortionsCategory.text.length != null) {
-          setState(() {
-            freezerCategories!.add(_freezePortionsCategory.text);
-            _freezePortionsCategory.text = "";
-          });
-          _freezeOverlay();
-        }
-      }
+        setState(() {
+          freezerCategories!.add(_freezePortionsCategory.text);
+          _freezePortionsCategory.text = "";
+        });
+        _freezeOverlay();
+            }
     });
   }
 
@@ -289,7 +285,7 @@ Future<void> createAndSharePdf() async {
       _overlayEntry!.remove();
     }
     _overlayEntry = _createAddNoteOverlayEntry();
-    Overlay.of(context)!.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _removeOverlay() {
@@ -379,7 +375,7 @@ Future<void> createAndSharePdf() async {
                                 final note = notes![index];
                                 return Column(
                                   children: [
-                                    Container(
+                                    SizedBox(
                                       height: 200,
                                       child: ListTile(
                                         contentPadding: EdgeInsets.zero,
@@ -448,7 +444,7 @@ Future<void> createAndSharePdf() async {
                         Flexible(
                           child: Column(
                             children: [
-                              Container(
+                              SizedBox(
                                 width: 200,
                                 height: 200,
                                 child: TextFormField(
@@ -510,7 +506,7 @@ Future<void> createAndSharePdf() async {
       _overlayEntry!.remove();
     }
     _overlayEntry = _addSelectedSListOverlayEntry();
-    Overlay.of(context)!.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _freezeOverlay() {
@@ -519,7 +515,7 @@ Future<void> createAndSharePdf() async {
       _overlayEntry!.remove();
     }
     _overlayEntry = _freezeOverlayEntry();
-    Overlay.of(context)!.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   OverlayEntry _freezeOverlayEntry() {
@@ -683,7 +679,7 @@ Future<void> createAndSharePdf() async {
                         ingredients.add(_selectedIngredients[key]!);
                       }
 
-                      API.addToSList(ingredients, amounts, token!);
+                      API.addToSListLocal(ingredients, amounts, token!);
                       _removeOverlay();
                       _checkedValues = [];
                       _selectedAmounts = {};
@@ -710,15 +706,11 @@ Future<void> createAndSharePdf() async {
   String totalTime() {
     return recipe["prep_time"] != null && recipe["cook_time"] != null
         ? int.parse(recipe["prep_time"]) + int.parse(recipe["cook_time"]) > 60
-            ? (((int.parse(recipe["prep_time"]) +
+            ? "${((int.parse(recipe["prep_time"]) +
                                 int.parse(recipe["cook_time"])) /
                             60)
-                        .toStringAsFixed(2))
-                    .toString() +
-                " hours"
-            : (int.parse(recipe["prep_time"]) + int.parse(recipe["cook_time"]))
-                    .toString() +
-                " min"
+                        .toStringAsFixed(2)} hours"
+            : "${int.parse(recipe["prep_time"]) + int.parse(recipe["cook_time"])} min"
         : "Undefined";
   }
 
@@ -780,7 +772,7 @@ Future<void> createAndSharePdf() async {
                               ? CircularOrangeButton(
                                   icon: Icons.add_box,
                                   onPressed: () async {
-                                    int? result = await API.addToSList(
+                                    int? result = await API.addToSListLocal(
                                         recipe["ingredients"],
                                         recipe["amounts"],
                                         token!);
@@ -806,8 +798,8 @@ Future<void> createAndSharePdf() async {
                     ),
                     Container(
                       margin: const EdgeInsets.only(left: 20, top: 3),
-                      decoration: new BoxDecoration(
-                        borderRadius: new BorderRadius.circular(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.0),
                         color: Color.fromARGB(255, 215, 184, 152),
                       ),
                       width: MediaQuery.sizeOf(context).width - 40,
@@ -937,8 +929,8 @@ Future<void> createAndSharePdf() async {
                         width: MediaQuery.sizeOf(context).width - 40,
                         margin:
                             const EdgeInsets.only(left: 20, top: 3, bottom: 20),
-                        decoration: new BoxDecoration(
-                          borderRadius: new BorderRadius.circular(16.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
                           color: Color.fromARGB(255, 215, 184, 152),
                         ),
                         child: Padding(
@@ -1045,7 +1037,7 @@ class IngredientsSection extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(left: 20, top: 3),
               child: Text(
-                "${amounts[i] != null ? amounts[i] : ""} x ${ingredients[i] != null ? ingredients[i] : ""}",
+                "${amounts[i] ?? ""} x ${ingredients[i] ?? ""}",
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -1077,7 +1069,7 @@ class editIngredientsSection extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(left: 20, top: 3),
               child: Text(
-                "${amounts[i] != null ? amounts[i] : ""} x ${ingredients[i] != null ? ingredients[i] : ""}",
+                "${amounts[i] ?? ""} x ${ingredients[i] ?? ""}",
                 style: TextStyle(fontSize: 16),
               ),
             ),

@@ -38,20 +38,16 @@ class _LoginState extends State<Login> {
         await prefs.setString('token', token);
 
 
-        if (token != null) {
-          // Save the token using flutter_secure_storage
-          await storage.write(key: 'jwt_token', value: token);
-          print('Token saved successfully');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    MyHomePage()), // Adjust this to navigate to your desired home page
-          );
-        } else {
-          throw Exception('Token not found in response');
-        }
-      } else {
+        // Save the token using flutter_secure_storage
+        await storage.write(key: 'jwt_token', value: token);
+        print('Token saved successfully');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  MyHomePage()), // Adjust this to navigate to your desired home page
+        );
+            } else {
         throw Exception('Failed to load recipes');
       }
     } catch (e) {

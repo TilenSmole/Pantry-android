@@ -72,11 +72,11 @@ class _RecipiesState extends State<Recipies> {
   }
 
   Future<void> fetchRecipes() async {
-    _recipes = await  API.getStorageLocal();//  API.fetchRecipes();
+    _recipes = await    API.fetchRecipes();  //API.getStorageLocal();//s
 
   setState(() {
       _DisplayRecipes =_recipes;
-          });
+    });
 
   }
 
@@ -113,7 +113,7 @@ class _RecipiesState extends State<Recipies> {
                       TextButton(
                         style: ButtonStyle(
                           foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                              WidgetStateProperty.all<Color>(Colors.blue),
                         ),
                         onPressed: () async {
                           // Await the result from the selectCriteria screen
@@ -136,7 +136,7 @@ class _RecipiesState extends State<Recipies> {
                       TextButton(
                         style: ButtonStyle(
                           foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                              WidgetStateProperty.all<Color>(Colors.blue),
                         ),
                         onPressed: () {
                           setState(() {
@@ -145,7 +145,6 @@ class _RecipiesState extends State<Recipies> {
                             _searchFocusNode.unfocus();
                             _selectedValues = [];
                           });
-                          ;
                         },
                         child: Text('Clear parameters'),
                       ),

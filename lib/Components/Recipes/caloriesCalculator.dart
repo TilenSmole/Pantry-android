@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'package:flutter/services.dart';
-import '../load_ingredients.dart';
 
 class caloriesCalculator {
   var total = 0;

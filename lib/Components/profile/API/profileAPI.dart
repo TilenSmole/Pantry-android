@@ -10,7 +10,7 @@ Future<List<Map<String, dynamic>>> addNote(String note, String token) async {
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/notes/add-note'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -42,7 +42,7 @@ Future<List<dynamic>?> deleteNote(int noteId, String token) async {
     final response = await http.delete(
       Uri.parse('http://192.168.1.179:5000/notes/delete-note'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -60,6 +60,7 @@ Future<List<dynamic>?> deleteNote(int noteId, String token) async {
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return null;
 }
 
 Future<List<Map<String, dynamic>>> editNote(
@@ -68,7 +69,7 @@ Future<List<Map<String, dynamic>>> editNote(
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/notes/edit-note'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({'newNote': newNote, 'noteId': noteId}),
@@ -98,7 +99,7 @@ Future<List<Map<String, dynamic>>> getNotes(String? token) async {
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/notes/'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
     );

@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For rootBundle
+// For rootBundle
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
-import 'dart:async';
 
-import 'dart:io'; // For SocketException
-import 'dart:async'; // For TimeoutException
-import 'package:http/http.dart' as http;
+// For SocketException
+// For TimeoutException
 
 Future<void> uploadItems() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();

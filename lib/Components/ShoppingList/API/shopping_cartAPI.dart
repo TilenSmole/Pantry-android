@@ -10,11 +10,15 @@ import 'dart:async';
 import 'dart:io'; // For SocketException
 import 'dart:async'; // For TimeoutException
 import 'package:http/http.dart' as http;
+import '../../Storage/API/StorageAPI.dart' as storageAPI;
+import '../../../Classes/ListItem.dart';
 
-Future<List<dynamic>> getItems() async {
+
+
+Future<List<ListItem>> getItems() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
-  final bool isSyncedItems = prefs.getBool('isSyncedItems') ?? false;
+  print("Fetching Shopping List");
 
   try {
     final response = await http.get(
@@ -25,27 +29,18 @@ Future<List<dynamic>> getItems() async {
         'Content-Type': 'application/json',
       },
     );
-
+  	  print(response);
+    
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      await prefs.setString('items', jsonEncode(data['items']));
-      await prefs.setBool('isSyncedItems', false);
-      return data['items'];
-    } else if (response.statusCode == 404) {
-      print("Items not found on the server.");
-      final String? items = prefs.getString('items');
-      if (items != null) {
-        final List<dynamic> itemsList = jsonDecode(items);
-        await prefs.setBool('isSyncedItems', false);
-        return itemsList;
-      }
-      return [];
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+      List<dynamic> jsonData = responseData['items'];
+      return jsonData.map((item) => ListItem.fromJson(item)).toList();
     } else {
       print('Failed to load storage data: ${response.statusCode}');
       return [];
     }
   } catch (e) {
-    print('Error fetching storage data: $e');
+    print('Error fetching Shopping List data: $e');
     return [];
   }
 }
@@ -57,7 +52,7 @@ Future<void> bought(int itemID) async {
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/storage/add-item-from-sList-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -74,10 +69,23 @@ Future<void> bought(int itemID) async {
   }
 }
 
-Future<void> updateStorageLocal(List shopping_cart) async {
+Future<void> addStorageLocal(Map<String, dynamic> item) async {
+  print(item);
+   
+  List<dynamic> storage = await storageAPI.getStorageLocal() ?? [];
+  storage.add(item);
+    print(storage);
+
+  await storageAPI.updateStorageLocal(storage) ;
+
+
+
+}
+
+Future<void> updateStorageLocal(List shoppingCart) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  print(shopping_cart);
-  await prefs.setString('items', jsonEncode(shopping_cart));
+  print(shoppingCart);
+  await prefs.setString('items', jsonEncode(shoppingCart));
      String? items = prefs.getString('items');
 
 
@@ -85,8 +93,10 @@ Future<void> updateStorageLocal(List shopping_cart) async {
 
 }
 
+
 Future<List<dynamic>> getStorageLocal() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
+//  await prefs.remove('items');
    String? items = prefs.getString('items');
      print("items");
      print(items);
@@ -123,7 +133,7 @@ Future<void> delete(int itemID) async {
     final response = await http.delete(
       Uri.parse('http://192.168.1.179:5000/shopping-list/delete-item-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -148,7 +158,7 @@ Future<void> uploadItem(String amount, String ingredient) async {
       Uri.parse(
           'http://192.168.1.179:5000/shopping-list/add-a-shopping-list-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -174,7 +184,7 @@ Future<void> updateItem(String amount, String ingredient, int id) async {
       Uri.parse(
           'http://192.168.1.179:5000/shopping-list/update-a-shopping-list-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({

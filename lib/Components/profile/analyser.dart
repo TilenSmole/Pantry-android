@@ -35,14 +35,14 @@ class _analyserState extends State<Analyser> {
 
   
   getRecipes() async {
-    var result = await await API.fetchRecipes();
+    var result = await API.fetchRecipes();
     setState(() {
       _recipes = result;
     });
   }
 
   getstorage() async {
-    var result = await await StorageAPI.fetchStorage();
+    var result = await StorageAPI.fetchStorage();
     setState(() {
       _storage = result;
     });
@@ -93,10 +93,10 @@ class _analyserState extends State<Analyser> {
               number2 = number2! * 1000;
               unit2 = "g";
             }
-            if (number1 != null && unit2 != null && unit1 != null && unit1!.toLowerCase() == "l" && unit2!.toLowerCase() == "ml" ) {
-              number1 = number1! * 1000;
+            if (number1 != null && unit2 != null && unit1 != null && unit1.toLowerCase() == "l" && unit2.toLowerCase() == "ml" ) {
+              number1 = number1 * 1000;
               unit1 = "ml";
-            } else if (number2 != null && unit2 != null && unit1 != null && unit2!.toLowerCase() == "l" && unit1!.toLowerCase() == "ml") {
+            } else if (number2 != null && unit2 != null && unit1 != null && unit2.toLowerCase() == "l" && unit1.toLowerCase() == "ml") {
               number1 = number1! * 1000;
               unit1 = "ml";
             }

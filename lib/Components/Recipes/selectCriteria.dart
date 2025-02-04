@@ -70,7 +70,7 @@ class _selectCriteriaState extends State<selectCriteria> {
             child: TextButton(
               style: ButtonStyle(
                 foregroundColor:
-                    MaterialStateProperty.all<Color>(Colors.orange),
+                    WidgetStateProperty.all<Color>(Colors.orange),
               ),
               onPressed: () {
                 setState(() {
@@ -84,7 +84,7 @@ class _selectCriteriaState extends State<selectCriteria> {
           ),
           TextButton(
             style: ButtonStyle(
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.orange),
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.orange),
             ),
             onPressed: () {
               Navigator.pop(context, _selectedValues);

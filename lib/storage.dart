@@ -14,7 +14,7 @@ class Storage extends StatefulWidget {
 }
 
 class CreateStorageState extends State<Storage> {
-  List _storage = [];
+  List<dynamic> _storage = [];
   Map<String, List<Map<String, dynamic>>> items =
       {}; //all items with key being a category and value other stuff ot the item
 
@@ -79,7 +79,7 @@ class CreateStorageState extends State<Storage> {
 
     _addItemFocusNode.addListener(() {
       if (!_focusNode.hasFocus) {
-        if (_itemController.text.length > 0) {
+        if (_itemController.text.isNotEmpty) {
           setState(() {
             newCategories.add(_itemController.text);
           });
@@ -91,7 +91,7 @@ class CreateStorageState extends State<Storage> {
 
     _addCategoryFocusNode.addListener(() {
       if (!_focusNode.hasFocus) {
-        if (_categoryController.text.length > 0) {
+        if (_categoryController.text.isNotEmpty) {
           categories.add(_categoryController.text);
           _categoryController.text = "";
         }
@@ -111,7 +111,7 @@ class CreateStorageState extends State<Storage> {
       _overlayEntry!.remove();
     }
     _overlayEntry = _createOverlayEntry(mapId, itemId);
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _showAddItemOverlay() {
@@ -120,7 +120,7 @@ class CreateStorageState extends State<Storage> {
       _overlayEntry!.remove();
     }
     _overlayEntry = __AddItemOverlayEntry();
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _showChangeCategoyOverlay(List<dynamic> categories, String id) {
@@ -129,7 +129,7 @@ class CreateStorageState extends State<Storage> {
       _overlayEntry!.remove();
     }
     _overlayEntry = _ChangeCategoryOverlay(categories, id);
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   OverlayEntry _createOverlayEntry(String mapId, int itemId) {
@@ -204,7 +204,8 @@ class CreateStorageState extends State<Storage> {
 
   Future<void> fetchStorage() async {
     //_storage = await API.fetchStorage();
-   _storage =   await API.getStorageLocal();
+    _storage = await API.getStorageLocal() ?? [];
+    print(_storage);
     setState(() {
       _storage = _storage;
     });
@@ -223,7 +224,7 @@ class CreateStorageState extends State<Storage> {
   Future<void> updateItem(String index, int itemID) async {
     var amount = _controllersQTY[index]?.text ?? 'default';
     var ingredient = _controllersITM[index]?.text ?? 'default';
-   // API.updateItem(itemID, amount, ingredient);
+    // API.updateItem(itemID, amount, ingredient);
 
     var itemIndex = findIndex(itemID);
 
@@ -260,7 +261,7 @@ class CreateStorageState extends State<Storage> {
 
     var amount = _amountController.text ?? 'default';
     var ingredient = _ingredientController.text ?? 'default';
-   // API.addANewItem(amount, ingredient, categories);
+    // API.addANewItem(amount, ingredient, categories);
 
     final Map<String, dynamic> item = {
       'id': idItem - 1,
@@ -276,7 +277,6 @@ class CreateStorageState extends State<Storage> {
       categories = [];
       _removeOverlay();
       loadFridge();
-      
     });
 
     API.updateStorageLocal(_storage);
@@ -323,22 +323,22 @@ class CreateStorageState extends State<Storage> {
         } else {
           items["default"] = [item];
         }
-        _controllersITM[item["id"].toString() + "default"] =
+        _controllersITM["${item["id"]}default"] =
             TextEditingController(text: item["ingredient"]);
-        _controllersQTY[item["id"].toString() + "default"] =
+        _controllersQTY["${item["id"]}default"] =
             TextEditingController(text: item["amount"]);
 
         var focusNode = FocusNode();
         focusNode.addListener(() {
           if (!focusNode.hasFocus) {
-            updateItem(item["id"].toString() + "default", item['id']);
+            updateItem("${item["id"]}default", item['id']);
           }
         });
 
-        _focusNodesQTY[item["id"].toString() + "default"] = focusNode;
-        _focusNodesITM[item["id"].toString() + "default"] = focusNode;
-        _layerLinks[item["id"].toString() + "default"] = LayerLink();
-        openClose[item["id"].toString() + "default"] = false;
+        _focusNodesQTY["${item["id"]}default"] = focusNode;
+        _focusNodesITM["${item["id"]}default"] = focusNode;
+        _layerLinks["${item["id"]}default"] = LayerLink();
+        openClose["${item["id"]}default"] = false;
       }
     }
   }
@@ -401,7 +401,6 @@ class CreateStorageState extends State<Storage> {
                                   setState(() {
                                     _removeOverlay();
                                   });
-                                  ;
                                 },
                               ),
                             ),
@@ -436,7 +435,7 @@ class CreateStorageState extends State<Storage> {
                         ),
                       ),
                       Text("Categories:"),
-                      Container(
+                      SizedBox(
                         height: 150,
                         child: ListView.builder(
                           itemCount: categories.length,
@@ -451,7 +450,6 @@ class CreateStorageState extends State<Storage> {
                           setState(() {
                             addANewItem();
                           });
-                          ;
                         },
                       ),
                     ],
@@ -575,12 +573,11 @@ class CreateStorageState extends State<Storage> {
                                                 category.toString())) {
                                           continue;
                                         } else {
-                                            temp.add(newCategories[i]);
-                                          
+                                          temp.add(newCategories[i]);
                                         }
                                       }
-                                        newCategories = temp;
-                                      
+                                      newCategories = temp;
+
                                       updateCategory(
                                           newCategories, id.toString());
                                       _removeOverlay();
@@ -638,7 +635,11 @@ class CreateStorageState extends State<Storage> {
           title: Text('YOUR STORAGE'),
         ),
         body: items.isEmpty
-            ? Center(child: CircularProgressIndicator())
+            ? Center(
+                child: SingleChildScrollView(
+                  child: Text("no items in your storage, you are broke..."),
+                ),
+              )
             : SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
@@ -697,7 +698,7 @@ class CreateStorageState extends State<Storage> {
                                                                 openClose[item['id'].toString() +
                                                                             category] ==
                                                                         true
-                                                                    ? Container(
+                                                                    ? SizedBox(
                                                                         width:
                                                                             80,
                                                                         child:
@@ -718,7 +719,7 @@ class CreateStorageState extends State<Storage> {
                                                                 openClose[item['id'].toString() +
                                                                             category] ==
                                                                         true
-                                                                    ? Container(
+                                                                    ? SizedBox(
                                                                         width:
                                                                             170,
                                                                         child:
@@ -775,7 +776,6 @@ class CreateStorageState extends State<Storage> {
                                                                               category] =
                                                                           false;
                                                                     });
-                                                                    ;
                                                                   },
                                                                 ),
                                                         ],

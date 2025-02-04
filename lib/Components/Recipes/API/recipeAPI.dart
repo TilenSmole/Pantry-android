@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For rootBundle
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../ShoppingList/API/shopping_cartAPI.dart' as shoppingCartAPI;
 
 Future<int?> addToSList(List ingredients, List amounts, String token) async { 
   try {
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/storage/add-to-shopping-list'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -32,14 +34,48 @@ Future<int?> addToSList(List ingredients, List amounts, String token) async {
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return null;
 }
+
+Future<int?> addToSListLocal(List ingredients, List amounts, String token) async { 
+   final SharedPreferences prefs = await SharedPreferences.getInstance();
+   
+    List<dynamic> shoppingCart = await shoppingCartAPI.getStorageLocal();
+
+
+    for(int i =0; i < ingredients.length; i++){
+      String? idItemStr = prefs.getString('idItem');
+      int idItem = idItemStr != null ? int.parse(idItemStr) : 0;
+      final Map<String, dynamic> item = {
+            'id': idItem - 1,
+            'amount': amounts[i],
+            'ingredient':ingredients[i],
+            'checked': false,
+            'userId': 1,
+          };
+    await prefs.setString('idItem', (idItem - 1).toString());
+
+    print(item);
+    shoppingCart.add(item);
+
+
+    }
+  print(shoppingCart);
+    shoppingCartAPI.updateStorageLocal(shoppingCart);
+    return null;
+
+
+}
+
+
+
 
 Future<int?> cook(List ingredients, List amounts, String token) async {
   try {
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/storage/cook'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -63,6 +99,7 @@ Future<int?> cook(List ingredients, List amounts, String token) async {
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return null;
 }
 
 Future<List<dynamic>?> addNote(String note, int recipeID, String token) async {
@@ -70,7 +107,7 @@ Future<List<dynamic>?> addNote(String note, int recipeID, String token) async {
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/notes/add-note'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -89,6 +126,7 @@ Future<List<dynamic>?> addNote(String note, int recipeID, String token) async {
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return null;
 }
 
 Future<List<dynamic>?> deleteNote(
@@ -97,7 +135,7 @@ Future<List<dynamic>?> deleteNote(
     final response = await http.delete(
       Uri.parse('http://192.168.1.179:5000/notes/delete-note'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -116,6 +154,7 @@ Future<List<dynamic>?> deleteNote(
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return null;
 }
 
 Future<List<dynamic>?> editNote(
@@ -124,7 +163,7 @@ Future<List<dynamic>?> editNote(
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/notes/edit-note'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode(
@@ -141,6 +180,7 @@ Future<List<dynamic>?> editNote(
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return null;
 }
 
 Future<List<dynamic>?> getNotes(int recipeID, String? token) async {
@@ -148,7 +188,7 @@ Future<List<dynamic>?> getNotes(int recipeID, String? token) async {
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/notes'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -171,6 +211,7 @@ Future<List<dynamic>?> getNotes(int recipeID, String? token) async {
   } catch (e) {
     print('Error fetching recipes: $e');
   }
+  return null;
 }
 
 Future<void> freezeItem(String amount, String ingredient,
@@ -179,7 +220,7 @@ Future<void> freezeItem(String amount, String ingredient,
     final response = await http.post(
       Uri.parse('http://192.168.1.179:5000/storage/add-storage-item-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode(
@@ -203,8 +244,8 @@ Future<int> editRecipe(
   String instructions,
   List<dynamic> amounts,
   String imageUrl,
-  int prep_time,
-  int cook_time,
+  int prepTime,
+  int cookTime,
   String token,
 ) async {
   Map<String, dynamic> recipe = {
@@ -220,7 +261,7 @@ Future<int> editRecipe(
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/recipes/edit-recipe-mobile'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -230,8 +271,8 @@ Future<int> editRecipe(
         'title': title,
         'instructions': instructions,
         'imageUrl': imageUrl,
-        'prep_time': prep_time,
-        'cook_time': cook_time,
+        'prep_time': prepTime,
+        'cook_time': cookTime,
       }),
     );
     if (response.statusCode == 200) {
@@ -247,19 +288,19 @@ Future<int> editRecipe(
 
 Future<int> edit_cook_time(
   int recipeId,
-  int cook_time,
+  int cookTime,
   String token,
 ) async {
   try {
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/recipes/edit-cook_time'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
         'recipeId': recipeId,
-        'cook_time': cook_time,
+        'cook_time': cookTime,
       }),
     );
     if (response.statusCode == 200) {
@@ -275,19 +316,19 @@ Future<int> edit_cook_time(
 
 Future<int> edit_prep_time(
   int recipeId,
-  int prep_time,
+  int prepTime,
   String token,
 ) async {
   try {
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/recipes/edit-prep_time'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
         'recipeId': recipeId,
-        'prep_time': prep_time,
+        'prep_time': prepTime,
       }),
     );
     if (response.statusCode == 200) {
@@ -310,7 +351,7 @@ Future<int> editInstructions(
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/recipes/edit-instructions'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
@@ -339,7 +380,7 @@ Future<int> editIngredients(
     final response = await http.put(
       Uri.parse('http://192.168.1.179:5000/recipes/edit-ingredients'),
       headers: {
-        'Authorization': 'Bearer ${token}',
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
