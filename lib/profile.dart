@@ -3,8 +3,11 @@ import './Components/load_token.dart' as load_token;
 import 'login.dart';
 import './Components/logout.dart';
 import 'dart:async';
-import './Components/profile/notes.dart';
-import './Components/profile/analyser.dart';
+import 'Components/PROFILE/notes.dart';
+import 'Components/OTHER/item_add.dart';
+import 'Components/OTHER/filter_storage.dart';
+
+import 'Components/PROFILE/analyser.dart';
 import './Components/SNYC/syncAPI.dart' as API;
 
 class Profile extends StatefulWidget {
@@ -87,12 +90,25 @@ class _ProfileState extends State<Profile> {
                   ),
                   InkWell(
                     onTap: () {
-                      API.uploadItems();
-                      API.uploadStorage();
-                      API.fetchRecipes();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddItem()),
+                      );
                     },
                     child: Text(
-                      "synchronize",
+                      "ADD A NEW ITEM",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                   InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => FilterStorage()),
+                      );
+                    },
+                    child: Text(
+                      "FILTER STORAGE",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),

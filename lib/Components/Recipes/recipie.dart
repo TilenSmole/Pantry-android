@@ -3,7 +3,7 @@ import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'caloriesCalculator.dart';
-import './API/recipeAPI.dart' as API;
+import 'API/recipeAPI.dart' as API;
 import '../load_token.dart' as load_token;
 
 import 'package:flutter/material.dart';
@@ -171,7 +171,7 @@ Future<void> createAndSharePdf() async {
         return pw.Column(
           children: [
             pw.Text(
-              recipe["title"].toString(),
+              recipe["name"].toString(),
               style: pw.TextStyle(
                 fontSize: 24,
                 fontWeight: pw.FontWeight.bold,
@@ -191,7 +191,7 @@ Future<void> createAndSharePdf() async {
               ),
             ),
              pw.Text(
-                "Total time: ${totalTime() ?? "Unknown"}",
+                "Total time: ${ "Unknown"}",
               style: pw.TextStyle(
                 fontSize: 16,
               ),
@@ -219,7 +219,7 @@ Future<void> createAndSharePdf() async {
   // Save and share the PDF file
   await Printing.sharePdf(
     bytes: await pdf.save(),
-    filename: '$recipe["title].pdf', 
+    filename: '${recipe["name"].toString()}.pdf',
   );
 }
 
@@ -679,7 +679,7 @@ Future<void> createAndSharePdf() async {
                         ingredients.add(_selectedIngredients[key]!);
                       }
 
-                      API.addToSListLocal(ingredients, amounts, token!);
+                      API.addToSList(ingredients, amounts, token!);
                       _removeOverlay();
                       _checkedValues = [];
                       _selectedAmounts = {};
@@ -696,7 +696,7 @@ Future<void> createAndSharePdf() async {
       ),
     );
   }
-
+/*
   String calucateTime(var type) {
     return (int.parse(recipe[type]) < 60)
         ? "${recipe[type]} min"
@@ -712,7 +712,7 @@ Future<void> createAndSharePdf() async {
                         .toStringAsFixed(2)} hours"
             : "${int.parse(recipe["prep_time"]) + int.parse(recipe["cook_time"])} min"
         : "Undefined";
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -772,7 +772,7 @@ Future<void> createAndSharePdf() async {
                               ? CircularOrangeButton(
                                   icon: Icons.add_box,
                                   onPressed: () async {
-                                    int? result = await API.addToSListLocal(
+                                    int? result = await API.addToSList(
                                         recipe["ingredients"],
                                         recipe["amounts"],
                                         token!);
@@ -855,7 +855,7 @@ Future<void> createAndSharePdf() async {
                                     ],
                                   ),
                             Text(
-                              "Total time: ${totalTime() ?? "Unknown"}",
+                              "Total time: ${ "Unknown"}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
                             ),

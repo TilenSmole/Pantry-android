@@ -5,7 +5,7 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'package:http/http.dart' as http;
 import '../load_token.dart' as load_token;
 import '../../main.dart';
-import './API/profileAPI.dart' as API;
+import 'API/profileAPI.dart' as API;
 
 class Notes extends StatefulWidget {
   @override
@@ -39,7 +39,7 @@ class _notesState extends State<Notes> {
   }
 
   void getNote() async {
-    var result = await API.getNotesLocal(token);// await API.getNotes(token);
+    var result = await API.getNotes(token);
     print("result");
     setState(() {
       notes = result;
@@ -69,7 +69,7 @@ class _notesState extends State<Notes> {
   }
 
   void addNote() async {
-    await API.addNotesLocal(_newNoteController.text, token!);//await API.addNote(_newNoteController.text, token!);
+   await API.addNote(_newNoteController.text, token!);
     getNote();
   }
 
@@ -78,7 +78,7 @@ class _notesState extends State<Notes> {
       print(_notesControllers[noteId]!.text);
             print(noteId);
 
-            var result =  await API.editNoteLocal(_notesControllers[noteId]!.text, noteId, token!);//API.editNote(_notesControllers[noteId]!.text, noteId, token!);
+            var result =  await API.editNote(_notesControllers[noteId]!.text, noteId, token!);
 
 
 
@@ -93,7 +93,7 @@ class _notesState extends State<Notes> {
     if (_notesControllers[noteId]!.text.isNotEmpty) {
     
 
-            var result =  await API.deleteNoteLocal( noteId, token!);//API.editNote(_notesControllers[noteId]!.text, noteId, token!);
+            var result =  API.editNote(_notesControllers[noteId]!.text, noteId, token!);
 
          _checkedValues[index] = !_checkedValues[index];
      

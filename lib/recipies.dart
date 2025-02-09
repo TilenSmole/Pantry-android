@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'Components/Recipes/recipie.dart';
-import 'Components/Recipes/add_recipe.dart';
-import 'Components/Recipes/selectCriteria.dart';
-import 'Components/Recipes/API/recipes.API.dart' as API;
+import 'Components/RECIPES/recipie.dart';
+import 'Components/RECIPES/add_recipe.dart';
+import 'Components/RECIPES/selectCriteria.dart';
+import 'Components/RECIPES/API/recipes.API.dart' as API;
 
 class Recipies extends StatefulWidget {
   @override

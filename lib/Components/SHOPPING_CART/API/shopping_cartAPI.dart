@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 // For SocketException
 // For TimeoutException
-import '../../STORAGE/API/StorageAPI.dart' as storageAPI;
+import '../../Storage/API/StorageAPI.dart' as storageAPI;
 import '../../../Classes/ListItem.dart';
 
 

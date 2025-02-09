@@ -203,8 +203,8 @@ class CreateStorageState extends State<Storage> {
   }
 
   Future<void> fetchStorage() async {
-    //_storage = await API.fetchStorage();
-    _storage = await API.getStorageLocal() ?? [];
+    _storage = await API.fetchStorage();
+  //  _storage = await API.getStorageLocal() ?? [];
     print(_storage);
     setState(() {
       _storage = _storage;
@@ -224,7 +224,7 @@ class CreateStorageState extends State<Storage> {
   Future<void> updateItem(String index, int itemID) async {
     var amount = _controllersQTY[index]?.text ?? 'default';
     var ingredient = _controllersITM[index]?.text ?? 'default';
-    // API.updateItem(itemID, amount, ingredient);
+     API.updateItem(itemID, amount, ingredient);
 
     var itemIndex = findIndex(itemID);
 
@@ -236,11 +236,11 @@ class CreateStorageState extends State<Storage> {
       }
     });
 
-    API.updateStorageLocal(_storage);
+   // API.updateStorageLocal(_storage);
   }
 
   Future<void> updateCategory(List<dynamic> category, String itemID) async {
-    //API.updateCategory(category, itemID);
+    API.updateCategory(category, itemID);
 
     var itemIndex = findIndex(int.parse(itemID));
 
@@ -251,7 +251,7 @@ class CreateStorageState extends State<Storage> {
       }
     });
 
-    API.updateStorageLocal(_storage);
+   // API.updateStorageLocal(_storage);
   }
 
   Future<void> addANewItem() async {
@@ -261,7 +261,7 @@ class CreateStorageState extends State<Storage> {
 
     var amount = _amountController.text ?? 'default';
     var ingredient = _ingredientController.text ?? 'default';
-    // API.addANewItem(amount, ingredient, categories);
+     API.addANewItem(amount, ingredient, categories);
 
     final Map<String, dynamic> item = {
       'id': idItem - 1,
@@ -279,7 +279,7 @@ class CreateStorageState extends State<Storage> {
       loadFridge();
     });
 
-    API.updateStorageLocal(_storage);
+   // API.updateStorageLocal(_storage);
   }
 
   Future<void> loadFridge() async {
@@ -344,7 +344,7 @@ class CreateStorageState extends State<Storage> {
   }
 
   Future<void> delete(int itemID, int index, key, String category) async {
-    //API.delete(itemID);
+    API.delete(itemID);
 
     var itemIndex = findIndex(itemID);
 
@@ -356,7 +356,7 @@ class CreateStorageState extends State<Storage> {
       }
     });
 
-    API.updateStorageLocal(_storage);
+   // API.updateStorageLocal(_storage);
   }
 
   OverlayEntry __AddItemOverlayEntry() {

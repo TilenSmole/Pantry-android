@@ -55,23 +55,17 @@ class _AddRecipeState extends State<AddRecipe> {
   }
 
   Future<void> setFood(String fileName, String key) async {
-    print(key);
     try {
-      // Load the JSON file from assets
       final String response = await rootBundle.loadString('FOODS/$fileName');
 
-      // Decode the JSON response
       final Map<String, dynamic> data = json.decode(response);
 
-      // Extract the list based on the provided key
       List<dynamic> items = data[key];
 
-      // Extract item names, ensure the value is a String
       List<String> names = items.map((item) {
-        return item["name"].toString(); // Change "name" if the key is different
+        return item["name"].toString(); 
       }).toList();
 
-      // Update the state
       setState(() {
         _allSuggestions.addAll(names);
       });

@@ -7,7 +7,7 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'Components/ShoppingList/API/shopping_cartAPI.dart' as API;
 import 'package:shared_preferences/shared_preferences.dart';
-import './Components/ShoppingList/shopping_list_tab.dart';
+import './Components/SHOPPING_CART/shopping_list_tab.dart';
 import '../../../Classes/ListItem.dart';
 
 class ShoppingCart extends StatefulWidget {
