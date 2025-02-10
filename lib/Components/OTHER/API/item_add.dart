@@ -105,3 +105,80 @@ Future<List<dynamic>> getDisallowdItems() async {
   }
   return [];
 }
+
+
+Future<bool> setDisallowdItems(id,set ) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('token');
+  try {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.179:5000/foods/set-disallowd-food-m'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'disallowedId': id,
+        'set': set,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Failed to upload disallowed item');
+    }
+  } catch (e) {
+    print('Error fetching recipes: $e');
+  }
+  return false;
+}
+
+
+
+Future<bool> setStorageOnly() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('token');
+  try {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.179:5000/account/set-storage-only-m'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Failed to update saving only storage');
+    }
+  } catch (e) {
+    print('Error fetching recipes: $e');
+  }
+  return false;
+}
+Future<bool> getStorageOnly() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('token');
+  try {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.179:5000/account/get-storage-only-m'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      },
+    );
+
+    if (response.statusCode == 200) {
+         final Map<String, dynamic> data = jsonDecode(response.body);
+
+      return data["existingValue"];
+    } else {
+      print('Failed to update saving only storage');
+    }
+  } catch (e) {
+    print('Error fetching recipes: $e');
+  }
+  return false;
+}

@@ -16,6 +16,7 @@ class _FilterStorageState extends State<FilterStorage> {
 
   Map<int, bool> taskSelection = {};
   bool enableOnlyStorageSaving = false;
+  bool isLoading = true; 
 
   @override
   void initState() {
@@ -24,23 +25,30 @@ class _FilterStorageState extends State<FilterStorage> {
   }
 
   Future<void> fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+
     Map<int, String> fetchedItems = await API.getItems();
     List<dynamic> fetchedDisallowed = await API.getDisallowdItems();
+    var enableOnlyStorageSavingCall = await API.getStorageOnly();
 
     setState(() {
       _storage = fetchedItems;
       _disallow_storage = fetchedDisallowed;
+      enableOnlyStorageSaving = enableOnlyStorageSavingCall;
 
       taskSelection = Map.fromIterable(
-      _storage.keys,  
-      value: (id) {
-        return _disallow_storage.any(
-            (disallowedItem) => disallowedItem['disallowedId'] == id);
-      },
-    );
-
+        _storage.keys,
+        value: (id) {
+          return _disallow_storage
+              .any((disallowedItem) => disallowedItem['disallowedId'] == id);
+        },
+      );
+    isLoading = false;
+      
     });
-    print(_disallow_storage);
+
   }
 
   Widget buildTasksColumn() {
@@ -51,9 +59,18 @@ class _FilterStorageState extends State<FilterStorage> {
 
         return Row(
           children: [
-            Checkbox(
-              value: taskSelection[index] ?? false,
-              onChanged: (bool? value) {},
+            StatefulBuilder(
+              builder: (context, setState) {
+                return Checkbox(
+                  value: taskSelection[index] ?? false,
+                  onChanged: (bool? value) async {
+                    bool insert = await API.setDisallowdItems(index, value);
+                    setState(() {
+                      taskSelection[index] = value ?? false;
+                    });
+                  },
+                );
+              },
             ),
             Text(task.toString()),
           ],
@@ -74,18 +91,27 @@ class _FilterStorageState extends State<FilterStorage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Text(
-                  'Enable saving only from storage: ',
-                  style: TextStyle(fontSize: 17.0),
-                ),
-                Checkbox(
-                  value: enableOnlyStorageSaving,
-                  onChanged: (bool? value) {},
-                ),
-              ],
-            ),
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Row(
+                    children: [
+                      const Text(
+                        'Enable saving only from storage: ',
+                        style: TextStyle(fontSize: 17.0),
+                      ),
+                      Checkbox(
+                        value: enableOnlyStorageSaving,
+                        onChanged: (bool? value) async {
+                          bool change = await API.setStorageOnly();
+                          if (change) {
+                            setState(() {
+                              enableOnlyStorageSaving = value ?? false;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
             Expanded(
               child: SingleChildScrollView(
                 child: buildTasksColumn(),
