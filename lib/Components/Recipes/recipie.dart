@@ -1,13 +1,8 @@
-import 'dart:ffi';
 import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'caloriesCalculator.dart';
 import 'API/recipeAPI.dart' as API;
 import '../load_token.dart' as load_token;
 
-import 'package:flutter/material.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
@@ -189,9 +184,9 @@ Future<void> createAndSharePdf() async {
               style: pw.TextStyle(
                 fontSize: 16,
               ),
-            ),
+            ),  
              pw.Text(
-                "Total time: ${ "Unknown"}",
+                "Total time: ${recipe["total_time"]?.toString() ?? "Unknown"} min",
               style: pw.TextStyle(
                 fontSize: 16,
               ),
@@ -855,13 +850,13 @@ Future<void> createAndSharePdf() async {
                                     ],
                                   ),
                             Text(
-                              "Total time: ${ "Unknown"}",
+                              "Total time: ${recipe["total_time"]}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              "TOTAL CALORIES: ${caloriesCalculator(recipe["ingredients"]).getCalories() ?? "Unknown"}",
+                              "TOTAL CALORIES: ${recipe["calories"] ?? "Unknown"}",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w500),
                             ),

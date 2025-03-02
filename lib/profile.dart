@@ -6,9 +6,11 @@ import 'dart:async';
 import 'Components/PROFILE/notes.dart';
 import 'Components/OTHER/item_add.dart';
 import 'Components/OTHER/filter_storage.dart';
+import 'Components/OTHER/warnings.dart';
+import 'Components/PROFILE/weekly.dart';
 
 import 'Components/PROFILE/analyser.dart';
-import './Components/SNYC/syncAPI.dart' as API;
+import 'Components/OTHER/API/warnings.dart' as WARNINGS_API; 
 
 class Profile extends StatefulWidget {
   @override
@@ -18,16 +20,21 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   String? token;
   Map<String, dynamic> _user = {};
+  List<dynamic> warnings = [];
+
   @override
   void initState() {
     super.initState();
-    _loadToken();
+    _loadData();
   }
 
-  Future<void> _loadToken() async {
+  Future<void> _loadData() async {
     final loadedToken = await load_token.loadToken();
+    List<dynamic> warningsFetched = await WARNINGS_API.getWarnings();
+
     setState(() {
       token = loadedToken;
+      warnings = warningsFetched;
     });
     if (token != null) {}
   }
@@ -64,6 +71,11 @@ class _ProfileState extends State<Profile> {
             child: Container(
               child: Column(
                 children: [
+                   Column(
+            children: warnings.map((warning) {
+          return Text(
+              "-> ${warning["amount"]} grams of ${warning["ingredient"]} left", style: TextStyle(fontSize: 17.0, color: Colors.redAccent)) ;
+        }).toList()),
                   InkWell(
                     onTap: () {
                       Navigator.push(
@@ -72,7 +84,7 @@ class _ProfileState extends State<Profile> {
                       );
                     },
                     child: Text(
-                      "NOTES",
+                      "NOTES 🌏",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
@@ -96,7 +108,67 @@ class _ProfileState extends State<Profile> {
                       );
                     },
                     child: Text(
-                      "ADD A NEW ITEM",
+                      "ADD A NEW ITEM 🌏",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FilterStorage()),
+                      );
+                    },
+                    child: Text(
+                      "FILTER STORAGE 🌏",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Warnings()),
+                      );
+                    },
+                    child: Text(
+                      "ADD COSTUM WARNINGS-USE BY",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Weekly()),
+                      );
+                    },
+                    child: Text(
+                      "WEEKLY PLANNER",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Analyser()),
+                      );
+                    },
+                    child: Text(
+                      "QUICK SHOPPING LISTS",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ), InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Analyser()),
+                      );
+                    },
+                    child: Text(
+                      "30 DAY PLANNER",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
@@ -104,11 +176,23 @@ class _ProfileState extends State<Profile> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FilterStorage()),
+                        MaterialPageRoute(builder: (context) => Analyser()),
                       );
                     },
                     child: Text(
-                      "FILTER STORAGE",
+                      "DEFAULT STORAGE",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                    InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Analyser()),
+                      );
+                    },
+                    child: Text(
+                      "NUTRIONAL VALUES OF ITEMS",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),

@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For rootBundle
+// For rootBundle
 import '../load_ingredients.dart';
 
 class selectCriteria extends StatefulWidget {

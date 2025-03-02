@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For rootBundle
-import 'package:http/http.dart' as http;
+// For rootBundle
 import '../load_token.dart' as load_token;
-import '../../main.dart';
 import 'API/profileAPI.dart' as API;
 
 class Notes extends StatefulWidget {

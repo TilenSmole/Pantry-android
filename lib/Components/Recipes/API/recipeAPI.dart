@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For rootBundle
+// For rootBundle
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../ShoppingList/API/shopping_cartAPI.dart' as shoppingCartAPI;

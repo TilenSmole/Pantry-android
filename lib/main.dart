@@ -3,7 +3,6 @@ import 'profile.dart' as profile;
 import 'recipies.dart';
 import 'shopping_cart.dart';
 import 'storage.dart';
-import 'login.dart';
 
 void main() {
     WidgetsFlutterBinding.ensureInitialized();

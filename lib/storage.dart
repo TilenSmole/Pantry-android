@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:printing/printing.dart';
-import 'Components/load_token.dart' as load_token;
-import 'dart:convert';
 import './Components/load_ingredients.dart';
 import 'Components/SuggestionOverlay.dart';
 import './Components/Storage/API/StorageAPI.dart' as API;
