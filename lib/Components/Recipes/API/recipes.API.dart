@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
     print('Trying to fetch receipes');
 
     try {
-      final response = await http.get(Uri.parse('http://192.168.1.179:5000/recipes'));
+      final response = await http.get(Uri.parse('http://192.168.1.7:5000/recipes'));
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
 

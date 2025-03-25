@@ -15,7 +15,7 @@ Future<void> uploadItems() async {
     final List<dynamic> itemsList = jsonDecode(items);
     await http.put(
       Uri.parse(
-          'http://192.168.1.179:5000/shopping-list/set-users-shopping-list-online'),
+          'http://192.168.1.7:5000/shopping-list/set-users-shopping-list-online'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ Future<void> uploadStorage() async {
         // Attempt to sync items with the server
         await http.post(
           Uri.parse(
-              'http://192.168.1.179:5000/storage/set-storage'),
+              'http://192.168.1.7:5000/storage/set-storage'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ Future<List<dynamic>> fetchRecipes() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
-      final response = await http.get(Uri.parse('http://192.168.1.179:5000/recipes'));
+      final response = await http.get(Uri.parse('http://192.168.1.7:5000/recipes'));
       if (response.statusCode == 200) {
               final Map<String, dynamic> data = jsonDecode(response.body);
 

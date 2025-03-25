@@ -172,30 +172,6 @@ class _ProfileState extends State<Profile> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-                   InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Analyser()),
-                      );
-                    },
-                    child: Text(
-                      "DEFAULT STORAGE",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                    InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Analyser()),
-                      );
-                    },
-                    child: Text(
-                      "NUTRIONAL VALUES OF ITEMS",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
                   InkWell(
                     onTap: () {
                       logout();

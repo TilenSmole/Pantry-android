@@ -162,7 +162,7 @@ _selectedIngridients.add(_filteredSuggestions[index]);
   Future<void> uploadRecipe() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.179:5000/recipes/add-recipe-mobile'),
+        Uri.parse('http://192.168.1.7:5000/recipes/add-recipe-mobile'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json'

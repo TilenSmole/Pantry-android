@@ -18,7 +18,7 @@ Future<List<ListItem>> getItems() async {
   try {
     final response = await http.get(
       Uri.parse(
-          'http://192.168.1.179:5000/shopping-list/get-users-shopping-list-mobile'),
+          'http://192.168.1.7:5000/shopping-list/get-users-shopping-list-mobile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ Future<void> bought(int itemID) async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.put(
-      Uri.parse('http://192.168.1.179:5000/storage/add-item-from-sList-mobile'),
+      Uri.parse('http://192.168.1.7:5000/storage/add-item-from-sList-mobile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ Future<void> delete(int itemID) async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.delete(
-      Uri.parse('http://192.168.1.179:5000/shopping-list/delete-item-mobile'),
+      Uri.parse('http://192.168.1.7:5000/shopping-list/delete-item-mobile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -151,7 +151,7 @@ Future<void> uploadItem(String amount, String ingredient) async {
   try {
     final response = await http.post(
       Uri.parse(
-          'http://192.168.1.179:5000/shopping-list/add-a-shopping-list-mobile'),
+          'http://192.168.1.7:5000/shopping-list/add-a-shopping-list-mobile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -177,7 +177,7 @@ Future<void> updateItem(String amount, String ingredient, int id) async {
   try {
     final response = await http.put(
       Uri.parse(
-          'http://192.168.1.179:5000/shopping-list/update-a-shopping-list-mobile'),
+          'http://192.168.1.7:5000/shopping-list/update-a-shopping-list-mobile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'

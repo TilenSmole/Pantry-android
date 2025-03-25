@@ -18,7 +18,7 @@ Future<int?> addItem({
     final String? token = prefs.getString('token');
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/foods/add-food-m'),
+      Uri.parse('http://192.168.1.7:5000/foods/add-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -48,12 +48,12 @@ Future<int?> addItem({
   return null;
 }
 
-Future<Map<int, String>> getItems() async {
+Future<Map<int, dynamic>> getItems() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/foods/get-food-m'),
+      Uri.parse('http://192.168.1.7:5000/foods/get-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -64,11 +64,11 @@ Future<Map<int, String>> getItems() async {
       final Map<String, dynamic> data = jsonDecode(response.body);
       final List<dynamic> foods = data["food"];
 
-      final Map<int, String> foodMap = {};
+      final Map<int, dynamic> foodMap = {};
       for (var food in foods) {
-        foodMap[food['id']] = food['name'];
+        foodMap[food['id']] = food;
       }
-
+      print(foodMap);
       return foodMap;
     } else {
       print('Failed to upload to a shopping list from recipe');
@@ -86,7 +86,7 @@ Future<List<dynamic>> getDisallowdItems() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/foods/get-disallowd-food-m'),
+      Uri.parse('http://192.168.1.7:5000/foods/get-disallowd-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -112,7 +112,7 @@ Future<bool> setDisallowdItems(id,set ) async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/foods/set-disallowd-food-m'),
+      Uri.parse('http://192.168.1.7:5000/foods/set-disallowd-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -136,12 +136,13 @@ Future<bool> setDisallowdItems(id,set ) async {
 
 
 
+
 Future<bool> setStorageOnly() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/account/set-storage-only-m'),
+      Uri.parse('http://192.168.1.7:5000/account/set-storage-only-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -159,11 +160,14 @@ Future<bool> setStorageOnly() async {
   return false;
 }
 Future<bool> getStorageOnly() async {
+
+
+
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/account/get-storage-only-m'),
+      Uri.parse('http://192.168.1.7:5000/account/get-storage-only-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -181,4 +185,61 @@ Future<bool> getStorageOnly() async {
     print('Error fetching recipes: $e');
   }
   return false;
+}
+
+
+
+Future<List<dynamic>> getCategories() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('token');
+  try {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.7:5000/foods/get-categories-m'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      final List<dynamic> categories = jsonDecode(response.body);
+        print(categories);
+
+      return categories;
+    } else {
+      print('Failed to getCategories');
+    }
+  } catch (e) {
+    print('Error getCategories: $e');
+  }
+  return [];
+}
+
+Future changeDefaultCategory(id,category) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('token');
+  try {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.7:5000/foods/change-category-m'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'id': id,
+        'category': category,
+      }),
+    );
+    
+    if (response.statusCode == 200) {
+    
+
+      return ;
+    } else {
+      print('Failed to getCategories');
+    }
+  } catch (e) {
+    print('Error getCategories: $e');
+  }
+  return ;
 }

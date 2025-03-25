@@ -22,7 +22,7 @@ class _LoginState extends State<Login> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.179:5000/login'),
+        Uri.parse('http://192.168.1.7:5000/login'),
         headers: {'Content-Type': 'application/json'},
         body:
             jsonEncode(<String, String>{'email': email, 'password': password}),

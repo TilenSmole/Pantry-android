@@ -9,7 +9,7 @@ Future<List<dynamic>> fetchStorage() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.get(
-      Uri.parse('http://192.168.1.179:5000/storage'),
+      Uri.parse('http://192.168.1.7:5000/storage'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ Future<void> delete(int itemID) async {
 
     final response = await http.delete(
       Uri.parse(
-          'http://192.168.1.179:5000/storage/delete-storage-item-mobile/'),
+          'http://192.168.1.7:5000/storage/delete-storage-item-mobile/'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -106,7 +106,7 @@ Future<void> updateItem(int itemID, String amount, ingredient) async {
     final String? token = prefs.getString('token');
 
     final response = await http.put(
-      Uri.parse('http://192.168.1.179:5000/storage/update-storage-mobile'),
+      Uri.parse('http://192.168.1.7:5000/storage/update-storage-mobile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -134,7 +134,7 @@ Future<void> addANewItem(
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.179:5000/storage/add-storage-item-mobile'),
+      Uri.parse('http://192.168.1.7:5000/storage/add-storage-item-mobile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -157,7 +157,7 @@ Future<void> updateCategory(List<dynamic> category, String id) async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.put(
-      Uri.parse('http://192.168.1.179:5000/storage/update-storage-mobile2'),
+      Uri.parse('http://192.168.1.7:5000/storage/update-storage-mobile2'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'

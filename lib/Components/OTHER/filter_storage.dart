@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import './API/item_add.dart' as API;
+import './FoodDetailScreen.dart';
 
 class FilterStorage extends StatefulWidget {
   @override
@@ -9,7 +10,7 @@ class FilterStorage extends StatefulWidget {
 
 class _FilterStorageState extends State<FilterStorage> {
   String? token;
-  Map<int, String> _storage = {};
+  Map<int, dynamic> _storage = {};
   List<dynamic> _disallow_storage = [];
 
   Map<int, bool> taskSelection = {};
@@ -27,7 +28,7 @@ class _FilterStorageState extends State<FilterStorage> {
       isLoading = true;
     });
 
-    Map<int, String> fetchedItems = await API.getItems();
+    Map<int, dynamic> fetchedItems = await API.getItems();
     List<dynamic> fetchedDisallowed = await API.getDisallowdItems();
     var enableOnlyStorageSavingCall = await API.getStorageOnly();
 
@@ -54,7 +55,7 @@ class _FilterStorageState extends State<FilterStorage> {
       children: _storage.entries.map((entry) {
         int index = entry.key;
         var task = entry.value;
-
+        var value = taskSelection[index] ?? false;
         return Row(
           children: [
             StatefulBuilder(
@@ -70,7 +71,20 @@ class _FilterStorageState extends State<FilterStorage> {
                 );
               },
             ),
-            Text(task.toString()),
+            GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FoodDetailScreen(food: task, checked: taskSelection[index] = value ?? false, index: index),
+                    ),
+                  );
+                },
+                child: Text(
+                  task["name"],
+                ),
+              ),
+
           ],
         );
       }).toList(),
