@@ -3,9 +3,10 @@ import 'profile.dart' as profile;
 import 'recipies.dart';
 import 'shopping_cart.dart';
 import 'storage.dart';
+import 'colors.dart';
 
 void main() {
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -14,8 +15,31 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.dark().copyWith(
+        
+        scaffoldBackgroundColor: Color(0xFF33658A), // Deep blue background
+        primaryColor: C.orange, // Warm orange as the primary color
+
+       
+        appBarTheme: AppBarTheme(
+          backgroundColor:
+              Color(0xFF33658A), // App bar blends with the background  
+          titleTextStyle: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(
+          ),
+          bodyMedium: TextStyle(
+              color: Colors.white), // Standard text stays white for contrast
+        ),
+
+        buttonTheme: ButtonThemeData(
+          buttonColor: C.orange, // Orange buttons for contrast
+          textTheme: ButtonTextTheme.primary,
+        ),
       ),
       home: MyHomePage(),
     );
@@ -53,17 +77,28 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          Expanded(child: page),
-        ],
-      ),
+      body: 
+         Row(
+          children: [
+            Expanded(child: page),
+          ],
+        ),
+      
       bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: C.blue, 
+          selectedItemColor: C.orange, 
+          unselectedItemColor: Colors.grey, 
+        showSelectedLabels: true, 
+        showUnselectedLabels:true,
+           iconSize: 25,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Shopping List',
+        BottomNavigationBarItem(
+          icon: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            child: Icon(Icons.shopping_cart),
           ),
+          label: 'List',
+        ),
           BottomNavigationBarItem(
             icon: Icon(Icons.kitchen),
             label: 'Storage',
@@ -78,8 +113,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.grey[600],
         onTap: _onItemTapped,
       ),
     );

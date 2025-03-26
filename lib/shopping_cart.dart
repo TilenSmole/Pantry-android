@@ -4,6 +4,7 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'Components/ShoppingList/API/shopping_cartAPI.dart' as API;
 import './Components/SHOPPING_CART/shopping_list_tab.dart';
 import '../../../Classes/ListItem.dart';
+import 'colors.dart';
 
 class ShoppingCart extends StatefulWidget {
   @override
@@ -251,9 +252,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
         },
       );
 
-      _layerLinks = {
-        for (var item in shoppingCart) item.id: LayerLink()
-      };
+      _layerLinks = {for (var item in shoppingCart) item.id: LayerLink()};
     });
 
     //  print(data["items"]);
@@ -337,16 +336,19 @@ class CreateShoppingCartState extends State<ShoppingCart> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-              bottom: const TabBar(
-            tabs: [
-              Tab(
-                text: "SHOPPING CARD",
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(0),
+              child: TabBar(
+                tabs: [
+                  Tab(text: "SHOPPING LIST"),
+                  Tab(text: "PREV. BOUGHT"),
+                ],
+                indicatorColor: C.orange, 
+                labelColor: Colors.white, 
+                unselectedLabelColor: Colors.grey,
               ),
-              Tab(
-                text: "BOUGHT",
-              ),
-            ],
-          )),
+            ),
+          ),
           body: TabBarView(
             children: [
               ShoppingCartView(

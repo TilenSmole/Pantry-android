@@ -2,6 +2,7 @@ import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:flutter/material.dart';
 import 'API/recipeAPI.dart' as API;
 import '../load_token.dart' as load_token;
+import '../../colors.dart';
 
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -714,7 +715,7 @@ Future<void> createAndSharePdf() async {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 255, 152, 0),
+          backgroundColor: C.orange,
           toolbarHeight: 100,
           title: Text(
             recipe["name"] ?? 'Recipe Details',
@@ -795,7 +796,7 @@ Future<void> createAndSharePdf() async {
                       margin: const EdgeInsets.only(left: 20, top: 3),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16.0),
-                        color: Color.fromARGB(255, 215, 184, 152),
+                        color: C.lightBlue,
                       ),
                       width: MediaQuery.sizeOf(context).width - 40,
                       child: Padding(
@@ -874,7 +875,7 @@ Future<void> createAndSharePdf() async {
                           margin: const EdgeInsets.only(left: 20, top: 3, right: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: Color.fromARGB(255, 215, 184, 152),
+        color: C.lightBlue,
       ),
                           child: Column(
                               children: [
@@ -926,7 +927,7 @@ Future<void> createAndSharePdf() async {
                             const EdgeInsets.only(left: 20, top: 3, bottom: 20),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16.0),
-                          color: Color.fromARGB(255, 215, 184, 152),
+                          color: C.lightBlue,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -981,8 +982,8 @@ Future<void> createAndSharePdf() async {
               height: 60.0,
               width: 60.0,
               decoration: BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle, // Make the container circular
+                color: C.orange,
+                shape: BoxShape.circle, 
               ),
               child: Center(
                 child: Icon(
@@ -1022,7 +1023,7 @@ class IngredientsSection extends StatelessWidget {
       margin: const EdgeInsets.only(left: 20, top: 3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: Color.fromARGB(255, 215, 184, 152),
+        color: C.lightBlue,
       ),
       width: MediaQuery.sizeOf(context).width - 40,
       child: Padding(
@@ -1054,7 +1055,7 @@ class editIngredientsSection extends StatelessWidget {
       margin: const EdgeInsets.only(left: 20, top: 3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: Color.fromARGB(255, 215, 184, 152),
+        color: C.lightBlue,
       ),
       width: MediaQuery.sizeOf(context).width - 40,
       child: Padding(
@@ -1086,7 +1087,7 @@ class CircularOrangeButton extends StatelessWidget {
       padding: const EdgeInsets.only(right: 8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 215, 184, 152),
+          color: C.lightBlue,
           shape: BoxShape.circle, // Circular shape
         ),
         child: IconButton(

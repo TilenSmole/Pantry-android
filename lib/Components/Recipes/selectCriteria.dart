@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 // For rootBundle
 import '../load_ingredients.dart';
+import '../../colors.dart';
 
 class selectCriteria extends StatefulWidget {
   @override
@@ -78,7 +79,10 @@ class _selectCriteriaState extends State<selectCriteria> {
                       List<bool>.filled(_allSuggestions.length, false);
                 });
               },
-              child: Text('RESET'),
+                child: Text(
+                          'Reset',
+                          style: TextStyle(color: C.orange),
+                        ),
             ),
           ),
           TextButton(
@@ -88,7 +92,10 @@ class _selectCriteriaState extends State<selectCriteria> {
             onPressed: () {
               Navigator.pop(context, _selectedValues);
             },
-            child: Text('CONFIRM'),
+                  child: Text(
+                          'Confirm',
+                          style: TextStyle(color: C.orange),
+                        ),
           ),
         ],
       ),

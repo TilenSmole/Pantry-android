@@ -3,6 +3,7 @@ import 'Components/RECIPES/recipie.dart';
 import 'Components/RECIPES/add_recipe.dart';
 import 'Components/RECIPES/selectCriteria.dart';
 import 'Components/RECIPES/API/recipes.API.dart' as API;
+import 'colors.dart';
 
 class Recipies extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _RecipiesState extends State<Recipies> {
   @override
   void initState() {
     super.initState();
-     fetchRecipes();
+    fetchRecipes();
     _searchController.addListener(_updateSuggestions);
   }
 
@@ -70,12 +71,11 @@ class _RecipiesState extends State<Recipies> {
   }
 
   Future<void> fetchRecipes() async {
-    _recipes = await    API.fetchRecipes();  //API.getStorageLocal();//s
+    _recipes = await API.fetchRecipes(); //API.getStorageLocal();//s
 
-  setState(() {
-      _DisplayRecipes =_recipes;
+    setState(() {
+      _DisplayRecipes = _recipes;
     });
-
   }
 
   @override
@@ -87,16 +87,8 @@ class _RecipiesState extends State<Recipies> {
                     CircularProgressIndicator()) // Show a loading indicator until data is available
             : Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: Text(
-                      "Recipes",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ),
                   Container(
-                    margin: const EdgeInsets.only(left: 20, right: 20),
+                    margin: const EdgeInsets.only(left: 20, right: 20, top: 40),
                     child: TextFormField(
                         focusNode: _searchFocusNode,
                         controller: _searchController,
@@ -129,7 +121,10 @@ class _RecipiesState extends State<Recipies> {
                             print("Selected items: $_selectedValues");
                           }
                         },
-                        child: Text('Advanced search'),
+                           child: Text(
+                          'Advanced search',
+                          style: TextStyle(color: C.lightBlue),
+                        ),
                       ),
                       TextButton(
                         style: ButtonStyle(
@@ -144,7 +139,10 @@ class _RecipiesState extends State<Recipies> {
                             _selectedValues = [];
                           });
                         },
-                        child: Text('Clear parameters'),
+                        child: Text(
+                          'Clear parameters',
+                          style: TextStyle(color: C.lightBlue),
+                        ),
                       ),
                     ],
                   ),
@@ -163,10 +161,9 @@ class _RecipiesState extends State<Recipies> {
                               },
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.only(left: 4, right: 4),
+                                    const EdgeInsets.only(left: 2, right: 2),
                                 child: Card(
-                                  color:
-                                      const Color.fromARGB(255, 220, 186, 135),
+                                  color: C.lightBlue,
                                   child: Center(
                                     child: Padding(
                                       padding: const EdgeInsets.all(10),
@@ -191,14 +188,13 @@ class _RecipiesState extends State<Recipies> {
               height: 75.0,
               width: 75.0,
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: C.orange,
                 shape: BoxShape.circle, // Make the container circular
               ),
               child: Center(
                 child: Icon(
                   Icons.add,
                   size: 40,
-                  color: const Color.fromARGB(255, 0, 0, 0),
                 ),
               )),
         ));

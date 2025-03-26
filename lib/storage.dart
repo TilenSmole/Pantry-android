@@ -3,6 +3,7 @@ import './Components/load_ingredients.dart';
 import 'Components/SuggestionOverlay.dart';
 import './Components/Storage/API/StorageAPI.dart' as API;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'colors.dart';
 
 class Storage extends StatefulWidget {
   @override
@@ -200,7 +201,7 @@ class CreateStorageState extends State<Storage> {
 
   Future<void> fetchStorage() async {
     _storage = await API.fetchStorage();
-  //  _storage = await API.getStorageLocal() ?? [];
+    //  _storage = await API.getStorageLocal() ?? [];
     print(_storage);
     setState(() {
       _storage = _storage;
@@ -220,7 +221,7 @@ class CreateStorageState extends State<Storage> {
   Future<void> updateItem(String index, int itemID) async {
     var amount = _controllersQTY[index]?.text ?? 'default';
     var ingredient = _controllersITM[index]?.text ?? 'default';
-     API.updateItem(itemID, amount, ingredient);
+    API.updateItem(itemID, amount, ingredient);
 
     var itemIndex = findIndex(itemID);
 
@@ -232,7 +233,7 @@ class CreateStorageState extends State<Storage> {
       }
     });
 
-   // API.updateStorageLocal(_storage);
+    // API.updateStorageLocal(_storage);
   }
 
   Future<void> updateCategory(List<dynamic> category, String itemID) async {
@@ -247,7 +248,7 @@ class CreateStorageState extends State<Storage> {
       }
     });
 
-   // API.updateStorageLocal(_storage);
+    // API.updateStorageLocal(_storage);
   }
 
   Future<void> addANewItem() async {
@@ -257,7 +258,7 @@ class CreateStorageState extends State<Storage> {
 
     var amount = _amountController.text ?? 'default';
     var ingredient = _ingredientController.text ?? 'default';
-     API.addANewItem(amount, ingredient, categories);
+    API.addANewItem(amount, ingredient, categories);
 
     final Map<String, dynamic> item = {
       'id': idItem - 1,
@@ -275,7 +276,7 @@ class CreateStorageState extends State<Storage> {
       loadFridge();
     });
 
-   // API.updateStorageLocal(_storage);
+    // API.updateStorageLocal(_storage);
   }
 
   Future<void> loadFridge() async {
@@ -352,7 +353,7 @@ class CreateStorageState extends State<Storage> {
       }
     });
 
-   // API.updateStorageLocal(_storage);
+    // API.updateStorageLocal(_storage);
   }
 
   OverlayEntry __AddItemOverlayEntry() {
@@ -371,7 +372,7 @@ class CreateStorageState extends State<Storage> {
             //    color: const Color.fromARGB(    255, 220, 186, 135),
             decoration: BoxDecoration(
               border: Border.all(
-                color: const Color.fromARGB(255, 208, 193, 171), // Border color
+                color: C.yellow, // Border color
                 width: 2.0, // Border width
               ),
               borderRadius: BorderRadius.circular(25.0), // Rounded corners
@@ -502,7 +503,7 @@ class CreateStorageState extends State<Storage> {
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
               border: Border.all(
-                color: const Color.fromARGB(255, 208, 193, 171), // Border color
+                color: C.yellow, // Border color
                 width: 2.0, // Border width
               ),
               borderRadius: BorderRadius.circular(25.0), // Rounded corners
@@ -627,209 +628,200 @@ class CreateStorageState extends State<Storage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('YOUR STORAGE'),
-        ),
         body: items.isEmpty
             ? Center(
                 child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(top: 30.0),
                   child: Text("no items in your storage, you are broke..."),
                 ),
               )
             : SingleChildScrollView(
+                padding: const EdgeInsets.only(top: 50.0),
                 scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
                     SingleChildScrollView(
                         scrollDirection: Axis.vertical,
-                        child: items.isEmpty
-                            ? Text('No items in storage')
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: items.entries.map((entry) {
-                                  final category = entry.key;
-                                  final categoryItems = entry.value;
-                                  return Padding(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: items.entries.map((entry) {
+                            final category = entry.key;
+                            final categoryItems = entry.value;
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10, left: 10, right: 10),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: C.lightBlue,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                                child: Column(children: [
+                                  Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 10, left: 10, right: 10),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: const Color.fromARGB(
-                                              255, 220, 186, 135),
-                                          border: Border.all(),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(20))),
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              category.toUpperCase(),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 28.0),
-                                            child: Container(
-                                                constraints: BoxConstraints(),
-                                                child: ListView.builder(
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      NeverScrollableScrollPhysics(), // Disable scrolling inside a scrollable parent
-                                                  itemCount:
-                                                      categoryItems.length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    final item =
-                                                        categoryItems[index];
-                                                    return ListTile(
-                                                      title: Row(
+                                        top: 10.0), // Add margin-top of 10
+                                    child: Text(
+                                      category.toUpperCase(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25,
+                                      ),
+                                    ),
+                                  ),
+                                  Column(
+                                    children: [
+                                      Container(
+                                          transform: Matrix4.translationValues(0.0, -50.0, 0.0),
+                                          constraints: BoxConstraints(),
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                NeverScrollableScrollPhysics(), // Disable scrolling inside a scrollable parent
+                                            itemCount: categoryItems.length,
+                                            itemBuilder: (context, index) {
+                                              final item = categoryItems[index];
+                                              return ListTile(
+                                                title: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
                                                         children: [
-                                                          Expanded(
-                                                            child: Row(
-                                                              children: [
-                                                                openClose[item['id'].toString() +
-                                                                            category] ==
-                                                                        true
-                                                                    ? SizedBox(
-                                                                        width:
-                                                                            80,
-                                                                        child:
-                                                                            TextFormField(
-                                                                          controller:
-                                                                              _controllersQTY[item['id'].toString() + category],
-                                                                          /*     focusNode: _focusNodesQTY[
-                                                                        item['id'].toString() +
-                                                                            category],*/
-                                                                          decoration:
-                                                                              InputDecoration(
-                                                                            border:
-                                                                                UnderlineInputBorder(),
-                                                                          ),
-                                                                        ),
-                                                                      )
-                                                                    : Container(),
-                                                                openClose[item['id'].toString() +
-                                                                            category] ==
-                                                                        true
-                                                                    ? SizedBox(
-                                                                        width:
-                                                                            170,
-                                                                        child:
-                                                                            CompositedTransformTarget(
-                                                                          link: _layerLinks[item['id'].toString() +
-                                                                              category]!,
-                                                                          child:
-                                                                              TextFormField(
-                                                                            controller:
-                                                                                _controllersITM[item['id'].toString() + category],
-                                                                            focusNode:
-                                                                                _focusNodesITM[item['id'].toString() + category],
-                                                                            decoration:
-                                                                                InputDecoration(
-                                                                              border: UnderlineInputBorder(),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      )
-                                                                    : Flexible(
-                                                                        child: Text(item["amount"] +
-                                                                            " x " +
-                                                                            item["ingredient"]),
-                                                                      ),
-                                                              ],
-                                                            ),
-                                                          ),
                                                           openClose[item['id']
                                                                           .toString() +
                                                                       category] ==
-                                                                  false
-                                                              ? IconButton(
-                                                                  icon: Icon(
-                                                                      Icons
-                                                                          .edit),
-                                                                  onPressed:
-                                                                      () {
-                                                                    setState(
-                                                                        () {
-                                                                      openClose[item['id'].toString() +
-                                                                              category] =
-                                                                          true;
-                                                                    });
-                                                                  },
+                                                                  true
+                                                              ? SizedBox(
+                                                                  width: 80,
+                                                                  child:
+                                                                      TextFormField(
+                                                                    controller: _controllersQTY[
+                                                                        item['id'].toString() +
+                                                                            category],
+                                                                    /*     focusNode: _focusNodesQTY[
+                                                                        item['id'].toString() +
+                                                                            category],*/
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      border:
+                                                                          UnderlineInputBorder(),
+                                                                    ),
+                                                                  ),
                                                                 )
-                                                              : IconButton(
-                                                                  icon: Icon(Icons
-                                                                      .close),
-                                                                  onPressed:
-                                                                      () {
-                                                                    setState(
-                                                                        () {
-                                                                      openClose[item['id'].toString() +
-                                                                              category] =
-                                                                          false;
-                                                                    });
-                                                                  },
+                                                              : Container(),
+                                                          openClose[item['id']
+                                                                          .toString() +
+                                                                      category] ==
+                                                                  true
+                                                              ? SizedBox(
+                                                                  width: 170,
+                                                                  child:
+                                                                      CompositedTransformTarget(
+                                                                    link: _layerLinks[
+                                                                        item['id'].toString() +
+                                                                            category]!,
+                                                                    child:
+                                                                        TextFormField(
+                                                                      controller:
+                                                                          _controllersITM[item['id'].toString() +
+                                                                              category],
+                                                                      focusNode:
+                                                                          _focusNodesITM[item['id'].toString() +
+                                                                              category],
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border:
+                                                                            UnderlineInputBorder(),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : Flexible(
+                                                                  child: Text(item[
+                                                                          "amount"] +
+                                                                      " x " +
+                                                                      item[
+                                                                          "ingredient"]),
                                                                 ),
                                                         ],
                                                       ),
-                                                      subtitle: openClose[item[
-                                                                          'id']
-                                                                      .toString() +
-                                                                  category] ==
-                                                              true
-                                                          ? Row(
-                                                              children: [
-                                                                IconButton(
-                                                                  icon: Icon(Icons
-                                                                      .delete),
-                                                                  onPressed:
-                                                                      () {
-                                                                    delete(
-                                                                        item[
-                                                                            'id'],
-                                                                        index,
-                                                                        item['id'].toString() +
-                                                                            category,
-                                                                        category);
-                                                                  },
-                                                                ),
-                                                                SizedBox(
-                                                                    width: 8),
-                                                                IconButton(
-                                                                  icon: Icon(
-                                                                      Icons
-                                                                          .tune),
-                                                                  onPressed:
-                                                                      () {
-                                                                    setState(
-                                                                        () {
-                                                                      _showChangeCategoyOverlay(
-                                                                          item[
-                                                                              'category'],
-                                                                          item["id"]
-                                                                              .toString());
-                                                                    });
-                                                                  },
-                                                                ),
-                                                              ],
-                                                            )
-                                                          : Row(
-                                                              children: [],
-                                                            ),
-                                                    );
-                                                  },
-                                                )),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              )),
+                                                    ),
+                                                    openClose[item['id']
+                                                                    .toString() +
+                                                                category] ==
+                                                            false
+                                                        ? IconButton(
+                                                            icon: Icon(
+                                                                Icons.edit),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                openClose[item[
+                                                                            'id']
+                                                                        .toString() +
+                                                                    category] = true;
+                                                              });
+                                                            },
+                                                          )
+                                                        : IconButton(
+                                                            icon: Icon(
+                                                                Icons.close),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                openClose[item[
+                                                                            'id']
+                                                                        .toString() +
+                                                                    category] = false;
+                                                              });
+                                                            },
+                                                          ),
+                                                  ],
+                                                ),
+                                                subtitle: openClose[item['id']
+                                                                .toString() +
+                                                            category] ==
+                                                        true
+                                                    ? Row(
+                                                        children: [
+                                                          IconButton(
+                                                            icon: Icon(
+                                                                Icons.delete),
+                                                            onPressed: () {
+                                                              delete(
+                                                                  item['id'],
+                                                                  index,
+                                                                  item['id']
+                                                                          .toString() +
+                                                                      category,
+                                                                  category);
+                                                            },
+                                                          ),
+                                                          SizedBox(width: 8),
+                                                          IconButton(
+                                                            icon: Icon(
+                                                                Icons.tune),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                _showChangeCategoyOverlay(
+                                                                    item[
+                                                                        'category'],
+                                                                    item["id"]
+                                                                        .toString());
+                                                              });
+                                                            },
+                                                          ),
+                                                        ],
+                                                      )
+                                                    : Row(
+                                                        children: [],
+                                                      ),
+                                              );
+                                            },
+                                          )),
+                                    ],
+                                  )
+                                ]),
+                              ),
+                            );
+                          }).toList(),
+                        )),
                   ],
                 ),
               ),
@@ -841,14 +833,13 @@ class CreateStorageState extends State<Storage> {
               height: 75.0,
               width: 75.0,
               decoration: BoxDecoration(
-                color: Colors.orange,
+                color: C.orange,
                 shape: BoxShape.circle, // Make the container circular
               ),
               child: Center(
                 child: Icon(
                   Icons.add,
                   size: 40,
-                  color: const Color.fromARGB(255, 0, 0, 0),
                 ),
               )),
         ));

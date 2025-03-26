@@ -86,7 +86,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                 onChanged: (String? newValue) {
                   API.changeDefaultCategory(widget.index, newValue);  
                 },
-              )
+              ),
+            Text("Nastavi opomnik, ko je izdelka malo"),
 
 
           ],
