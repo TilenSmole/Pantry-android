@@ -11,6 +11,8 @@ import 'Components/PROFILE/weekly.dart';
 import 'colors.dart';
 import 'Components/PROFILE/analyser.dart';
 import 'Components/OTHER/API/warnings.dart' as WARNINGS_API;
+import 'Components/PROFILE/categories.dart';
+
 
 class Profile extends StatefulWidget {
   @override
@@ -194,6 +196,21 @@ class _ProfileState extends State<Profile> {
                       padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
                       child: Text(
                         "30 DAY PLANNER",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                   InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Categories()),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
+                      child: Text(
+                        "Categories",
                         style: TextStyle(fontSize: 20),
                       ),
                     ),

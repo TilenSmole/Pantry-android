@@ -652,9 +652,9 @@ class CreateStorageState extends State<Storage> {
                                   top: 10, left: 10, right: 10),
                               child: Container(
                                 decoration: BoxDecoration(
-                                    color: C.lightBlue,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20))),
+                                border: Border.all(color: C.orange),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15))),
                                 child: Column(children: [
                                   Padding(
                                     padding: const EdgeInsets.only(
