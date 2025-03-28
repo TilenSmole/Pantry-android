@@ -26,7 +26,7 @@ class CreateStorageState extends State<Storage> {
   List<String> suggestions = [];
   List<String> _filteredSuggestions = [];
   List<String> _allSuggestions = [];
-  List<String> categories = [];
+  String categories = "";
 
   Map<String, LayerLink> _layerLinks = {};
   OverlayEntry? _overlayEntry;
@@ -89,7 +89,7 @@ class CreateStorageState extends State<Storage> {
     _addCategoryFocusNode.addListener(() {
       if (!_focusNode.hasFocus) {
         if (_categoryController.text.isNotEmpty) {
-          categories.add(_categoryController.text);
+          categories = _categoryController.text;
           _categoryController.text = "";
         }
       }
@@ -120,12 +120,12 @@ class CreateStorageState extends State<Storage> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void _showChangeCategoyOverlay(List<dynamic> categories, String id) {
+  void _showChangeCategoyOverlay(String categories, String id) {
     print("Showing overlay");
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
     }
-    _overlayEntry = _ChangeCategoryOverlay(categories, id);
+    //_overlayEntry = _ChangeCategoryOverlay(categories, id);
     Overlay.of(context).insert(_overlayEntry!);
   }
 
@@ -236,8 +236,8 @@ class CreateStorageState extends State<Storage> {
     // API.updateStorageLocal(_storage);
   }
 
-  Future<void> updateCategory(List<dynamic> category, String itemID) async {
-    API.updateCategory(category, itemID);
+  Future<void> updateCategory(String category, String itemID) async {
+    //API.updateCategory(category, itemID);
 
     var itemIndex = findIndex(int.parse(itemID));
 
@@ -258,7 +258,7 @@ class CreateStorageState extends State<Storage> {
 
     var amount = _amountController.text ?? 'default';
     var ingredient = _ingredientController.text ?? 'default';
-    API.addANewItem(amount, ingredient, categories);
+  //  API.addANewItem(amount, ingredient, categories);
 
     final Map<String, dynamic> item = {
       'id': idItem - 1,
@@ -271,7 +271,7 @@ class CreateStorageState extends State<Storage> {
 
     setState(() {
       _storage.add(item);
-      categories = [];
+      categories = "";
       _removeOverlay();
       loadFridge();
     });
@@ -288,8 +288,11 @@ class CreateStorageState extends State<Storage> {
     openClose = {};
     items = {};
     for (var item in _storage) {
-      if (item != null && item['category']!.isNotEmpty) {
-        for (var category in item['category']) {
+      print(_storage);
+      if (item != null && item['category'] != "") {
+              print(item['category']);
+
+          var category =  item['category'];
           if (items.containsKey(category)) {
             items[category]!.add(item);
           } else {
@@ -313,7 +316,7 @@ class CreateStorageState extends State<Storage> {
           _focusNodesITM[item["id"].toString() + category] = focusNode;
           _layerLinks[item["id"].toString() + category] = LayerLink();
           openClose[item["id"].toString() + category] = false;
-        }
+        
       } else {
         if (items.containsKey("default")) {
           items["default"]!.add(item);
@@ -460,9 +463,7 @@ class CreateStorageState extends State<Storage> {
     );
   }
 
-  OverlayEntry _ChangeCategoryOverlay(List<dynamic> categories, String id) {
-    print("_ChangeCategoryOverlay");
-    print(categories);
+  /*OverlayEntry _ChangeCategoryOverlay(String categories, String id) {
     newCategories = List.from(categories);
     for (var category in categories) {
       var controller = TextEditingController(text: category.toString());
@@ -618,7 +619,7 @@ class CreateStorageState extends State<Storage> {
       },
     );
   }
-
+*/
   void openInputTypingField() {
     setState(() {
       openText = false;

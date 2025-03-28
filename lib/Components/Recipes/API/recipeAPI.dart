@@ -8,7 +8,7 @@ import '../../ShoppingList/API/shopping_cartAPI.dart' as shoppingCartAPI;
 Future<int?> addToSList(List ingredients, List amounts, String token) async { 
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/storage/add-to-shopping-list'),
+      Uri.parse('http://192.168.1.7:5000/shopping-list/add-to-shopping-list'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'

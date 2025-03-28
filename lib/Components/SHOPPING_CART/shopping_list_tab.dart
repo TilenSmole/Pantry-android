@@ -58,7 +58,7 @@ class ShoppingCartView extends StatelessWidget {
                   children: [
                     if (!checked) _buildAddItemTile(),
                     SizedBox(
-                      height: 10000,
+                      height: 500,
                       child: 
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20),

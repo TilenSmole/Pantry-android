@@ -151,7 +151,7 @@ Future<void> uploadItem(String amount, String ingredient) async {
   try {
     final response = await http.post(
       Uri.parse(
-          'http://192.168.1.7:5000/shopping-list/add-a-shopping-list-mobile'),
+          'http://192.168.1.7:5000/shopping-list/add-a-shopping-list-item'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'

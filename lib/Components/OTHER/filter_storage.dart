@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import './API/item_add.dart' as API;
 import './FoodDetailScreen.dart';
+import '../HELPERS/colors.dart';
 
 class FilterStorage extends StatefulWidget {
   @override
@@ -12,10 +13,13 @@ class _FilterStorageState extends State<FilterStorage> {
   String? token;
   Map<int, dynamic> _storage = {};
   List<dynamic> _disallow_storage = [];
-
   Map<int, bool> taskSelection = {};
   bool enableOnlyStorageSaving = false;
-  bool isLoading = true; 
+  bool isLoading = true;
+
+  // Search state
+  TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
 
   @override
   void initState() {
@@ -44,15 +48,20 @@ class _FilterStorageState extends State<FilterStorage> {
               .any((disallowedItem) => disallowedItem['disallowedId'] == id);
         },
       );
-    isLoading = false;
-      
+      isLoading = false;
     });
-
   }
 
   Widget buildTasksColumn() {
+    // Filter storage items based on search query
+    var filteredItems = _storage.entries.where((entry) {
+      return entry.value["name"]
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase());
+    }).toList();
+
     return Column(
-      children: _storage.entries.map((entry) {
+      children: filteredItems.map((entry) {
         int index = entry.key;
         var task = entry.value;
         var value = taskSelection[index] ?? false;
@@ -63,7 +72,7 @@ class _FilterStorageState extends State<FilterStorage> {
                 return Checkbox(
                   value: taskSelection[index] ?? false,
                   onChanged: (bool? value) async {
-                    bool insert = await API.setDisallowdItems(index, value);
+                    await API.setDisallowdItems(index, value);
                     setState(() {
                       taskSelection[index] = value ?? false;
                     });
@@ -72,19 +81,22 @@ class _FilterStorageState extends State<FilterStorage> {
               },
             ),
             GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FoodDetailScreen(food: task, checked: taskSelection[index] = value ?? false, index: index),
-                    ),
-                  );
-                },
-                child: Text(
-                  task["name"],
-                ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FoodDetailScreen(
+                        food: task,
+                        checked: taskSelection[index] = value ?? false,
+                        index: index),
+                  ),
+                );
+              },
+              child: Text(
+                task["name"],
+                style: TextStyle(fontSize: 16),
               ),
-
+            ),
           ],
         );
       }).toList(),
@@ -95,20 +107,41 @@ class _FilterStorageState extends State<FilterStorage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Filter Storage'),
-        backgroundColor: Colors.orange,
+        title: Text(
+          'Filter Storage',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: C.orange,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Container(
-        margin: const EdgeInsets.only(top: 20),
+        margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: "Search items...",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
             isLoading
                 ? Center(child: CircularProgressIndicator())
                 : Row(
                     children: [
                       const Text(
-                        'Enable saving only from storage: ',
+                        'Saving only from storage: ',
                         style: TextStyle(fontSize: 17.0),
                       ),
                       Checkbox(

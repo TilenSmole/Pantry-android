@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './API/item_add.dart' as API;
+import '../HELPERS/colors.dart';
 
 
 class FoodDetailScreen extends StatefulWidget {
@@ -36,12 +37,12 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       categories.add("Freezer");
     });
 
-
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.food["name"])), 
+      appBar: AppBar(title: Text(widget.food["name"]),),
+      
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

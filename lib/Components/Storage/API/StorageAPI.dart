@@ -152,7 +152,7 @@ Future<void> addANewItem(
   }
 }
 
-Future<void> updateCategory(List<dynamic> category, String id) async {
+Future<void> updateCategory(String category, String id) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
