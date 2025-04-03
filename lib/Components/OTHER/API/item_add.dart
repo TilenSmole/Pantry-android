@@ -215,7 +215,7 @@ Future<List<dynamic>> getCategories() async {
   return [];
 }
 
-Future<int> changeDefaultCategory(food,newCategory) async {
+Future<int> changeDefaultCategory(foodId,newCategory) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
@@ -226,7 +226,7 @@ Future<int> changeDefaultCategory(food,newCategory) async {
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
-        'food': food,
+        'foodId': foodId,
         'newCategory': newCategory,
       }),
     );
@@ -239,7 +239,7 @@ Future<int> changeDefaultCategory(food,newCategory) async {
 }
 
 
-Future<int> setWarning(food, warning) async {
+Future<int> setWarning(foodId, warning) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
@@ -250,7 +250,7 @@ Future<int> setWarning(food, warning) async {
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
-        'food': food,
+        'foodId': foodId,
         'warning': warning,
       }),
     );

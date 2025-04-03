@@ -126,7 +126,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                     onChanged: (String? newValue) async {
                       if (newValue != null) {
                         var code = await API.changeDefaultCategory(
-                            widget.food["name"], newValue);
+                            widget.food["id"], newValue);
                         if (code == 200) {
                           setState(() {
                             widget.food["UserStorageDefaults"]?[0]
@@ -149,8 +149,6 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                         width: 100, 
                         child: TextFormField(
                           controller: _controllersWarning,
-                          keyboardType:
-                              TextInputType.number,
                           decoration: InputDecoration(
                             border: UnderlineInputBorder(),
                           ),
@@ -163,7 +161,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                         onPressed: () {
                           setState(() {
                             API.setWarning(
-                                widget.food["name"], _controllersWarning.text);
+                                widget.food["id"], _controllersWarning.text);
                           });
                         },
                       ),
