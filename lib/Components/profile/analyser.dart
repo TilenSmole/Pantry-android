@@ -1,190 +1,143 @@
 import 'package:flutter/material.dart';
-// For rootBundle
 import '../Recipes/API/recipes.API.dart' as API;
 import '../Storage/API/StorageAPI.dart' as StorageAPI;
 import '../Recipes/recipie.dart';
+import '../HELPERS/colors.dart';
 
 class Analyser extends StatefulWidget {
   @override
-  _analyserState createState() => _analyserState();
+  _AnalyserState createState() => _AnalyserState();
 }
 
-class _analyserState extends State<Analyser> {
+class _AnalyserState extends State<Analyser> {
   List _recipes = [];
   List _storage = [];
-
   Map<int, String> _analyse = {};
 
   @override
   void initState() {
     super.initState();
-    getRecipes().then((_) {
-      getstorage().then((_) {
-        getstorage();
-        analyse();
-      });
-    });
+    _fetchData();
   }
 
-  
-  getRecipes() async {
+  Future<void> _fetchData() async {
+    await getRecipes();
+    await getStorage();
+    analyse();
+  }
+
+  Future<void> getRecipes() async {
     var result = await API.fetchRecipes();
-    setState(() {
-      _recipes = result;
-    });
+    setState(() => _recipes = result);
   }
 
-  getstorage() async {
+  Future<void> getStorage() async {
     var result = await StorageAPI.fetchStorage();
-    setState(() {
-      _storage = result;
-    });
+    setState(() => _storage = result);
   }
 
-  void analyse() async {
-    double result = 100;
-    double nItems = 0;
-    double part = 0;
-        var index1 = 0;
-    var included = true;
+  void analyse() {
     for (var recipe in _recipes) {
-      nItems = (recipe["ingredients"].length).toDouble();
-      part = (100 / nItems);
-              index1 = 0;
+      double percentage = 100;
+      double ingredientCount = recipe["ingredients"].length.toDouble();
+      double portion = 100 / ingredientCount;
+      
+      for (var i = 0; i < recipe["ingredients"].length; i++) {
+        var ingredient = recipe["ingredients"][i].toLowerCase();
+        bool isAvailable = _storage.any((item) {
+          return item["ingredient"].toLowerCase() == ingredient &&
+                 _compareAmounts(item["amount"], recipe["amounts"][i]);
+        });
 
-      for (var ingredient in recipe["ingredients"]) {
-        for (var storageItem in _storage) {
-          if (storageItem["ingredient"].toLowerCase() ==  (ingredient.toLowerCase())) {
-
-              /*  print(recipe["amounts"][index1]);
-                print(storageItem["amount"]);
-  print(storageItem["ingredient"].toLowerCase());
-  print(ingredient.toLowerCase());
-  print("--------------");*/
-
-            RegExp numberRegExp = RegExp(r'\d+(\.\d+)?');
-            Match? number1Match =       numberRegExp.firstMatch(storageItem["amount"]);
-            Match? number2Match =          numberRegExp.firstMatch(recipe["amounts"][index1]);
-
-            double? number1 = number1Match != null ? double.tryParse(number1Match.group(0)!)      : 0;
-            double? number2 = number2Match != null    ? double.tryParse(number2Match.group(0)!)       : 0;
-
-            // Match the units (letters only)
-            RegExp unitRegExp = RegExp(r'[a-zA-Z]+');
-            Match? unit1Match = unitRegExp.firstMatch(storageItem["amount"]);
-            Match? unit2Match =     unitRegExp.firstMatch(recipe["amounts"][index1]);
-
-            // Extract the matched units as strings
-            String? unit1 = unit1Match?.group(0);
-            String? unit2 = unit2Match?.group(0);
-           if (number1 != null && unit1 == "kg" && unit2 == "g" ||
-                unit2 == "grams") {
-              number1 = number1! * 1000;
-              unit1 = "g";
-            } else if (number2 != null && unit2 == "kg" && unit1 == "g" ||
-                unit1 == "grams") {
-              number2 = number2! * 1000;
-              unit2 = "g";
-            }
-            if (number1 != null && unit2 != null && unit1 != null && unit1.toLowerCase() == "l" && unit2.toLowerCase() == "ml" ) {
-              number1 = number1 * 1000;
-              unit1 = "ml";
-            } else if (number2 != null && unit2 != null && unit1 != null && unit2.toLowerCase() == "l" && unit1.toLowerCase() == "ml") {
-              number1 = number1! * 1000;
-              unit1 = "ml";
-            }
-    /*      print(storageItem["ingredient"].toLowerCase() );
-            print(unit1);
-              print(unit2);
-   print(number1);
-              print(number2);*/
-
-            if (number1! >= number2! && unit1 == unit2) {
-              included = false;
-          break;
-            }
-                
-          }
-       
+        if (!isAvailable) {
+          percentage -= portion;
+          if (percentage < 0.1) percentage = 0;
         }
-        index1++;
-        if (included) {
-          result -= part;
-          if (result < 0.1) {
-            result = 0;
-          }
-        }
-        included = true;
-       
       }
-      //    print(recipe["name"] + " " + result.toString());
-      _analyse[recipe["id"]] = result.toStringAsFixed(2);
-      result = 100;
+      
+      _analyse[recipe["id"]] = percentage.toStringAsFixed(2);
     }
-   // print(_analyse);
+    
     setState(() {
       _analyse = Map.fromEntries(
-        sortMapByValuesDescending(_analyse),
+        _analyse.entries.toList()
+          ..sort((a, b) => double.parse(b.value).compareTo(double.parse(a.value))),
       );
     });
   }
 
-  List<MapEntry<int, String>> sortMapByValuesDescending(
-      Map<int, String> map) {
-    List<MapEntry<int, String>> sortedEntries = map.entries.toList()
-      ..sort((a, b) {
-        double valueA = double.tryParse(a.value) ?? 0;
-        double valueB = double.tryParse(b.value) ?? 0;
-        return valueB.compareTo(valueA);
-      });
+  bool _compareAmounts(String storageAmount, String recipeAmount) {
+    RegExp numberRegExp = RegExp(r'\d+(\.\d+)?');
+    RegExp unitRegExp = RegExp(r'[a-zA-Z]+');
 
-    return sortedEntries;
-  }
-
- findRecipe(var id)  {
-    for(var recipe in _recipes){
-      if(id == recipe["id"]){
-        return recipe;
-      }
+    double storageValue = double.tryParse(numberRegExp.firstMatch(storageAmount)?.group(0) ?? '0') ?? 0;
+    double recipeValue = double.tryParse(numberRegExp.firstMatch(recipeAmount)?.group(0) ?? '0') ?? 0;
+    
+    String? storageUnit = unitRegExp.firstMatch(storageAmount)?.group(0);
+    String? recipeUnit = unitRegExp.firstMatch(recipeAmount)?.group(0);
+    
+    if (storageUnit == "kg" && (recipeUnit == "g" || recipeUnit == "grams")) {
+      storageValue *= 1000;
+      storageUnit = "g";
+    } else if (recipeUnit == "kg" && (storageUnit == "g" || storageUnit == "grams")) {
+      recipeValue *= 1000;
+      recipeUnit = "g";
     }
-  }
- findRecipeName(var id)  {
-    for(var recipe in _recipes){
-      if(id == recipe["id"]){
-        return recipe["name"];
-      }
+
+    if (storageUnit == "l" && recipeUnit == "ml") {
+      storageValue *= 1000;
+      storageUnit = "ml";
+    } else if (recipeUnit == "l" && storageUnit == "ml") {
+      recipeValue *= 1000;
+      recipeUnit = "ml";
     }
+
+    return storageValue >= recipeValue && storageUnit == recipeUnit;
   }
 
+  String findRecipeName(int id) => _recipes.firstWhere((r) => r["id"] == id, orElse: () => {"name": "Unknown"})["name"];
 
-
+  dynamic findRecipe(int id) => _recipes.firstWhere((r) => r["id"] == id, orElse: () => null);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ANALYSER'),
-        backgroundColor: Colors.orange,
+        title: Text('Analyser',
+                  style: TextStyle(color: Colors.black),),
+        backgroundColor: C.orange,
+                iconTheme: IconThemeData(color: Colors.black),
+
       ),
-      body: Container(
-        padding: EdgeInsets.all(16.0), // Add padding if needed
-        child: ListView(
-          
-          children: _analyse.entries.map((entry) {
-            return GestureDetector (
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView.builder(
+          itemCount: _analyse.length,
+          itemBuilder: (context, index) {
+            var entry = _analyse.entries.elementAt(index);
+            return GestureDetector(
               onTap: () {
-                 Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Recepie(recipe: findRecipe(entry.key) )));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Recepie(recipe: findRecipe(entry.key)),
+                  ),
+                );
               },
-              child: ListTile(
-                title: Text(' ${findRecipeName(entry.key)}'),
-                subtitle: Text(' ${entry.value}%'),
+              child: Card(
+                margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0, bottom: 1.0),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.orangeAccent,
+                    child: Text((index + 1).toString(), style: TextStyle(color: Colors.white)),
+                  ),
+                  title: Text(findRecipeName(entry.key)),
+                  subtitle: Text('${entry.value}%'),
+                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                ),
               ),
             );
-          }).toList(),
+          },
         ),
       ),
     );

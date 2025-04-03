@@ -4,6 +4,8 @@ import 'Components/SuggestionOverlay.dart';
 import './Components/Storage/API/StorageAPI.dart' as API;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'colors.dart';
+import './Components/HELPERS/CustomOverlay.dart';
+import './Components/HELPERS/getCategories.dart';
 
 class Storage extends StatefulWidget {
   @override
@@ -26,7 +28,7 @@ class CreateStorageState extends State<Storage> {
   List<String> suggestions = [];
   List<String> _filteredSuggestions = [];
   List<String> _allSuggestions = [];
-  String categories = "";
+  String selectedCategory = "";
 
   Map<String, LayerLink> _layerLinks = {};
   OverlayEntry? _overlayEntry;
@@ -38,10 +40,10 @@ class CreateStorageState extends State<Storage> {
 
   final TextEditingController _ingredientController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
 
   final FocusNode _addAmountFocusNode = FocusNode();
   final FocusNode _addIngredientFocusNode = FocusNode();
+  List<String> categories = [];
 
   final TextEditingController _itemController = TextEditingController();
   final FocusNode _addItemFocusNode = FocusNode();
@@ -56,6 +58,10 @@ class CreateStorageState extends State<Storage> {
   void initState() {
     loadFood();
     super.initState();
+      fetchCategories();
+
+
+
     fetchStorage().then((_) {
       loadFridge();
     });
@@ -86,14 +92,7 @@ class CreateStorageState extends State<Storage> {
       }
     });
 
-    _addCategoryFocusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
-        if (_categoryController.text.isNotEmpty) {
-          categories = _categoryController.text;
-          _categoryController.text = "";
-        }
-      }
-    });
+  
   }
 
   Future<void> loadFood() async {
@@ -112,21 +111,14 @@ class CreateStorageState extends State<Storage> {
   }
 
   void _showAddItemOverlay() {
-    print("Showing overlay");
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-    }
-    _overlayEntry = __AddItemOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-  }
-
-  void _showChangeCategoyOverlay(String categories, String id) {
-    print("Showing overlay");
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-    }
-    //_overlayEntry = _ChangeCategoryOverlay(categories, id);
-    Overlay.of(context).insert(_overlayEntry!);
+ CustomOverlay(
+      context: context,
+      controllers: [_ingredientController, _amountController],
+      onSave: addANewItem,
+      hintTexts : ["Enter ingredient", "Enter amount", "Enter category"],
+      title: "Add a New Storage Item",
+      categories: categories,
+    ).show();
   }
 
   OverlayEntry _createOverlayEntry(String mapId, int itemId) {
@@ -218,9 +210,9 @@ class CreateStorageState extends State<Storage> {
     return -1;
   }
 
-  Future<void> updateItem(String index, int itemID) async {
-    var amount = _controllersQTY[index]?.text ?? 'default';
-    var ingredient = _controllersITM[index]?.text ?? 'default';
+  Future<void> updateItem(int itemID, int index) async {
+    var amount = _controllersQTY[itemID.toString()]?.text ?? '';
+    var ingredient = _controllersITM[itemID.toString()]?.text ?? '';
     API.updateItem(itemID, amount, ingredient);
 
     var itemIndex = findIndex(itemID);
@@ -236,21 +228,6 @@ class CreateStorageState extends State<Storage> {
     // API.updateStorageLocal(_storage);
   }
 
-  Future<void> updateCategory(String category, String itemID) async {
-    //API.updateCategory(category, itemID);
-
-    var itemIndex = findIndex(int.parse(itemID));
-
-    setState(() {
-      if (itemIndex != -1) {
-        _storage[itemIndex]["category"] = category;
-        loadFridge();
-      }
-    });
-
-    // API.updateStorageLocal(_storage);
-  }
-
   Future<void> addANewItem() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? idItemStr = prefs.getString('idItem');
@@ -258,27 +235,33 @@ class CreateStorageState extends State<Storage> {
 
     var amount = _amountController.text ?? 'default';
     var ingredient = _ingredientController.text ?? 'default';
-  //  API.addANewItem(amount, ingredient, categories);
+    //  API.addANewItem(amount, ingredient, categories);
 
     final Map<String, dynamic> item = {
       'id': idItem - 1,
       'amount': amount,
       'ingredient': ingredient,
-      'category': categories,
+      'category': selectedCategory,
       'userId': 1,
     };
     await prefs.setString('idItem', (idItem - 1).toString());
 
     setState(() {
       _storage.add(item);
-      categories = "";
+      selectedCategory = "";
       _removeOverlay();
       loadFridge();
+
     });
 
     // API.updateStorageLocal(_storage);
   }
-
+Future<void> fetchCategories() async {
+  List<String> fetchedCategories = await GetCategories.fetchCategories();
+  setState(() {
+    categories = fetchedCategories;
+  });
+}
   Future<void> loadFridge() async {
     _controllersQTY = {};
     _controllersITM = {};
@@ -290,55 +273,54 @@ class CreateStorageState extends State<Storage> {
     for (var item in _storage) {
       print(_storage);
       if (item != null && item['category'] != "") {
-              print(item['category']);
+        print(item['category']);
 
-          var category =  item['category'];
-          if (items.containsKey(category)) {
-            items[category]!.add(item);
-          } else {
-            items[category] = [item];
+        var category = item['category'];
+        if (items.containsKey(category)) {
+          items[category]!.add(item);
+        } else {
+          items[category] = [item];
+        }
+        var controller = TextEditingController(text: item["ingredient"]);
+        controller.addListener(
+            () => _updateSuggestions(item['id'].toString(), item["id"]));
+        _controllersITM[item["id"].toString()] = controller;
+        _controllersQTY[item["id"].toString()] =
+            TextEditingController(text: item["amount"]);
+
+        var focusNode = FocusNode();
+        focusNode.addListener(() {
+          if (!focusNode.hasFocus) {
+            //  updateItem((item["id"].toString()), item['id']);
           }
-          var controller = TextEditingController(text: item["ingredient"]);
-          controller.addListener(() =>
-              _updateSuggestions(item['id'].toString() + category, item["id"]));
-          _controllersITM[item["id"].toString() + category] = controller;
-          _controllersQTY[item["id"].toString() + category] =
-              TextEditingController(text: item["amount"]);
+        });
 
-          var focusNode = FocusNode();
-          focusNode.addListener(() {
-            if (!focusNode.hasFocus) {
-              updateItem((item["id"].toString() + category), item['id']);
-            }
-          });
-
-          _focusNodesQTY[item["id"].toString() + category] = focusNode;
-          _focusNodesITM[item["id"].toString() + category] = focusNode;
-          _layerLinks[item["id"].toString() + category] = LayerLink();
-          openClose[item["id"].toString() + category] = false;
-        
+        _focusNodesQTY[item["id"].toString()] = focusNode;
+        _focusNodesITM[item["id"].toString()] = focusNode;
+        _layerLinks[item["id"].toString()] = LayerLink();
+        openClose[item["id"].toString()] = false;
       } else {
         if (items.containsKey("default")) {
           items["default"]!.add(item);
         } else {
           items["default"] = [item];
         }
-        _controllersITM["${item["id"]}default"] =
+        _controllersITM["${item["id"]}"] =
             TextEditingController(text: item["ingredient"]);
-        _controllersQTY["${item["id"]}default"] =
+        _controllersQTY["${item["id"]}"] =
             TextEditingController(text: item["amount"]);
 
         var focusNode = FocusNode();
         focusNode.addListener(() {
           if (!focusNode.hasFocus) {
-            updateItem("${item["id"]}default", item['id']);
+            //     updateItem("${item["id"]}default", item['id']);
           }
         });
 
-        _focusNodesQTY["${item["id"]}default"] = focusNode;
-        _focusNodesITM["${item["id"]}default"] = focusNode;
-        _layerLinks["${item["id"]}default"] = LayerLink();
-        openClose["${item["id"]}default"] = false;
+        _focusNodesQTY["${item["id"]}"] = focusNode;
+        _focusNodesITM["${item["id"]}"] = focusNode;
+        _layerLinks["${item["id"]}"] = LayerLink();
+        openClose["${item["id"]}"] = false;
       }
     }
   }
@@ -357,273 +339,6 @@ class CreateStorageState extends State<Storage> {
     });
 
     // API.updateStorageLocal(_storage);
-  }
-
-  OverlayEntry __AddItemOverlayEntry() {
-    print("object");
-
-    return OverlayEntry(
-      builder: (context) {
-        final size = MediaQuery.of(context).size;
-        return Positioned(
-          left: 30,
-          top: 100,
-          height: 500.0,
-          width: 300,
-          child: Container(
-            clipBehavior: Clip.hardEdge,
-            //    color: const Color.fromARGB(    255, 220, 186, 135),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: C.yellow, // Border color
-                width: 2.0, // Border width
-              ),
-              borderRadius: BorderRadius.circular(25.0), // Rounded corners
-            ),
-            child: Material(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 400, maxWidth: 400),
-                child: Container(
-                  color: Color.fromARGB(255, 208, 193, 171),
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20.0),
-                        child: Row(
-                          children: [
-                            Text("ADD A NEW STORAGE ITEM"),
-                            Spacer(),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(Icons.close),
-                                onPressed: () {
-                                  setState(() {
-                                    _removeOverlay();
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      TextFormField(
-                        controller: _amountController,
-                        focusNode: _addAmountFocusNode,
-                        decoration: InputDecoration(
-                          hintText: 'Enter the amount',
-                          border: UnderlineInputBorder(),
-                        ),
-                      ),
-                      CompositedTransformTarget(
-                        link: _addItemLayerLink,
-                        child: TextFormField(
-                          controller: _ingredientController,
-                          focusNode: _addIngredientFocusNode,
-                          decoration: InputDecoration(
-                            hintText: 'Enter the ingredient',
-                            border: UnderlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      TextFormField(
-                        controller: _categoryController,
-                        focusNode: _addCategoryFocusNode,
-                        decoration: InputDecoration(
-                          hintText: 'Enter the category',
-                          border: UnderlineInputBorder(),
-                        ),
-                      ),
-                      Text("Categories:"),
-                      SizedBox(
-                        height: 150,
-                        child: ListView.builder(
-                          itemCount: categories.length,
-                          itemBuilder: (context, index) {
-                            return Text(categories[index]);
-                          },
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.done),
-                        onPressed: () {
-                          setState(() {
-                            addANewItem();
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  /*OverlayEntry _ChangeCategoryOverlay(String categories, String id) {
-    newCategories = List.from(categories);
-    for (var category in categories) {
-      var controller = TextEditingController(text: category.toString());
-      _controllersCTGY[id + category.toString()] = controller;
-      var focusNode = FocusNode();
-      focusNode.addListener(() {
-        if (!focusNode.hasFocus) {
-          print("jej");
-          var newItem = _controllersCTGY[id + category.toString()]?.text;
-
-          for (var i = 0; i < newCategories.length; i++) {
-            if ((id.toString() + newCategories[i]) ==
-                (id.toString() + category.toString())) {
-              newCategories[i] =
-                  _controllersCTGY[id + category.toString()] != null
-                      ? _controllersCTGY[id + category.toString()]!.text
-                      : "sth";
-              // updateCategory(newCategories, id.toString());
-            }
-          }
-
-          // newCategories[id + category.toString()] =  _controllersCTGY[id + category.toString()].text();
-          // updateCategory(    newCategories, id.toString());
-        }
-      });
-      _focusNodesCTGY[id + category.toString()] = focusNode;
-    }
-
-    return OverlayEntry(
-      builder: (context) {
-        final size = MediaQuery.of(context).size;
-        return Positioned(
-          left: 30,
-          top: 100,
-          height: 500.0,
-          width: 300,
-          child: Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: C.yellow, // Border color
-                width: 2.0, // Border width
-              ),
-              borderRadius: BorderRadius.circular(25.0), // Rounded corners
-            ),
-            child: Material(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 400, maxWidth: 400),
-                child: Container(
-                  color: Color.fromARGB(255, 208, 193, 171),
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20.0),
-                        child: Row(
-                          children: [
-                            Text("EDIT ITEM'S CATEGORY"),
-                            Spacer(),
-                            IconButton(
-                              icon: Icon(Icons.close),
-                              onPressed: () {
-                                setState(() {
-                                  _removeOverlay();
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Use Expanded to allow ListView to take available space
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: categories.length,
-                          itemBuilder: (context, index) {
-                            var category = categories[index];
-
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _controllersCTGY[
-                                          id + category.toString()],
-                                      focusNode: _focusNodesCTGY[
-                                          id + category.toString()],
-                                      decoration: const InputDecoration(
-                                        border: UnderlineInputBorder(),
-                                        labelText: 'Category',
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      List<String> temp = [];
-                                      for (var i = 0;
-                                          i < newCategories.length;
-                                          i++) {
-                                        if ((id.toString() +
-                                                newCategories[i]) ==
-                                            (id.toString() +
-                                                category.toString())) {
-                                          continue;
-                                        } else {
-                                          temp.add(newCategories[i]);
-                                        }
-                                      }
-                                      newCategories = temp;
-
-                                      updateCategory(
-                                          newCategories, id.toString());
-                                      _removeOverlay();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      Container(
-                          child: TextFormField(
-                        focusNode: _addItemFocusNode,
-                        controller: _itemController,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: 'New Category',
-                        ),
-                      )),
-
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: IconButton(
-                          icon: Icon(Icons.done),
-                          onPressed: () {
-                            setState(() {
-                              updateCategory(newCategories, id.toString());
-                              _removeOverlay();
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-*/
-  void openInputTypingField() {
-    setState(() {
-      openText = false;
-    });
   }
 
   @override
@@ -650,28 +365,31 @@ class CreateStorageState extends State<Storage> {
                             final categoryItems = entry.value;
                             return Padding(
                               padding: const EdgeInsets.only(
-                                  top: 10, left: 10, right: 10),
+                                  top: 20, left: 10, right: 10),
                               child: Container(
                                 decoration: BoxDecoration(
-                                border: Border.all(color: C.orange),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15))),
+                                    color: C.darkGrey,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15))),
                                 child: Column(children: [
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 10.0), // Add margin-top of 10
+                                        top: 10.0), 
                                     child: Text(
                                       category.toUpperCase(),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 25,
+                                                                        color: C.orange,
+
                                       ),
                                     ),
                                   ),
                                   Column(
                                     children: [
                                       Container(
-                                          transform: Matrix4.translationValues(0.0, -50.0, 0.0),
+                                          transform: Matrix4.translationValues(
+                                              0.0, -40.0, 0.0),
                                           constraints: BoxConstraints(),
                                           child: ListView.builder(
                                             shrinkWrap: true,
@@ -687,19 +405,17 @@ class CreateStorageState extends State<Storage> {
                                                       child: Row(
                                                         children: [
                                                           openClose[item['id']
-                                                                          .toString() +
-                                                                      category] ==
+                                                                      .toString()] ==
                                                                   true
                                                               ? SizedBox(
-                                                                  width: 80,
+                                                                  width: 100,
                                                                   child:
                                                                       TextFormField(
-                                                                    controller: _controllersQTY[
-                                                                        item['id'].toString() +
-                                                                            category],
+                                                                    controller:
+                                                                        _controllersQTY[
+                                                                            item['id'].toString()],
                                                                     /*     focusNode: _focusNodesQTY[
-                                                                        item['id'].toString() +
-                                                                            category],*/
+                                                                        item['id'].toString() ],*/
                                                                     decoration:
                                                                         InputDecoration(
                                                                       border:
@@ -709,24 +425,23 @@ class CreateStorageState extends State<Storage> {
                                                                 )
                                                               : Container(),
                                                           openClose[item['id']
-                                                                          .toString() +
-                                                                      category] ==
+                                                                      .toString()] ==
                                                                   true
                                                               ? SizedBox(
-                                                                  width: 170,
+                                                                  width: 190,
                                                                   child:
                                                                       CompositedTransformTarget(
                                                                     link: _layerLinks[
-                                                                        item['id'].toString() +
-                                                                            category]!,
+                                                                        item['id']
+                                                                            .toString()]!,
                                                                     child:
                                                                         TextFormField(
                                                                       controller:
-                                                                          _controllersITM[item['id'].toString() +
-                                                                              category],
+                                                                          _controllersITM[
+                                                                              item['id'].toString()],
                                                                       focusNode:
-                                                                          _focusNodesITM[item['id'].toString() +
-                                                                              category],
+                                                                          _focusNodesITM[
+                                                                              item['id'].toString()],
                                                                       decoration:
                                                                           InputDecoration(
                                                                         border:
@@ -738,7 +453,7 @@ class CreateStorageState extends State<Storage> {
                                                               : Flexible(
                                                                   child: Text(item[
                                                                           "amount"] +
-                                                                      " x " +
+                                                                      ": " +
                                                                       item[
                                                                           "ingredient"]),
                                                                 ),
@@ -746,8 +461,7 @@ class CreateStorageState extends State<Storage> {
                                                       ),
                                                     ),
                                                     openClose[item['id']
-                                                                    .toString() +
-                                                                category] ==
+                                                                .toString()] ==
                                                             false
                                                         ? IconButton(
                                                             icon: Icon(
@@ -756,59 +470,56 @@ class CreateStorageState extends State<Storage> {
                                                               setState(() {
                                                                 openClose[item[
                                                                             'id']
-                                                                        .toString() +
-                                                                    category] = true;
+                                                                        .toString()] =
+                                                                    true;
                                                               });
                                                             },
                                                           )
-                                                        : IconButton(
-                                                            icon: Icon(
-                                                                Icons.close),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                openClose[item[
+                                                        : Column(
+                                                            children: [
+                                                              IconButton(
+                                                                icon: Icon(Icons
+                                                                    .close),
+                                                                onPressed: () {
+                                                                  setState(() {
+                                                                    openClose[item[
                                                                             'id']
-                                                                        .toString() +
-                                                                    category] = false;
-                                                              });
-                                                            },
-                                                          ),
+                                                                        .toString()] = false;
+                                                                  });
+                                                                },
+                                                              ),
+                                                              IconButton(
+                                                                icon: Icon(Icons
+                                                                    .delete),
+                                                                onPressed: () {
+                                                                  delete(
+                                                                      item[
+                                                                          'id'],
+                                                                      index,
+                                                                      item['id']
+                                                                          .toString(),
+                                                                      category);
+                                                                },
+                                                              ),
+                                                              IconButton(
+                                                                icon: Icon(Icons
+                                                                    .post_add),
+                                                                onPressed: () {
+                                                                  updateItem(
+                                                                      item[
+                                                                          'id'],
+                                                                      index);
+                                                                },
+                                                              ),
+                                                            ],
+                                                          )
                                                   ],
                                                 ),
                                                 subtitle: openClose[item['id']
-                                                                .toString() +
-                                                            category] ==
+                                                            .toString()] ==
                                                         true
                                                     ? Row(
-                                                        children: [
-                                                          IconButton(
-                                                            icon: Icon(
-                                                                Icons.delete),
-                                                            onPressed: () {
-                                                              delete(
-                                                                  item['id'],
-                                                                  index,
-                                                                  item['id']
-                                                                          .toString() +
-                                                                      category,
-                                                                  category);
-                                                            },
-                                                          ),
-                                                          SizedBox(width: 8),
-                                                          IconButton(
-                                                            icon: Icon(
-                                                                Icons.tune),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                _showChangeCategoyOverlay(
-                                                                    item[
-                                                                        'category'],
-                                                                    item["id"]
-                                                                        .toString());
-                                                              });
-                                                            },
-                                                          ),
-                                                        ],
+                                                        children: [],
                                                       )
                                                     : Row(
                                                         children: [],

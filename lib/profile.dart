@@ -8,11 +8,10 @@ import 'Components/OTHER/item_add.dart';
 import 'Components/OTHER/filter_storage.dart';
 import 'Components/OTHER/warnings.dart';
 import 'Components/PROFILE/weekly.dart';
-import 'colors.dart';
 import 'Components/PROFILE/analyser.dart';
 import 'Components/OTHER/API/warnings.dart' as WARNINGS_API;
 import 'Components/PROFILE/categories.dart';
-
+import './Components/HELPERS/colors.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -30,6 +29,17 @@ class _ProfileState extends State<Profile> {
     _loadData();
   }
 
+  Future<void> _checkLoginStatus() async {
+    
+    if (token == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    }
+  }
+
+
   Future<void> _loadData() async {
     final loadedToken = await load_token.loadToken();
     List<dynamic> warningsFetched = await WARNINGS_API.getWarnings();
@@ -38,183 +48,64 @@ class _ProfileState extends State<Profile> {
       token = loadedToken;
       warnings = warningsFetched;
     });
-    if (token != null) {}
+
+     _checkLoginStatus();
+
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        
-        children: [
-          Center(
-            child: token != null
-                ? Column(children: [
-                    Padding(padding:  const EdgeInsets.only(top:40.0),),
-                    Text(
-                        'WELCOME: ${token == null ? "loading" : _user["id"].toString()} !',
-                        style: TextStyle(fontSize: 24), ),
-                  ])
-                : Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Login()),
-                        );
-                      },
-                      child: Text("tap to log in"),
-                    ),
-                  ),
-          ),
-          Center(
-            child: Container(
-              child: Column(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 50.0, left: 10, right: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: 
+                   Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Text(
+                          'WELCOME: ${token == null ? "loading" : _user["id"].toString()} !',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
+                 
+            ),
+            Expanded(
+              child: ListView(
                 children: [
-                  Column(
-                      children: warnings.map((warning) {
-                    return Text(
-                        "-> ${warning["amount"]} grams of ${warning["ingredient"]} left",
-                        style:
-                            TextStyle(fontSize: 17.0, color: Colors.redAccent));
-                  }).toList()),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Notes()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "NOTES 🌏",
-                        style: TextStyle(fontSize: 20),
+                  // Map over warnings and create cards
+                  ...warnings.map((warning) {
+                    return Card(
+                      color: Colors.red.shade100,
+                      elevation: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "-> ${warning["amount"]} grams of ${warning["ingredient"]} left",
+                          style: TextStyle(
+                              fontSize: 17.0, color: Colors.redAccent),
+                        ),
                       ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Analyser()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), 
-                      child: Text(
-                        "RECIPE ANALYSER",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => AddItem()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "ADD A NEW ITEM 🌏",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => FilterStorage()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "FILTER STORAGE 🌏",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Warnings()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "ADD COSTUM WARNINGS-USE BY",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Weekly()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "WEEKLY PLANNER",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Analyser()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "QUICK SHOPPING LISTS",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Analyser()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "30 DAY PLANNER",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                   InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Categories()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "Categories",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
+                    );
+                  }).toList(),
+
+                  // Menu items
+                  _buildMenuItem(context, "NOTES", Notes()),
+                  _buildMenuItem(context, "RECIPE ANALYSER", Analyser()),
+                  _buildMenuItem(context, "ADD A NEW ITEM", AddItem()),
+                  _buildMenuItem(context, "FILTER STORAGE", FilterStorage()),
+                  _buildMenuItem(context, "WEEKLY PLANNER", Weekly()),
+                 // _buildMenuItem(context, "QUICK SHOPPING LISTS", Analyser()),
+               //   _buildMenuItem(context, "30 DAY PLANNER", Analyser()),
+                  _buildMenuItem(context, "CATEGORIES", Categories()),
+
+                  // Log out button
                   InkWell(
                     onTap: () {
                       logout();
@@ -224,19 +115,52 @@ class _ProfileState extends State<Profile> {
                             builder: (BuildContext context) => super.widget),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0), // Add padding here
-                      child: Text(
-                        "LOGUS",
-                        style: TextStyle(fontSize: 20),
+                    child: Card(
+                      elevation: 4,
+                      color: C.darkGrey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Center(
+                          child: Text(
+                            "LOG OUT",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: C.red),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
+            ) 
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(BuildContext context, String title, Widget page) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        );
+      },
+      child: Card(
+        elevation: 4,
+        color: C.darkGrey,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Center(
+            child: Text(
+              title,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

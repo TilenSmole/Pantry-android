@@ -5,6 +5,7 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'package:http/http.dart' as http;
 import '../load_token.dart' as load_token;
 import '../../main.dart';
+import '../HELPERS/colors.dart';
 
 class AddRecipe extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class _AddRecipeState extends State<AddRecipe> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _recipeNameController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _ingreientController = TextEditingController();
+  final TextEditingController _ingridientController = TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
   final LayerLink _layerLink = LayerLink();
@@ -27,13 +28,13 @@ class _AddRecipeState extends State<AddRecipe> {
   List<String> _allSuggestions = [];
   List<String> _selectedAmount = [];
   List<String> _selectedIngridients = [];
- 
+
   String? token;
 
   @override
   void initState() {
     super.initState();
-    _ingreientController.addListener(_updateSuggestions);
+    _ingridientController.addListener(_updateSuggestions);
     setFood('Vegetables.json', 'vegetables');
     setFood('Fruits.json', 'fruits');
     setFood('Condiments.json', 'condiments');
@@ -63,7 +64,7 @@ class _AddRecipeState extends State<AddRecipe> {
       List<dynamic> items = data[key];
 
       List<String> names = items.map((item) {
-        return item["name"].toString(); 
+        return item["name"].toString();
       }).toList();
 
       setState(() {
@@ -128,19 +129,17 @@ class _AddRecipeState extends State<AddRecipe> {
                       setState(() {
                         _recipeNameController.text =
                             _filteredSuggestions[index];
-                            _selectedAmount.add(_amountController.text);
-_selectedIngridients.add(_filteredSuggestions[index]);
-                       // _selectedFoods.add(
-                         //   '{amount: ${_amountController.text}, ingredient: ${_filteredSuggestions[index]} }');
+                        _selectedAmount.add(_amountController.text);
+                        _selectedIngridients.add(_filteredSuggestions[index]);
+                        // _selectedFoods.add(
+                        //   '{amount: ${_amountController.text}, ingredient: ${_filteredSuggestions[index]} }');
                         _filteredSuggestions =
                             []; // Clear suggestions after selection
-               _amountController.text = "";
-                      _ingreientController.text = "";
-                      _recipeNameController.text = "";
+                        _amountController.text = "";
+                        _ingridientController.text = "";
+                        _recipeNameController.text = "";
                       });
                       _removeOverlay();
-       
-
                     },
                   );
                 },
@@ -162,7 +161,7 @@ _selectedIngridients.add(_filteredSuggestions[index]);
   Future<void> uploadRecipe() async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.7:5000/recipes/add-recipe-mobile'),
+        Uri.parse('http://192.168.1.8:5000/recipes/add-recipe-mobile'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json'
@@ -176,15 +175,15 @@ _selectedIngridients.add(_filteredSuggestions[index]);
           'cook_time': _cook_timeController.text
         }),
       );
-            
+
       print(response.statusCode);
       print(jsonDecode(response.body));
 
       if (response.statusCode == 200) {
-       // final Map<String, dynamic> responseJson = jsonDecode(response.body);
+        // final Map<String, dynamic> responseJson = jsonDecode(response.body);
 
         // Extract the token from the JSON object
-       // final String? token = responseJson['token'];
+        // final String? token = responseJson['token'];
       } else {
         throw Exception('Failed to load recipes');
       }
@@ -192,25 +191,28 @@ _selectedIngridients.add(_filteredSuggestions[index]);
       print('Error fetching recipes: $e');
     }
     Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MyApp()),
-            );
+      context,
+      MaterialPageRoute(builder: (context) => MyApp()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Recipe'),
+        title: Text(
+          'Add a New Recipe',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: C.orange,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Container(
-                        margin: const EdgeInsets.all(10.0),
-
           decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 220, 186, 135),
-              border: Border.all(),
-              borderRadius: BorderRadius.all(Radius.circular(20))),
+              color: C.darkGrey,
+              borderRadius: BorderRadius.all(Radius.circular(15))),
+          margin: const EdgeInsets.all(10.0),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -218,12 +220,8 @@ _selectedIngridients.add(_filteredSuggestions[index]);
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Enter the name',
+                    hintText: "name",
                   ),
-                  style: TextStyle(
-                      fontSize:
-                          18), // Adjust the fontSize to make the text bigger
                 ),
                 Row(
                   children: [
@@ -231,8 +229,7 @@ _selectedIngridients.add(_filteredSuggestions[index]);
                       child: TextFormField(
                         controller: _amountController,
                         decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: 'Enter quantity',
+                          hintText: 'quantity',
                         ),
                       ),
                     ),
@@ -244,20 +241,19 @@ _selectedIngridients.add(_filteredSuggestions[index]);
                       child: CompositedTransformTarget(
                         link: _layerLink,
                         child: TextFormField(
-                          controller: _ingreientController,
+                          controller: _ingridientController,
                           focusNode: _focusNode,
                           decoration: InputDecoration(
                             hintText: 'Enter the ingredient',
-                            border: UnderlineInputBorder(),
                           ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                for(var i = 0; i < _selectedAmount.length; i++)
-                    Text("${_selectedAmount[i]} x ${_selectedIngridients[i]}"),
-              
+                for (var i = 0; i < _selectedAmount.length; i++)
+                  Text("${_selectedAmount[i]} x ${_selectedIngridients[i]}"),
+
                 /*..._selectedFoods
                     .map((selected) => ListTile(
                           title: Text(selected),
@@ -267,14 +263,12 @@ _selectedIngridients.add(_filteredSuggestions[index]);
                 TextFormField(
                   controller: _prep_timeController,
                   decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
                     labelText: 'Enter prep time',
                   ),
                 ),
                 TextFormField(
                   controller: _cook_timeController,
                   decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
                     labelText: 'Enter cook time',
                   ),
                 ),
@@ -294,7 +288,7 @@ _selectedIngridients.add(_filteredSuggestions[index]);
                   padding: const EdgeInsets.only(top: 50),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
+                        backgroundColor: C.orange,
                         foregroundColor: Colors.black,
                         padding:
                             EdgeInsets.symmetric(horizontal: 50, vertical: 20),
@@ -303,7 +297,6 @@ _selectedIngridients.add(_filteredSuggestions[index]);
                     child: Text("SUBMIT"),
                     onPressed: () {
                       uploadRecipe();
-
                     },
                   ),
                 ),
@@ -311,7 +304,6 @@ _selectedIngridients.add(_filteredSuggestions[index]);
             ),
           ),
         ),
-        
       ),
     );
   }

@@ -18,7 +18,7 @@ Future<int?> addItem({
     final String? token = prefs.getString('token');
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/foods/add-food-m'),
+      Uri.parse('http://192.168.1.8:5000/foods/add-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -53,7 +53,7 @@ Future<Map<int, dynamic>> getItems() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/foods/get-food-m'),
+      Uri.parse('http://192.168.1.8:5000/foods/get-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -86,7 +86,7 @@ Future<List<dynamic>> getDisallowdItems() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/foods/get-disallowd-food-m'),
+      Uri.parse('http://192.168.1.8:5000/foods/get-disallowd-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -112,7 +112,7 @@ Future<bool> setDisallowdItems(id,set ) async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/foods/set-disallowd-food-m'),
+      Uri.parse('http://192.168.1.8:5000/foods/set-disallowd-food-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -142,7 +142,7 @@ Future<bool> setStorageOnly() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/account/set-storage-only-m'),
+      Uri.parse('http://192.168.1.8:5000/account/set-storage-only-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -167,7 +167,7 @@ Future<bool> getStorageOnly() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/account/get-storage-only-m'),
+      Uri.parse('http://192.168.1.8:5000/account/get-storage-only-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -194,7 +194,7 @@ Future<List<dynamic>> getCategories() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/foods/get-categories-m'),
+      Uri.parse('http://192.168.1.8:5000/foods/get-categories-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -215,31 +215,49 @@ Future<List<dynamic>> getCategories() async {
   return [];
 }
 
-Future changeDefaultCategory(id,category) async {
+Future<int> changeDefaultCategory(food,newCategory) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/foods/change-category-m'),
+      Uri.parse('http://192.168.1.8:5000/foods/change-category-m'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
       },
       body: jsonEncode({
-        'id': id,
-        'category': category,
+        'food': food,
+        'newCategory': newCategory,
       }),
     );
-    
-    if (response.statusCode == 200) {
-    
-
-      return ;
-    } else {
-      print('Failed to getCategories');
-    }
+    return response.statusCode;
+   
   } catch (e) {
     print('Error getCategories: $e');
   }
-  return ;
+  return 0;
+}
+
+
+Future<int> setWarning(food, warning) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('token');
+  try {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.8:5000/foods/set-warning'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'food': food,
+        'warning': warning,
+      }),
+    );
+    return response.statusCode;
+   
+  } catch (e) {
+    print('Error getCategories: $e');
+  }
+  return 0;
 }

@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> addCategory(String category, String token) async {
   try {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7:5000/storage/add-category'),
+      Uri.parse('http://192.168.1.8:5000/storage/add-category'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -27,7 +27,7 @@ Future<void> addCategory(String category, String token) async {
 Future<List<dynamic>?> deleteCategorye(int noteId, String token) async {
   try {
     final response = await http.delete(
-      Uri.parse('http://192.168.1.7:5000/notes/delete-note'),
+      Uri.parse('http://192.168.1.8:5000/notes/delete-note'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -54,7 +54,7 @@ Future<void> editCategory(
     String category, int categoryID, String token) async {
   try {
     final response = await http.put(
-      Uri.parse('http://192.168.1.7:5000/storage/update-category'),
+      Uri.parse('http://192.168.1.8:5000/storage/update-category'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'
@@ -72,7 +72,7 @@ Future<void> editCategory(
 Future<List<dynamic>> getCategories(String? token) async {
   try {
     final response = await http.get(
-      Uri.parse('http://192.168.1.7:5000/storage/get-categories'),
+      Uri.parse('http://192.168.1.8:5000/storage/get-categories'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'

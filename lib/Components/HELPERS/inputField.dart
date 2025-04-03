@@ -18,7 +18,7 @@ class CustomTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-          vertical:2), 
+          vertical:2, horizontal: 20), 
       child: Row(
         children: [      
           SizedBox(

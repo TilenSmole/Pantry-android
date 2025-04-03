@@ -3,6 +3,7 @@ import './API/weeklyAPI.dart' as API;
 import '../load_token.dart' as load_token;
 import '../RECIPES/API/recipeAPI.dart' as recipeAPI;
 import '/Components/RECIPES/recipie.dart';
+import '../HELPERS/colors.dart';
 
 class Weekly extends StatefulWidget {
   @override
@@ -23,7 +24,6 @@ class _WeekyState extends State<Weekly> {
   ];
 
   String? token;
-
   List<bool> addedToSList = [];
   bool addedAll = false;
 
@@ -38,13 +38,11 @@ class _WeekyState extends State<Weekly> {
     setState(() {
       token = loadedToken;
     });
-
     fetchCostumRecipes();
   }
 
   Future<void> fetchCostumRecipes() async {
-    _recipes = await API.fetchCostumRecipes(token, 7); //API.getStorageLocal();
-
+    _recipes = await API.fetchCostumRecipes(token, 7);
     setState(() {
       _DisplayRecipes = _recipes;
       addedToSList = List.filled(_recipes.length, false);
@@ -53,7 +51,6 @@ class _WeekyState extends State<Weekly> {
 
   Future<void> replaceRecipe(position) async {
     var updatedRecipies = await API.replace(token, position);
-
     setState(() {
       _DisplayRecipes = updatedRecipies;
     });
@@ -76,19 +73,25 @@ class _WeekyState extends State<Weekly> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _recipes.isEmpty
-            ? Center(child: CircularProgressIndicator())
-            : Column(
+      appBar: AppBar(
+        title: Text(
+          "Weekly Planner",
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 24, color: C.black),
+        ),
+        backgroundColor: C.orange,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      body: _recipes.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: Text(
-                      "PLANNER",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                  SizedBox(height: 20),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
                         onPressed: () {
@@ -96,34 +99,54 @@ class _WeekyState extends State<Weekly> {
                             addAll();
                           });
                         },
-                        child: Text("ADD ALL TO THE SHOPPING CART"),
-                      )
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 18),
+                          backgroundColor: C.orange,
+                          textStyle: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        child: Text(
+                          "ADD ALL TO THE SHOPPING CART",
+                          style: TextStyle(color: C.black),
+                        ),
+                      ),
                     ],
                   ),
-                  Column(
-                    children: <Widget>[
-                      for (var i = 0; i < _DisplayRecipes.length; i++)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4, right: 4),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(children: [
-                                      Text(
-                                        days[i],
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      //add to shopping cart
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _DisplayRecipes.length,
+                      itemBuilder: (context, i) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            color: C.darkGrey,
+                            child: ListTile(
+                              contentPadding: EdgeInsets.all(16),
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    days[i],
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: C.orange,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
                                       IconButton(
-                                        icon: Icon(addedToSList[i]
-                                            ? Icons.check_box
-                                            : Icons.add_box),
+                                        icon: Icon(
+                                          addedToSList[i]
+                                              ? Icons.check_box
+                                              : Icons.add_box,
+                                          color: C.orange,
+                                        ),
                                         onPressed: () async {
                                           int? result =
                                               await recipeAPI.addToSList(
@@ -138,62 +161,46 @@ class _WeekyState extends State<Weekly> {
                                           }
                                         },
                                       ),
-                                      //replace this recipy with a new one
                                       IconButton(
-                                        icon: Icon(Icons.edit_note),
+                                        icon: Icon(
+                                          Icons.edit_note,
+                                          color: C.orange,
+                                        ),
                                         onPressed: () {
                                           setState(() {
                                             replaceRecipe(i);
                                           });
                                         },
                                       ),
-                                    ]),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => Recepie(
-                                                recipe: _DisplayRecipes[i]),
-                                          ),
-                                        );
-                                      },
-                                      child: Text(
-                                        _DisplayRecipes[i]["name"] ?? "unknown",
-                                        style: TextStyle(fontSize: 16),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              subtitle: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Recepie(
+                                        recipe: _DisplayRecipes[i],
                                       ),
                                     ),
-                                  ],
+                                  );
+                                },
+                                child: Text(
+                                  _DisplayRecipes[i]["name"] ?? "Unknown",
+                                  style: TextStyle(fontSize: 16),
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                    ],
-                  )
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
-        floatingActionButton: GestureDetector(
-          onTap: () {
-            /* Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddRecipe()),
-            );*/
-          },
-          child: Container(
-              height: 75.0,
-              width: 75.0,
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle, // Make the container circular
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.add,
-                  size: 40,
-                  color: const Color.fromARGB(255, 0, 0, 0),
-                ),
-              )),
-        ));
+            ),
+    );
   }
 }

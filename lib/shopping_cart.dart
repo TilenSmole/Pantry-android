@@ -344,7 +344,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
                   Tab(text: "PREV. BOUGHT"),
                 ],
                 indicatorColor: C.orange, 
-                labelColor: Colors.white, 
+                labelColor: C.orange, 
                 unselectedLabelColor: Colors.grey,
               ),
             ),

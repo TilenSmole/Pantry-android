@@ -8,7 +8,7 @@ Future<List<dynamic>> getWarnings() async {
   final String? token = prefs.getString('token');
   try {
     final response = await http.get(
-      Uri.parse('http://192.168.1.7:5000/storage/get-warnings'),
+      Uri.parse('http://192.168.1.8:5000/storage/get-warnings'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json'

@@ -92,9 +92,10 @@ class _notesState extends State<Notes> {
   void _showAddNoteOverlay() {
     CustomOverlay(
       context: context,
-      controller: _newNoteController,
+      controllers: [_newNoteController],
       onSave: addNote,
       title: "New Note",
+      hintTexts: ["Enter a note "],
     ).show();
   }
 
@@ -102,7 +103,10 @@ class _notesState extends State<Notes> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('COOKING NOTES', style: TextStyle(color: Colors.black),),
+        title: Text(
+          'COOKING NOTES',
+          style: TextStyle(color: Colors.black),
+        ),
         backgroundColor: C.orange,
         iconTheme: IconThemeData(color: Colors.black),
       ),
@@ -122,7 +126,7 @@ class _notesState extends State<Notes> {
                             margin: const EdgeInsets.only(
                                 bottom: 20, left: 20, right: 20),
                             decoration: BoxDecoration(
-                                border: Border.all(color: C.orange),
+                                color: C.darkGrey,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15))),
                             child: Column(
@@ -176,10 +180,10 @@ class _notesState extends State<Notes> {
                           )
                         : Container(
                             margin: const EdgeInsets.only(
-                                bottom: 20, left: 20, right: 20),
+                                bottom: 10, left: 10, right: 10),
                             decoration: BoxDecoration(
                                 boxShadow: [],
-                                border: Border.all(color: C.orange),
+                                color: C.darkGrey,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15))),
                             child: Column(

@@ -121,7 +121,7 @@ class _RecipiesState extends State<Recipies> {
                             print("Selected items: $_selectedValues");
                           }
                         },
-                           child: Text(
+                        child: Text(
                           'Advanced search',
                           style: TextStyle(color: C.lightBlue),
                         ),
@@ -163,11 +163,11 @@ class _RecipiesState extends State<Recipies> {
                                 padding:
                                     const EdgeInsets.only(left: 2, right: 2),
                                 child: Card(
-                                  color: C.lightBlue,
+                                  color: C.darkGrey,
                                   child: Center(
                                     child: Padding(
                                       padding: const EdgeInsets.all(10),
-                                      child: Text(recipe["name"] ?? "unknown"),
+                                      child: Text(recipe["name"] ?? "unknown", style: TextStyle(color: C.orange)),
                                     ),
                                   ),
                                 ),

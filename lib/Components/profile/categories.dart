@@ -89,14 +89,16 @@ class _categoriesState extends State<Categories> {
     }
   }
 
- void _showAddCategoryOverlay() {
+void _showAddCategoryOverlay() {
   CustomOverlay(
     context: context,
-    controller: _newCategoryController,
+    controllers: [_newCategoryController], 
     onSave: addCategory,  
     title: "New Category",  
+      hintTexts : ["Enter a category"],
   ).show();
 }
+
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +128,8 @@ class _categoriesState extends State<Categories> {
                               margin: const EdgeInsets.only(
                                   bottom: 20, left: 20, right: 20),
                               decoration: BoxDecoration(
-                                  border: Border.all(color: C.orange),
+                                                                  color: C.darkGrey,
+
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15))),
                               child: Column(
@@ -182,10 +185,10 @@ class _categoriesState extends State<Categories> {
                             )
                           : Container(
                               margin: const EdgeInsets.only(
-                                  bottom: 20, left: 20, right: 20),
+                                  bottom: 10, left: 20, right: 20),
                               decoration: BoxDecoration(
                                   boxShadow: [],
-                                  border: Border.all(color: C.orange),
+                                color: C.darkGrey,
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15))),
                               child: Column(

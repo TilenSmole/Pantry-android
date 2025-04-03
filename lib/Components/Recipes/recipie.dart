@@ -6,7 +6,7 @@ import '../../colors.dart';
 
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-
+import '../HELPERS/CustomOverlay.dart';
 
 class Recepie extends StatefulWidget {
   Map<String, dynamic> recipe = {
@@ -53,11 +53,7 @@ class RecepieState extends State<Recepie> {
   bool canEditSelect = false;
 
   //freeze
-  TextEditingController _freezePortionsCategory = TextEditingController();
-  FocusNode _freezePortionsCategoryfocusNode = FocusNode();
-
-  List<dynamic>? freezerCategories = [];
-  final TextEditingController _freezePortions = TextEditingController();
+  TextEditingController _freezePortions = TextEditingController();
 
   //edit main
   bool edit = false;
@@ -69,8 +65,6 @@ class RecepieState extends State<Recepie> {
 
   Map<int, TextEditingController> _controllersQTY = {};
   Map<int, TextEditingController> _controllersITM = {};
-  Map<String, FocusNode> _focusNodesQTY = {};
-  Map<String, FocusNode> _focusNodesITM = {};
 
   Future<void> _loadToken() async {
     final loadedToken = await load_token.loadToken();
@@ -110,7 +104,7 @@ class RecepieState extends State<Recepie> {
       _cookTimefocusNode.addListener(() {
         if (!_cookTimefocusNode.hasFocus) {
           updateCookTime();
-                }
+        }
       });
       _prepTimefocusNode.addListener(() {
         if (!_prepTimefocusNode.hasFocus) {
@@ -128,7 +122,6 @@ class RecepieState extends State<Recepie> {
         controller2.addListener(() => _updateIngredient(i));
 
         _controllersQTY[i] = controller2;
-
       }
     });
 
@@ -141,85 +134,75 @@ class RecepieState extends State<Recepie> {
         _amountsController[i++] = controller;
       });
     }
-    _freezePortionsCategory.text = "freezer";
-    _freezePortionsCategoryfocusNode.addListener(() {
-      if (!_freezePortionsCategoryfocusNode.hasFocus) {
-        setState(() {
-          freezerCategories!.add(_freezePortionsCategory.text);
-          _freezePortionsCategory.text = "";
-        });
-        _freezeOverlay();
-            }
-    });
   }
 
   void _updateIngredient(int index) {
-      recipe["ingredients"][index] =  _controllersITM[index]!.text;
-      recipe["amounts"][index] =  _controllersQTY[index]!.text;
+    recipe["ingredients"][index] = _controllersITM[index]!.text;
+    recipe["amounts"][index] = _controllersQTY[index]!.text;
   }
 
-Future<void> createAndSharePdf() async {
-  final pdf = pw.Document();
+  Future<void> createAndSharePdf() async {
+    final pdf = pw.Document();
 
-  pdf.addPage(
-    pw.Page(
-      build: (pw.Context context) {
-        return pw.Column(
-          children: [
-            pw.Text(
-              recipe["name"].toString(),
-              style: pw.TextStyle(
-                fontSize: 24,
-                fontWeight: pw.FontWeight.bold,
-              ),
-            ),
-            pw.SizedBox(height: 20),
-            pw.Text(
-               "Preparation time: ${recipe["prep_time"]?.toString() ?? "Unknown"} min",
-              style: pw.TextStyle(
-                fontSize: 16,
-              ),
-            ),
-             pw.Text(
-               "Cooking time: ${recipe["cook_time"]?.toString() ?? "Unknown"} min",
-              style: pw.TextStyle(
-                fontSize: 16,
-              ),
-            ),  
-             pw.Text(
-                "Total time: ${recipe["total_time"]?.toString() ?? "Unknown"} min",
-              style: pw.TextStyle(
-                fontSize: 16,
-              ),
-            ),
-            pw.Container(
-              child:  pw.Column(
-                children: [
-                  for(var i = 0; i < recipe["ingredients"].length; i++ )
-                    pw.Text(recipe["amounts"][i] + " " +recipe["ingredients"][i]),
-                ],
-              ),
-            ),
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
               pw.Text(
-                 recipe["instructions"],
-              style: pw.TextStyle(
-                fontSize: 16,
+                recipe["name"].toString(),
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
-            ),
-          ],
-        );
-      },
-    ),
-  );
+              pw.SizedBox(height: 20),
+              pw.Text(
+                "Preparation time: ${recipe["prep_time"]?.toString() ?? "Unknown"} min",
+                style: pw.TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              pw.Text(
+                "Cooking time: ${recipe["cook_time"]?.toString() ?? "Unknown"} min",
+                style: pw.TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              pw.Text(
+                "Total time: ${recipe["total_time"]?.toString() ?? "Unknown"} min",
+                style: pw.TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              pw.Container(
+                child: pw.Column(
+                  children: [
+                    for (var i = 0; i < recipe["ingredients"].length; i++)
+                      pw.Text(recipe["amounts"][i] +
+                          " " +
+                          recipe["ingredients"][i]),
+                  ],
+                ),
+              ),
+              pw.Text(
+                recipe["instructions"],
+                style: pw.TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
 
-  // Save and share the PDF file
-  await Printing.sharePdf(
-    bytes: await pdf.save(),
-    filename: '${recipe["name"].toString()}.pdf',
-  );
-}
-
-
+    // Save and share the PDF file
+    await Printing.sharePdf(
+      bytes: await pdf.save(),
+      filename: '${recipe["name"].toString()}.pdf',
+    );
+  }
 
   void updateInstructions() async {
     var result = await API.editInstructions(
@@ -296,7 +279,6 @@ Future<void> createAndSharePdf() async {
   }
 
   OverlayEntry _createAddNoteOverlayEntry() {
-
     return OverlayEntry(
       builder: (context) => Positioned(
         width: MediaQuery.of(context).size.width / 1.5,
@@ -506,79 +488,16 @@ Future<void> createAndSharePdf() async {
   }
 
   void _freezeOverlay() {
-    print("_showAddNoteOverlay");
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-    }
-    _overlayEntry = _freezeOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-  }
-
-  OverlayEntry _freezeOverlayEntry() {
-    return OverlayEntry(
-        builder: (context) => Positioned(
-            width: MediaQuery.of(context).size.width / 1.3,
-            top: MediaQuery.of(context).size.height / 3.5,
-            left: MediaQuery.of(context).size.width / 8,
-            child: Material(
-                elevation: 4.0,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Text("FREEZING"),
-                            Spacer(),
-                            IconButton(
-                              icon: Icon(Icons.close),
-                              onPressed: () {
-                                setState(() {
-                                  _removeOverlay();
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                            controller: _freezePortions,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              hintText: 'Enter the amount',
-                              border: OutlineInputBorder(),
-                            )),
-                        TextFormField(
-                            controller: _freezePortionsCategory,
-                            focusNode: _freezePortionsCategoryfocusNode,
-                            decoration: InputDecoration(
-                              hintText: 'Enter categories',
-                              border: OutlineInputBorder(),
-                            )),
-                        Text("Choosen categories:"),
-                        if (freezerCategories != null) ...[
-                          for (var category in freezerCategories!)
-                            Text(category),
-                        ],
-                        IconButton(
-                          icon: Icon(Icons.check),
-                          onPressed: () {
-                            setState(() {
-                              API.freezeItem(_freezePortions.text,
-                                  recipe["name"], freezerCategories, token);
-                              _removeOverlay();
-                            });
-                            KeepScreenOn.turnOn();
-                            setState(() {
-                              cook = true;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ))));
+    CustomOverlay(
+      context: context,
+      controllers: [_freezePortions],
+      onSave: () async {
+        await API.freezeItem(
+            _freezePortions.text, recipe["name"], "Freezer", token);
+      },
+      title: "Freezing",
+      hintTexts: ["Enter number of portions that will be added to Freezer"],
+    ).show();
   }
 
   OverlayEntry _addSelectedSListOverlayEntry() {
@@ -786,7 +705,7 @@ Future<void> createAndSharePdf() async {
                           CircularOrangeButton(
                             icon: Icons.share,
                             onPressed: () {
-                               createAndSharePdf();
+                              createAndSharePdf();
                             },
                           ),
                         ],
@@ -796,7 +715,7 @@ Future<void> createAndSharePdf() async {
                       margin: const EdgeInsets.only(left: 20, top: 3),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16.0),
-                        color: C.lightBlue,
+                        color: C.darkGrey,
                       ),
                       width: MediaQuery.sizeOf(context).width - 40,
                       child: Padding(
@@ -804,7 +723,6 @@ Future<void> createAndSharePdf() async {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            
                             !edit
                                 ? Column(
                                     crossAxisAlignment: CrossAxisAlignment
@@ -872,12 +790,13 @@ Future<void> createAndSharePdf() async {
                             ingredients: recipe["ingredients"],
                             amounts: recipe["amounts"])
                         : Container(
-                          margin: const EdgeInsets.only(left: 20, top: 3, right: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.0),
-        color: C.lightBlue,
-      ),
-                          child: Column(
+                            margin: const EdgeInsets.only(
+                                left: 20, top: 3, right: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                              color: C.darkGrey,
+                            ),
+                            child: Column(
                               children: [
                                 IconButton(
                                   icon: Icon(Icons.check),
@@ -886,8 +805,7 @@ Future<void> createAndSharePdf() async {
                                   },
                                 ),
                                 ListView.builder(
-                                   physics:
-                                                NeverScrollableScrollPhysics(), 
+                                    physics: NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
                                     itemCount: recipe["ingredients"].length,
                                     itemBuilder: (context, index) {
@@ -897,29 +815,27 @@ Future<void> createAndSharePdf() async {
                                           children: [
                                             Flexible(
                                                 child: TextFormField(
-                                                  controller:
-                                                      _controllersQTY[index],
-                                                  decoration: InputDecoration(
-                                                    border:
-                                                        UnderlineInputBorder(),
-                                                  ),
-                                                )),
+                                              controller:
+                                                  _controllersQTY[index],
+                                              decoration: InputDecoration(
+                                                border: UnderlineInputBorder(),
+                                              ),
+                                            )),
                                             Flexible(
                                                 child: TextFormField(
-                                                  controller:
-                                                      _controllersITM[index],
-                                                  decoration: InputDecoration(
-                                                    border:
-                                                        UnderlineInputBorder(),
-                                                  ),
-                                                )),
+                                              controller:
+                                                  _controllersITM[index],
+                                              decoration: InputDecoration(
+                                                border: UnderlineInputBorder(),
+                                              ),
+                                            )),
                                           ],
                                         ),
                                       );
                                     }),
                               ],
                             ),
-                        ),
+                          ),
                     SizedBox(height: 8),
                     Container(
                         width: MediaQuery.sizeOf(context).width - 40,
@@ -927,7 +843,7 @@ Future<void> createAndSharePdf() async {
                             const EdgeInsets.only(left: 20, top: 3, bottom: 20),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16.0),
-                          color: C.lightBlue,
+                          color: C.darkGrey,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -983,7 +899,7 @@ Future<void> createAndSharePdf() async {
               width: 60.0,
               decoration: BoxDecoration(
                 color: C.orange,
-                shape: BoxShape.circle, 
+                shape: BoxShape.circle,
               ),
               child: Center(
                 child: Icon(
@@ -1023,7 +939,7 @@ class IngredientsSection extends StatelessWidget {
       margin: const EdgeInsets.only(left: 20, top: 3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: C.lightBlue,
+        color: C.darkGrey,
       ),
       width: MediaQuery.sizeOf(context).width - 40,
       child: Padding(
@@ -1055,7 +971,7 @@ class editIngredientsSection extends StatelessWidget {
       margin: const EdgeInsets.only(left: 20, top: 3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: C.lightBlue,
+        color: C.darkGrey,
       ),
       width: MediaQuery.sizeOf(context).width - 40,
       child: Padding(
@@ -1087,7 +1003,7 @@ class CircularOrangeButton extends StatelessWidget {
       padding: const EdgeInsets.only(right: 8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: C.lightBlue,
+          color: C.darkGrey,
           shape: BoxShape.circle, // Circular shape
         ),
         child: IconButton(

@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
-}
+} 
 
 class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
@@ -22,10 +22,9 @@ class _LoginState extends State<Login> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.7:5000/login'),
+        Uri.parse('http://192.168.1.8:5000/login'),
         headers: {'Content-Type': 'application/json'},
-        body:
-            jsonEncode(<String, String>{'email': email, 'password': password}),
+        body: jsonEncode(<String, String>{'email': email, 'password': password}),
       );
       print(response.statusCode);
       print(jsonDecode(response.body));
@@ -37,17 +36,14 @@ class _LoginState extends State<Login> {
 
         await prefs.setString('token', token);
 
-
         // Save the token using flutter_secure_storage
         await storage.write(key: 'jwt_token', value: token);
         print('Token saved successfully');
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  MyHomePage()), // Adjust this to navigate to your desired home page
+          MaterialPageRoute(builder: (context) => MyHomePage()),
         );
-            } else {
+      } else {
         throw Exception('Failed to load recipes');
       }
     } catch (e) {
@@ -58,36 +54,84 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile Page'),
-      ),
       body: Center(
-          child: Column(
-        children: [
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your email',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.lock,
+                  size: 80,
+                  color: Colors.orangeAccent,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Welcome Back!',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Email Field
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Password Field
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Enter your password',
+                    prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Login Button
+                ElevatedButton(
+                  onPressed: () {
+                    final email = _emailController.text;
+                    final password = _passwordController.text;
+                    login(email, password);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  child: Text('Login',           style: TextStyle(color: Colors.black),
+),
+                ),
+                SizedBox(height: 20),
+                // Sign up Text
+               
+              ],
             ),
           ),
-          TextFormField(
-            controller: _passwordController,
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your password',
-            ),
-          ),
-          ElevatedButton(
-            child: Text("LOGIN"),
-            onPressed: () {
-              final email = _emailController.text;
-              final password = _passwordController.text;
-              login(email, password);
-            },
-          ),
-        ],
-      )),
+        ),
+      ),
     );
   }
 }

@@ -41,8 +41,15 @@ class _addItemState extends State<AddItem> {
         iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Container(
-        margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Column(children: [
+          margin: const EdgeInsets.only(left: 20, top: 10, right: 20, bottom: 150),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.0),
+                        color: C.darkGrey,
+                      ),
+                      
+        child: Column(
+          children: [
+            
           CustomTextFormField(
             controller: _nameController,
             labelText: 'item name',
@@ -72,7 +79,7 @@ class _addItemState extends State<AddItem> {
             labelText: 'sugar/100g',
           ),
           Padding(
-              padding: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.all( 20),
               child: Column(
                 children: [
                   Row(

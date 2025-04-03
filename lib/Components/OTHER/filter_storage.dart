@@ -65,40 +65,55 @@ class _FilterStorageState extends State<FilterStorage> {
         int index = entry.key;
         var task = entry.value;
         var value = taskSelection[index] ?? false;
-        return Row(
-          children: [
-            StatefulBuilder(
-              builder: (context, setState) {
-                return Checkbox(
-                  value: taskSelection[index] ?? false,
-                  onChanged: (bool? value) async {
-                    await API.setDisallowdItems(index, value);
-                    setState(() {
-                      taskSelection[index] = value ?? false;
-                    });
-                  },
-                );
-              },
+      return Container(
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(16.0),
+    color: C.darkGrey, // Your desired background color
+  ),
+  margin: EdgeInsets.symmetric(vertical: 8.0), // Optional margin for spacing
+  padding: EdgeInsets.all(8.0), // Optional padding for spacing inside the row
+  child: Row(
+    children: [
+      StatefulBuilder(
+        builder: (context, setState) {
+          return Checkbox(
+            value: taskSelection[index] ?? false,
+            onChanged: (bool? value) async {
+              await API.setDisallowdItems(index, value);
+              setState(() {
+                taskSelection[index] = value ?? false;
+              });
+            },
+          );
+        },
+      ),
+      GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FoodDetailScreen(
+                  food: task,
+                  checked: taskSelection[index] = value,
+                  index: index),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FoodDetailScreen(
-                        food: task,
-                        checked: taskSelection[index] = value ?? false,
-                        index: index),
-                  ),
-                );
-              },
-              child: Text(
-                task["name"],
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        );
+          );
+        },
+        child: Text(
+          task["name"],
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white, // Adjust text color for contrast with the background
+          ),
+        ),
+        
+      ),
+      Spacer(),
+       Icon(Icons.arrow_forward_ios, size: 16),
+    ],
+  ),
+);
+
       }).toList(),
     );
   }

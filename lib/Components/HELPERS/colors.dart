@@ -7,4 +7,7 @@ class C {
   static const Color lightBlue = Color(0xFF86BBD8); // Light Blue color
   static const Color green = Color(0xFF758E4F);    // Green color
   static const Color darkGrey = Color(0xFF263238);  // Dark Grey color
+    static const Color black = Colors.black;  // Dark Grey color
+    static const Color red = Colors.red;  // Dark Grey color
+
 }

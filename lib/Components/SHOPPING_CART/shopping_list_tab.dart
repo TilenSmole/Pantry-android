@@ -47,81 +47,50 @@ class ShoppingCartView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        children: [
-          Center(
-            child: Column(
-              children: [
-                Column(
+  return SingleChildScrollView(
+  scrollDirection: Axis.vertical,
+  child: Column(
+    mainAxisSize: MainAxisSize.min, // Ensures the column only takes up necessary space
+    children: [
+      if (!checked) _buildAddItemTile(),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: ListView.builder(
+          controller: scrollController,
+          shrinkWrap: true, // Important: Allows ListView to take only required space
+          physics: NeverScrollableScrollPhysics(), // Prevents nested scrolling conflict
+          itemCount: shoppingCart.length,
+          itemBuilder: (context, index) {
+            final item = shoppingCart[index];
+
+            if (!item.checked && !checked) {
+              return _buildShoppingCartItem(item, index);
+            } else if (item.checked && checked) {
+              return ListTile(
+                title: Row(
                   children: [
-                    if (!checked) _buildAddItemTile(),
-                    SizedBox(
-                      height: 500,
-                      child: 
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        
-                        child: ListView.builder(
-                          
-                          shrinkWrap: true,
-                          itemCount: shoppingCart.length ,
-                          itemBuilder: (context, index) {
-                            if (!checked) {
-                              print('checked is false');
-                            }
-                            if (index == shoppingCart.length) {
-                              if (!checked) {
-                                return _buildAddItemTile();
-                              } else {
-                                return null;
-                              }
-                            }
-
-                            final item = shoppingCart[index];
-                            print(item);
-                            if (!item.checked && !checked) {
-                              return _buildShoppingCartItem(item, index);
-                            } else if (item.checked && checked) {
-                              // return _buildShoppingCartItem(item, index);
-                              /*9var divided = item['item'].split(",");
-                                      var amount = divided[0].trim().split(" ");
-                                      amount = amount[1].split('"');
-                                      var ingredient =
-                                          divided[1].trim().split(" ");*/
-                              return ListTile(
-                                title: Row(
-                                  children: [
-                                    Text("${item.amount} ${item.ingredient}",
-                                        style: TextStyle(
-                                            decoration:
-                                                TextDecoration.lineThrough)),
-                                    Spacer(),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () {
-                                        delete(item.id, index);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-
-                            return SizedBox.shrink();
-                          },
-                        ),
-                      ),
+                    Text("${item.amount} ${item.ingredient}",
+                        style: TextStyle(decoration: TextDecoration.lineThrough)),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        delete(item.id, index);
+                      },
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              );
+            }
+
+            return SizedBox.shrink();
+          },
+        ),
       ),
-    );
+    ],
+  ),
+);
+
   }
 
   Widget _buildAddItemTile() {
@@ -134,59 +103,62 @@ class ShoppingCartView extends StatelessWidget {
                 openInputTypingField();
               },
               child: Padding(
-                padding: const EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.only(left: 25),
                 child: Text("Click here to add a new item"),
               ),
             ),
           if (openInput)
-            Row(
-              children: [
-                SizedBox(
-                  width: 60,
-                  child: TextFormField(
-                    controller: newQtntyItemController,
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Qnty',
+            Padding(
+              padding: const EdgeInsets.only(left: 25),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 70,
+                    child: TextFormField(
+                      controller: newQtntyItemController,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Qnty',
+                      ),
                     ),
                   ),
-                ),
-                SingleChildScrollView(
-                  controller: scrollController,
-                  scrollDirection: Axis.vertical,
-                  child: SizedBox(
-                    width: 190,
-                    child: CompositedTransformTarget(
-                      link: newLayerController,
-                      child: GestureDetector(
-                        onTap: () {
-                          scrollController.animateTo(
-                            scrollController.position.maxScrollExtent,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: TextFormField(
-                          controller: newItemController,
-                          focusNode: focusNode,
-                          decoration: const InputDecoration(
-                            border: UnderlineInputBorder(),
-                            labelText: 'Item',
+                  SingleChildScrollView(
+                    controller: scrollController,
+                    scrollDirection: Axis.vertical,
+                    child: SizedBox(
+                      width: 220,
+                      child: CompositedTransformTarget(
+                        link: newLayerController,
+                        child: GestureDetector(
+                          onTap: () {
+                            scrollController.animateTo(
+                              scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: TextFormField(
+                            controller: newItemController,
+                            focusNode: focusNode,
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              labelText: 'Item',
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.check),
-                  onPressed: () {
-                    closeTypingField();
-                  },
-                  padding: EdgeInsets.only(left: 25),
-                ),
-              ],
-            ),
+                  IconButton(
+                    icon: Icon(Icons.check),
+                    onPressed: () {
+                      closeTypingField();
+                    },
+                    padding: EdgeInsets.only(left: 25),
+                  ),
+                ],
+              ),
+            )
         ],
       ),
     );
@@ -219,7 +191,7 @@ class ShoppingCartView extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.check),
           onPressed: () {
-            closeTypingField(); 
+            closeTypingField();
           },
           padding: EdgeInsets.only(left: 25),
         ),
