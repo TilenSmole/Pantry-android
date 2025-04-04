@@ -1,4 +1,3 @@
-
 class ListItem {
   int id;
   bool checked;

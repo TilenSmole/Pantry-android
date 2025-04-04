@@ -4,12 +4,11 @@ import './API/warnings.dart' as API;
 
 class Warnings extends StatefulWidget {
   @override
-  _WarningsState createState() => _WarningsState();
+  WarningsState createState() => WarningsState();
 }
 
-class _WarningsState extends State<Warnings> {
+class WarningsState extends State<Warnings> {
   String? token;
-  Map<int, String> _storage = {};
   List<dynamic> warnings = [];
 
   Map<int, bool> taskSelection = {};

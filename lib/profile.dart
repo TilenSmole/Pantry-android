@@ -6,7 +6,6 @@ import 'dart:async';
 import 'Components/PROFILE/notes.dart';
 import 'Components/OTHER/item_add.dart';
 import 'Components/OTHER/filter_storage.dart';
-import 'Components/OTHER/warnings.dart';
 import 'Components/PROFILE/weekly.dart';
 import 'Components/PROFILE/analyser.dart';
 import 'Components/OTHER/API/warnings.dart' as WARNINGS_API;
@@ -15,10 +14,10 @@ import './Components/HELPERS/colors.dart';
 
 class Profile extends StatefulWidget {
   @override
-  _ProfileState createState() => _ProfileState();
+  ProfileState createState() => ProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class ProfileState extends State<Profile> {
   String? token;
   Map<String, dynamic> _user = {};
   List<dynamic> warnings = [];
@@ -87,7 +86,7 @@ class _ProfileState extends State<Profile> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "-> ${warning["amount"]} grams of ${warning["ingredient"]} left",
+                          "-> ${warning["amount"]} of ${warning["ingredient"]} left",
                           style: TextStyle(
                               fontSize: 17.0, color: Colors.redAccent),
                         ),

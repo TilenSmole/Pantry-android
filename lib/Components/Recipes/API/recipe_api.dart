@@ -3,7 +3,7 @@ import 'dart:convert';
 // For rootBundle
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../ShoppingList/API/shopping_cartAPI.dart' as shoppingCartAPI;
+import '../../ShoppingList/API/shopping_cart_api.dart' as shoppingCartAPI;
 
 Future<int?> addToSList(List ingredients, List amounts, String token) async { 
   try {
@@ -247,15 +247,6 @@ Future<int> editRecipe(
   int cookTime,
   String token,
 ) async {
-  Map<String, dynamic> recipe = {
-    'name': 'Unknown Recipe',
-    'ingredients': [], // Default to an empty list
-    'amounts': [], // Default to an empty list
-    'instructions': 'No instructions available',
-    'cook_time': '0', // Default cooking time
-    'prep_time': '0', // Default preparation time
-    'imageUrl': '', // Default to an empty string or placeholder image URL
-  };
   try {
     final response = await http.put(
       Uri.parse('http://192.168.1.8:5000/recipes/edit-recipe-mobile'),
@@ -285,7 +276,7 @@ Future<int> editRecipe(
   return -1;
 }
 
-Future<int> edit_cook_time(
+Future<int> editCookTime(
   int recipeId,
   int cookTime,
   String token,
@@ -313,7 +304,7 @@ Future<int> edit_cook_time(
   return -1;
 }
 
-Future<int> edit_prep_time(
+Future<int> editPrepTime(
   int recipeId,
   int prepTime,
   String token,

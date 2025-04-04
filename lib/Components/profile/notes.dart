@@ -1,22 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-// For rootBundle
 import '../load_token.dart' as load_token;
-import 'API/profileAPI.dart' as API;
-import '../HELPERS/addButton.dart';
-import '../HELPERS/customOverlay.dart';
+import 'API/profile_api.dart' as API;
+import '../HELPERS/add_button.dart';
+import '../HELPERS/custom_overlay.dart';
 import '../HELPERS/colors.dart';
 
 class Notes extends StatefulWidget {
   @override
-  _notesState createState() => _notesState();
+  NotesState createState() => NotesState();
 }
 
-class _notesState extends State<Notes> {
+class NotesState extends State<Notes> {
   String? token;
   List<Map<String, dynamic>> notes = [];
-  OverlayEntry? _overlayEntry;
-  LayerLink _newLayerController = LayerLink();
   TextEditingController _newNoteController = TextEditingController();
 
   List<bool> _checkedValues = [];
@@ -54,11 +51,6 @@ class _notesState extends State<Notes> {
     }
   }
 
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
   void addNote() async {
     await API.addNote(_newNoteController.text, token!);
     getNote();
@@ -69,7 +61,7 @@ class _notesState extends State<Notes> {
       print(_notesControllers[noteId]!.text);
       print(noteId);
 
-      var result =
+     
           await API.editNote(_notesControllers[noteId]!.text, noteId, token!);
 
       _checkedValues[index] = !_checkedValues[index];
@@ -80,7 +72,7 @@ class _notesState extends State<Notes> {
 
   void deleteNote(int index, var noteId) async {
     if (_notesControllers[noteId]!.text.isNotEmpty) {
-      var result =
+      
           API.editNote(_notesControllers[noteId]!.text, noteId, token!);
 
       _checkedValues[index] = !_checkedValues[index];

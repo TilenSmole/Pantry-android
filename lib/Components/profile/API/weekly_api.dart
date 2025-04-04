@@ -37,10 +37,10 @@ Future<List<dynamic>> fetchCostumRecipes(token, number) async {
   }
 
   print("Having to update the list!");
-  List<dynamic> Recipies =  await apiCall(token, number);
+  List<dynamic> recipes =  await apiCall(token, number);
   resetWeeklyLocal();
-  updateWeeklyLocal(Recipies);
-  return Recipies;
+  updateWeeklyLocal(recipes);
+  return recipes;
 }
 
 Future<List<dynamic>> apiCall(token, number) async {
@@ -59,7 +59,7 @@ try {
    if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
 
-        return data['Recipies'];
+        return data['recipes'];
       } else if (response.statusCode == 404) {
         
         return [];

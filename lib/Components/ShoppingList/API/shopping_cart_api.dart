@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 // For SocketException
 // For TimeoutException
-import '../../STORAGE/API/StorageAPI.dart' as storageAPI;
-import '../../../Classes/ListItem.dart';
+import '../../STORAGE/API/storage_api.dart' as storageAPI;
+import '../../../Classes/list_item.dart';
 
 
 
@@ -67,7 +67,7 @@ Future<void> bought(int itemID) async {
 Future<void> addStorageLocal(Map<String, dynamic> item) async {
   print(item);
    
-  List<dynamic> storage = await storageAPI.getStorageLocal() ?? [];
+  List<dynamic> storage = await storageAPI.getStorageLocal();
   storage.add(item);
     print(storage);
 

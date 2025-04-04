@@ -9,13 +9,13 @@ import '../HELPERS/colors.dart';
 
 class AddRecipe extends StatefulWidget {
   @override
-  _AddRecipeState createState() => _AddRecipeState();
+  AddRecipeState createState() => AddRecipeState();
 }
 
-class _AddRecipeState extends State<AddRecipe> {
+class AddRecipeState extends State<AddRecipe> {
   final TextEditingController _instructionsController = TextEditingController();
-  final TextEditingController _prep_timeController = TextEditingController();
-  final TextEditingController _cook_timeController = TextEditingController();
+  final TextEditingController _prepTimeController = TextEditingController();
+  final TextEditingController _cookTimeController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _recipeNameController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
@@ -171,8 +171,8 @@ class _AddRecipeState extends State<AddRecipe> {
           'ingredients': _selectedIngridients,
           'amounts': _selectedAmount,
           'instructions': _instructionsController.text,
-          'prep_time': _prep_timeController.text,
-          'cook_time': _cook_timeController.text
+          'prep_time': _prepTimeController.text,
+          'cook_time': _cookTimeController.text
         }),
       );
 
@@ -190,6 +190,7 @@ class _AddRecipeState extends State<AddRecipe> {
     } catch (e) {
       print('Error fetching recipes: $e');
     }
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MyApp()),
@@ -261,13 +262,13 @@ class _AddRecipeState extends State<AddRecipe> {
                         ))
                     .toList(),*/
                 TextFormField(
-                  controller: _prep_timeController,
+                  controller: _prepTimeController,
                   decoration: const InputDecoration(
                     labelText: 'Enter prep time',
                   ),
                 ),
                 TextFormField(
-                  controller: _cook_timeController,
+                  controller: _cookTimeController,
                   decoration: const InputDecoration(
                     labelText: 'Enter cook time',
                   ),

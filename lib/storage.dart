@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import './Components/load_ingredients.dart';
-import 'Components/SuggestionOverlay.dart';
+import 'Components/suggestion_overlay.dart';
 import './Components/Storage/API/StorageAPI.dart' as API;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'colors.dart';
-import './Components/HELPERS/CustomOverlay.dart';
-import './Components/HELPERS/getCategories.dart';
+import './Components/HELPERS/custom_overlay.dart';
+import 'Components/HELPERS/get_categories.dart';
 
 class Storage extends StatefulWidget {
   @override
@@ -21,30 +21,17 @@ class CreateStorageState extends State<Storage> {
   Map<String, TextEditingController> _controllersITM = {};
   Map<String, FocusNode> _focusNodesQTY = {};
   Map<String, FocusNode> _focusNodesITM = {};
-
-  Map<String, FocusNode> _focusNodesCTGY = {};
-  Map<String, TextEditingController> _controllersCTGY = {};
-
   List<String> suggestions = [];
   List<String> _filteredSuggestions = [];
   List<String> _allSuggestions = [];
   String selectedCategory = "";
-
   Map<String, LayerLink> _layerLinks = {};
   OverlayEntry? _overlayEntry;
   final FocusNode _focusNode = FocusNode();
   Map<String, bool> openClose = {};
-
-  //final LayerLink _AddItemLink = LayerLink();
-  final FocusNode _addCategoryFocusNode = FocusNode();
-
   final TextEditingController _ingredientController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-
-  final FocusNode _addAmountFocusNode = FocusNode();
-  final FocusNode _addIngredientFocusNode = FocusNode();
   List<String> categories = [];
-
   final TextEditingController _itemController = TextEditingController();
   final FocusNode _addItemFocusNode = FocusNode();
   var openText = true;
@@ -58,9 +45,7 @@ class CreateStorageState extends State<Storage> {
   void initState() {
     loadFood();
     super.initState();
-      fetchCategories();
-
-
+    fetchCategories();
 
     fetchStorage().then((_) {
       loadFridge();
@@ -91,8 +76,6 @@ class CreateStorageState extends State<Storage> {
         }
       }
     });
-
-  
   }
 
   Future<void> loadFood() async {
@@ -111,11 +94,11 @@ class CreateStorageState extends State<Storage> {
   }
 
   void _showAddItemOverlay() {
- CustomOverlay(
+    CustomOverlay(
       context: context,
       controllers: [_ingredientController, _amountController],
       onSave: addANewItem,
-      hintTexts : ["Enter ingredient", "Enter amount", "Enter category"],
+      hintTexts: ["Enter ingredient", "Enter amount", "Enter category"],
       title: "Add a New Storage Item",
       categories: categories,
     ).show();
@@ -233,8 +216,8 @@ class CreateStorageState extends State<Storage> {
     String? idItemStr = prefs.getString('idItem');
     int idItem = idItemStr != null ? int.parse(idItemStr) : 0;
 
-    var amount = _amountController.text ?? 'default';
-    var ingredient = _ingredientController.text ?? 'default';
+    var amount = _amountController.text;
+    var ingredient = _ingredientController.text;
     //  API.addANewItem(amount, ingredient, categories);
 
     final Map<String, dynamic> item = {
@@ -251,17 +234,18 @@ class CreateStorageState extends State<Storage> {
       selectedCategory = "";
       _removeOverlay();
       loadFridge();
-
     });
 
     // API.updateStorageLocal(_storage);
   }
-Future<void> fetchCategories() async {
-  List<String> fetchedCategories = await GetCategories.fetchCategories();
-  setState(() {
-    categories = fetchedCategories;
-  });
-}
+
+  Future<void> fetchCategories() async {
+    List<String> fetchedCategories = await GetCategories.fetchCategories();
+    setState(() {
+      categories = fetchedCategories;
+    });
+  }
+
   Future<void> loadFridge() async {
     _controllersQTY = {};
     _controllersITM = {};
@@ -373,15 +357,13 @@ Future<void> fetchCategories() async {
                                         BorderRadius.all(Radius.circular(15))),
                                 child: Column(children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10.0), 
+                                    padding: const EdgeInsets.only(top: 10.0),
                                     child: Text(
                                       category.toUpperCase(),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 25,
-                                                                        color: C.orange,
-
+                                        color: C.orange,
                                       ),
                                     ),
                                   ),
@@ -451,11 +433,8 @@ Future<void> fetchCategories() async {
                                                                   ),
                                                                 )
                                                               : Flexible(
-                                                                  child: Text(item[
-                                                                          "amount"] +
-                                                                      ": " +
-                                                                      item[
-                                                                          "ingredient"]),
+                                                                  child: Text(
+                                                                      "${item['amount']}: ${item['ingredient']}"),
                                                                 ),
                                                         ],
                                                       ),

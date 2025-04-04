@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import './API/item_add.dart' as API;
 import '../HELPERS/colors.dart';
-import '../HELPERS/getCategories.dart';
+import '../HELPERS/get_categories.dart';
 
 class FoodDetailScreen extends StatefulWidget {
   final Map<String, dynamic> food;
-  bool checked;
-  int index;
+  late final  bool checked;
+  late final  int index;
 
   FoodDetailScreen({
     super.key,
@@ -16,10 +16,10 @@ class FoodDetailScreen extends StatefulWidget {
   });
 
   @override
-  _FoodDetailScreenState createState() => _FoodDetailScreenState();
+  FoodDetailScreenState createState() => FoodDetailScreenState();
 }
 
-class _FoodDetailScreenState extends State<FoodDetailScreen> {
+class FoodDetailScreenState extends State<FoodDetailScreen> {
   List<String> categories = [];
   late TextEditingController _controllersWarning;
 
@@ -27,11 +27,17 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
   void initState() {
     super.initState();
     fetchCategories();
-    int warningValue = (widget.food["UserStorageDefaults"]?.isEmpty ?? true)
-        ? 0
-        : widget.food["UserStorageDefaults"]?[0]["warning"] ?? 0;
+
+    String warningRaw = (widget.food["UserStorageDefaults"]?.isEmpty ?? true)
+        ? "0"
+        : widget.food["UserStorageDefaults"]?[0]["warning"] ?? "0";
+
+    final numberMatch = RegExp(r'^(\d+(?:\.\d+)?)').firstMatch(warningRaw);
+    int warningValue =
+        numberMatch != null ? int.parse(numberMatch.group(1)!) : 0;
+
     _controllersWarning = TextEditingController(
-      text: warningValue > 0 ? warningValue.toString() : "",
+      text: warningValue > 0 ? warningRaw.toString() : "",
     );
   }
 
@@ -146,14 +152,13 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: 100, 
+                        width: 100,
                         child: TextFormField(
                           controller: _controllersWarning,
                           decoration: InputDecoration(
                             border: UnderlineInputBorder(),
                           ),
-                          textAlign: TextAlign
-                              .center,
+                          textAlign: TextAlign.center,
                         ),
                       ),
                       IconButton(

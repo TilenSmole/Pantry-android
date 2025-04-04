@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import './API/weeklyAPI.dart' as API;
+import 'API/weekly_api.dart' as API;
 import '../load_token.dart' as load_token;
-import '../RECIPES/API/recipeAPI.dart' as recipeAPI;
+import '../RECIPES/API/recipe_api.dart' as recipeAPI;
 import '/Components/RECIPES/recipie.dart';
 import '../HELPERS/colors.dart';
 
 class Weekly extends StatefulWidget {
   @override
-  _WeekyState createState() => _WeekyState();
+  WeekyState createState() => WeekyState();
 }
 
-class _WeekyState extends State<Weekly> {
+class WeekyState extends State<Weekly> {
   List<dynamic> _recipes = [];
-  List<dynamic> _DisplayRecipes = [];
+  List<dynamic> _displayRecipes = [];
   List<String> days = [
     "Monday",
     "Tuesday",
@@ -44,7 +44,7 @@ class _WeekyState extends State<Weekly> {
   Future<void> fetchCostumRecipes() async {
     _recipes = await API.fetchCostumRecipes(token, 7);
     setState(() {
-      _DisplayRecipes = _recipes;
+      _displayRecipes = _recipes;
       addedToSList = List.filled(_recipes.length, false);
     });
   }
@@ -52,15 +52,15 @@ class _WeekyState extends State<Weekly> {
   Future<void> replaceRecipe(position) async {
     var updatedRecipies = await API.replace(token, position);
     setState(() {
-      _DisplayRecipes = updatedRecipies;
+      _displayRecipes = updatedRecipies;
     });
   }
 
   Future<void> addAll() async {
-    for (var i = 0; i < _DisplayRecipes.length; i++) {
+    for (var i = 0; i < _displayRecipes.length; i++) {
       int? result = await recipeAPI.addToSList(
-          _DisplayRecipes[i]["ingredients"],
-          _DisplayRecipes[i]["amounts"],
+          _displayRecipes[i]["ingredients"],
+          _displayRecipes[i]["amounts"],
           token!);
       if (result == 0) {
         setState(() {
@@ -115,7 +115,7 @@ class _WeekyState extends State<Weekly> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: _DisplayRecipes.length,
+                      itemCount: _displayRecipes.length,
                       itemBuilder: (context, i) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -150,9 +150,9 @@ class _WeekyState extends State<Weekly> {
                                         onPressed: () async {
                                           int? result =
                                               await recipeAPI.addToSList(
-                                                  _DisplayRecipes[i]
+                                                  _displayRecipes[i]
                                                       ["ingredients"],
-                                                  _DisplayRecipes[i]["amounts"],
+                                                  _displayRecipes[i]["amounts"],
                                                   token!);
                                           if (result == 0) {
                                             setState(() {
@@ -182,13 +182,13 @@ class _WeekyState extends State<Weekly> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Recepie(
-                                        recipe: _DisplayRecipes[i],
+                                        recipe: _displayRecipes[i],
                                       ),
                                     ),
                                   );
                                 },
                                 child: Text(
-                                  _DisplayRecipes[i]["name"] ?? "Unknown",
+                                  _displayRecipes[i]["name"] ?? "Unknown",
                                   style: TextStyle(fontSize: 16),
                                 ),
                               ),

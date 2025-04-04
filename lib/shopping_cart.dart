@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart'; // For rootBundle
-import 'Components/ShoppingList/API/shopping_cartAPI.dart' as API;
+import 'Components/ShoppingList/API/shopping_cart_api.dart' as API;
 import './Components/SHOPPING_CART/shopping_list_tab.dart';
-import '../../../Classes/ListItem.dart';
+import 'Classes/list_item.dart';
 import 'colors.dart';
 
 class ShoppingCart extends StatefulWidget {
@@ -14,7 +14,6 @@ class ShoppingCart extends StatefulWidget {
 class CreateShoppingCartState extends State<ShoppingCart> {
   List<ListItem> shoppingCart = [];
   LayerLink _newLayerController = LayerLink();
-  LayerLink _newLayerController2 = LayerLink();
 
   TextEditingController _newItemController = TextEditingController();
   TextEditingController _newQtntyItemController = TextEditingController();
@@ -30,7 +29,6 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   String? token;
   OverlayEntry? _overlayEntry;
   Map<int, LayerLink> _layerLinks = {};
-  Map<int, LayerLink> _layerLinks2 = {};
 
   late ScrollController _scrollController;
   @override
@@ -276,7 +274,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   void _updateSuggestions2() {
     print("Updating suggestions");
     setState(() {
-      String inputText = _newItemController.text.toLowerCase() ?? '';
+      String inputText = _newItemController.text.toLowerCase();
       if (inputText.isEmpty) {
         _filteredSuggestions = [];
       } else {

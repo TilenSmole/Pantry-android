@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import '../load_ingredients.dart';
 import '../../colors.dart';
 
-class selectCriteria extends StatefulWidget {
+class SelectCriteria extends StatefulWidget {
   @override
-  _selectCriteriaState createState() => _selectCriteriaState();
+  SelectCriteriaState createState() => SelectCriteriaState();
 }
 
-class _selectCriteriaState extends State<selectCriteria> {
+class SelectCriteriaState extends State<SelectCriteria> {
   List<String> _allSuggestions = [];
   List<bool> _checkedValues = [];
   static List<String> _selectedValues = [];

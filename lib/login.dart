@@ -8,10 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  LoginState createState() => LoginState();
 } 
 
-class _LoginState extends State<Login> {
+class LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final storage = FlutterSecureStorage();
@@ -39,6 +39,7 @@ class _LoginState extends State<Login> {
         // Save the token using flutter_secure_storage
         await storage.write(key: 'jwt_token', value: token);
         print('Token saved successfully');
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MyHomePage()),

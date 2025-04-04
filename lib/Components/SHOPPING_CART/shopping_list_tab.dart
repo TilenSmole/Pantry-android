@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../Classes/ListItem.dart';
+import '../../Classes/list_item.dart';
 
 // ignore: must_be_immutable
 class ShoppingCartView extends StatelessWidget {
@@ -161,41 +161,6 @@ class ShoppingCartView extends StatelessWidget {
             )
         ],
       ),
-    );
-  }
-
-  Widget _buildNewItemInputs() {
-    return Row(
-      children: [
-        SizedBox(
-          width: 60,
-          child: TextFormField(
-            controller: newQtntyItemController,
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Qnty',
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 190,
-          child: TextFormField(
-            controller: newItemController,
-            focusNode: focusNode,
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Item',
-            ),
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.check),
-          onPressed: () {
-            closeTypingField();
-          },
-          padding: EdgeInsets.only(left: 25),
-        ),
-      ],
     );
   }
 

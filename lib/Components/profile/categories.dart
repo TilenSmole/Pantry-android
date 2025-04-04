@@ -4,18 +4,17 @@ import 'package:flutter/material.dart';
 import '../load_token.dart' as load_token;
 import 'API/categories.dart' as API;
 import '../../colors.dart';
-import '../HELPERS/addButton.dart';
-import '../HELPERS/customOverlay.dart';
+import '../HELPERS/add_button.dart';
+import '../HELPERS/custom_overlay.dart';
 
 class Categories extends StatefulWidget {
   @override
-  _categoriesState createState() => _categoriesState();
+  CategoriesState createState() => CategoriesState();
 }
 
-class _categoriesState extends State<Categories> {
+class CategoriesState extends State<Categories> {
   String? token;
   List<dynamic> categories = [];
-  OverlayEntry? _overlayEntry;
   TextEditingController _newCategoryController = TextEditingController();
 
   List<bool> _checkedValues = [];
@@ -52,13 +51,6 @@ class _categoriesState extends State<Categories> {
 
     print(categories);
   }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
- 
 
   void addCategory() async {
     await API.addCategory(_newCategoryController.text, token!);

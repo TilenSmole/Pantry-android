@@ -1,13 +1,14 @@
 import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:flutter/material.dart';
-import 'API/recipeAPI.dart' as API;
+import 'API/recipe_api.dart' as API;
 import '../load_token.dart' as load_token;
 import '../../colors.dart';
 
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import '../HELPERS/CustomOverlay.dart';
+import '../HELPERS/custom_overlay.dart';
 
+// ignore: must_be_immutable
 class Recepie extends StatefulWidget {
   Map<String, dynamic> recipe = {
     'name': 'Unknown Recipe',
@@ -20,6 +21,7 @@ class Recepie extends StatefulWidget {
   };
   Recepie({Key? key, required this.recipe}) : super(key: key);
   @override
+  // ignore: no_logic_in_create_state
   State<StatefulWidget> createState() => RecepieState(recipe);
 }
 
@@ -31,7 +33,6 @@ class RecepieState extends State<Recepie> {
   OverlayEntry? _overlayEntry;
 
   final FocusNode _addNotefocusNode = FocusNode();
-  final LayerLink _addNotelayerLink = LayerLink();
   final TextEditingController _addNoteController = TextEditingController();
   bool openAddNewNote = false;
   bool editNote = false;
@@ -49,7 +50,6 @@ class RecepieState extends State<Recepie> {
   Map<int, String> _selectedAmounts = {};
   Map<int, String> _selectedIngredients = {};
   Map<int, TextEditingController> _amountsController = {};
-  Map<int, FocusNode> _amountsFocusNode = {};
   bool canEditSelect = false;
 
   //freeze
@@ -179,9 +179,9 @@ class RecepieState extends State<Recepie> {
                 child: pw.Column(
                   children: [
                     for (var i = 0; i < recipe["ingredients"].length; i++)
-                      pw.Text(recipe["amounts"][i] +
-                          " " +
-                          recipe["ingredients"][i]),
+                      pw.Text(
+                        "${recipe["amounts"][i] ?? ''} ${recipe["ingredients"][i] ?? ''}",
+                      ),
                   ],
                 ),
               ),
@@ -234,7 +234,7 @@ class RecepieState extends State<Recepie> {
   }
 
   void updatePrepTime() async {
-    var result = await API.edit_prep_time(
+    var result = await API.editPrepTime(
       recipe["id"],
       int.parse(_prepTimeController.text),
       token!,
@@ -248,7 +248,7 @@ class RecepieState extends State<Recepie> {
   }
 
   void updateCookTime() async {
-    var result = await API.edit_cook_time(
+    var result = await API.editCookTime(
         recipe["id"], int.parse(_cookTimeController.text), token!);
     if (result == 0) {
       setState(() {
@@ -284,191 +284,187 @@ class RecepieState extends State<Recepie> {
         width: MediaQuery.of(context).size.width / 1.5,
         top: MediaQuery.of(context).size.height / 3.5,
         left: MediaQuery.of(context).size.width / 6,
-        child: Container(
-          child: Material(
-            elevation: 4.0,
-            color: Colors
-                .transparent, // Make Material's color transparent so that the Container's background color is visible
-            child: Container(
-              height: 400,
-              decoration: BoxDecoration(
-                color: Colors.white, // Background color of the Container
-                borderRadius: BorderRadius.circular(16.0), // Rounded corners
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(top: 20.0, left: 20, right: 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          Text("NOTES"),
-                          Spacer(),
-                          !openAddNewNote
-                              ? Row(
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(!editNote
-                                          ? Icons.edit
-                                          : Icons.edit_note),
-                                      onPressed: () {
-                                        setState(() {
-                                          editNote = !editNote;
-                                          _changeOverlay(false);
-                                        });
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.add),
-                                      onPressed: () {
-                                        setState(() {
-                                          _changeOverlay(true);
-                                        });
-                                      },
-                                    )
-                                  ],
-                                )
-                              : Container(),
-                          IconButton(
-                            icon: Icon(Icons.close),
-                            onPressed: () {
-                              setState(() {
-                                _removeOverlay();
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      if (!openAddNewNote && notes != null) ...[
-                        if (editNote)
-                          ListView.builder(
-                              shrinkWrap: true,
-                              physics:
-                                  NeverScrollableScrollPhysics(), // Disable scrolling inside a scrollable parent
-                              itemCount: notes!.length,
-                              itemBuilder: (context, index) {
-                                final note = notes![index];
-                                return Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 200,
-                                      child: ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        title: TextFormField(
-                                          controller:
-                                              _notesController[note['id']],
-                                          focusNode:
-                                              _notesFocusNode[note['id']],
-                                          decoration: InputDecoration(
-                                            border: UnderlineInputBorder(),
-                                          ),
-                                          maxLines:
-                                              null, // Allows the TextFormField to expand vertically
-                                          keyboardType: TextInputType.multiline,
+        child: Material(
+          elevation: 4.0,
+          color: Colors
+              .transparent, // Make Material's color transparent so that the Container's background color is visible
+          child: Container(
+            height: 400,
+            decoration: BoxDecoration(
+              color: Colors.white, // Background color of the Container
+              borderRadius: BorderRadius.circular(16.0), // Rounded corners
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Text("NOTES"),
+                        Spacer(),
+                        !openAddNewNote
+                            ? Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(!editNote
+                                        ? Icons.edit
+                                        : Icons.edit_note),
+                                    onPressed: () {
+                                      setState(() {
+                                        editNote = !editNote;
+                                        _changeOverlay(false);
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.add),
+                                    onPressed: () {
+                                      setState(() {
+                                        _changeOverlay(true);
+                                      });
+                                    },
+                                  )
+                                ],
+                              )
+                            : Container(),
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              _removeOverlay();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    if (!openAddNewNote && notes != null) ...[
+                      if (editNote)
+                        ListView.builder(
+                            shrinkWrap: true,
+                            physics:
+                                NeverScrollableScrollPhysics(), // Disable scrolling inside a scrollable parent
+                            itemCount: notes!.length,
+                            itemBuilder: (context, index) {
+                              final note = notes![index];
+                              return Column(
+                                children: [
+                                  SizedBox(
+                                    height: 200,
+                                    child: ListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      title: TextFormField(
+                                        controller:
+                                            _notesController[note['id']],
+                                        focusNode: _notesFocusNode[note['id']],
+                                        decoration: InputDecoration(
+                                          border: UnderlineInputBorder(),
                                         ),
+                                        maxLines:
+                                            null, // Allows the TextFormField to expand vertically
+                                        keyboardType: TextInputType.multiline,
                                       ),
                                     ),
-                                    IconButton(
-                                      icon: Icon(Icons.delete),
-                                      onPressed: () async {
-                                        notes = await API.deleteNote(
-                                            note["id"], recipe["id"], token!);
-                                        _addNoteController.text = "";
-                                        _changeOverlay(false);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.check),
-                                      onPressed: () async {
-                                        notes = await API.editNote(
-                                            _notesController[note["id"]]!.text,
-                                            recipe["id"],
-                                            note['id'],
-                                            token!);
-                                        _addNoteController.text = "";
-                                        _changeOverlay(false);
-                                        print("object");
-                                      },
-                                    ),
-                                  ],
-                                );
-                              })
-                        else
-                          for (var note in notes!)
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  editNote
-                                      ? Column()
-                                      : Column(
-                                          children: [
-                                            Text(
-                                              note["note"],
-                                              style: TextStyle(fontSize: 16),
-                                            ),
-                                            Text(
-                                              "-----------------------------",
-                                            ),
-                                          ],
-                                        ),
-                                ],
-                              ),
-                            ),
-                      ] else
-                        Flexible(
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                width: 200,
-                                height: 200,
-                                child: TextFormField(
-                                  controller: _addNoteController,
-                                  focusNode: _addNotefocusNode,
-                                  decoration: InputDecoration(
-                                    hintText: 'Enter your note',
-                                    border: OutlineInputBorder(),
                                   ),
-                                  maxLines: 5,
-                                  minLines: 1,
-                                  keyboardType: TextInputType.multiline,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20, right: 20),
-                                    child: IconButton(
-                                      icon: Icon(Icons.close),
-                                      onPressed: () {
-                                        _changeOverlay(false);
-                                      },
-                                      padding: EdgeInsets.all(25),
-                                    ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () async {
+                                      notes = await API.deleteNote(
+                                          note["id"], recipe["id"], token!);
+                                      _addNoteController.text = "";
+                                      _changeOverlay(false);
+                                    },
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.check),
                                     onPressed: () async {
-                                      notes = await API.addNote(
-                                          _addNoteController.text,
+                                      notes = await API.editNote(
+                                          _notesController[note["id"]]!.text,
                                           recipe["id"],
+                                          note['id'],
                                           token!);
                                       _addNoteController.text = "";
                                       _changeOverlay(false);
+                                      print("object");
+                                    },
+                                  ),
+                                ],
+                              );
+                            })
+                      else
+                        for (var note in notes!)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                editNote
+                                    ? Column()
+                                    : Column(
+                                        children: [
+                                          Text(
+                                            note["note"],
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
+                                            "-----------------------------",
+                                          ),
+                                        ],
+                                      ),
+                              ],
+                            ),
+                          ),
+                    ] else
+                      Flexible(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              width: 200,
+                              height: 200,
+                              child: TextFormField(
+                                controller: _addNoteController,
+                                focusNode: _addNotefocusNode,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter your note',
+                                  border: OutlineInputBorder(),
+                                ),
+                                maxLines: 5,
+                                minLines: 1,
+                                keyboardType: TextInputType.multiline,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20, right: 20),
+                                  child: IconButton(
+                                    icon: Icon(Icons.close),
+                                    onPressed: () {
+                                      _changeOverlay(false);
                                     },
                                     padding: EdgeInsets.all(25),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.check),
+                                  onPressed: () async {
+                                    notes = await API.addNote(
+                                        _addNoteController.text,
+                                        recipe["id"],
+                                        token!);
+                                    _addNoteController.text = "";
+                                    _changeOverlay(false);
+                                  },
+                                  padding: EdgeInsets.all(25),
+                                )
+                              ],
+                            ),
+                          ],
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -588,7 +584,6 @@ class RecepieState extends State<Recepie> {
                       // Iterating over the map using for-in
                       for (var entry in _selectedAmounts.entries) {
                         var key = entry.key;
-                        var value = entry.value;
 
                         amounts.add(_selectedAmounts[key]!);
                         ingredients.add(_selectedIngredients[key]!);
@@ -809,7 +804,6 @@ class RecepieState extends State<Recepie> {
                                     shrinkWrap: true,
                                     itemCount: recipe["ingredients"].length,
                                     itemBuilder: (context, index) {
-                                      final item = recipe["ingredients"][index];
                                       return ListTile(
                                         title: Row(
                                           children: [
@@ -959,11 +953,11 @@ class IngredientsSection extends StatelessWidget {
   }
 }
 
-class editIngredientsSection extends StatelessWidget {
+class EditIngredientsSection extends StatelessWidget {
   final List<dynamic> ingredients;
   final List<dynamic> amounts;
 
-  editIngredientsSection({required this.ingredients, required this.amounts});
+  EditIngredientsSection({required this.ingredients, required this.amounts});
 
   @override
   Widget build(BuildContext context) {

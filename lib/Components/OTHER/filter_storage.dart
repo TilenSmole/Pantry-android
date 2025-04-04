@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import './API/item_add.dart' as API;
-import './FoodDetailScreen.dart';
+import 'food_detail_screen.dart';
 import '../HELPERS/colors.dart';
 
 class FilterStorage extends StatefulWidget {
   @override
-  _FilterStorageState createState() => _FilterStorageState();
+  FilterStorageState createState() => FilterStorageState();
 }
 
-class _FilterStorageState extends State<FilterStorage> {
+class FilterStorageState extends State<FilterStorage> {
   String? token;
   Map<int, dynamic> _storage = {};
-  List<dynamic> _disallow_storage = [];
+  List<dynamic> _disallowStorage = [];
   Map<int, bool> taskSelection = {};
   bool enableOnlyStorageSaving = false;
   bool isLoading = true;
@@ -38,13 +38,13 @@ class _FilterStorageState extends State<FilterStorage> {
 
     setState(() {
       _storage = fetchedItems;
-      _disallow_storage = fetchedDisallowed;
+      _disallowStorage = fetchedDisallowed;
       enableOnlyStorageSaving = enableOnlyStorageSavingCall;
 
       taskSelection = Map.fromIterable(
         _storage.keys,
         value: (id) {
-          return _disallow_storage
+          return _disallowStorage
               .any((disallowedItem) => disallowedItem['disallowedId'] == id);
         },
       );

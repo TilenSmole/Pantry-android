@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 // For rootBundle
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> addCategory(String category, String token) async {
   try {
-    final response = await http.post(
+     await http.post(
       Uri.parse('http://192.168.1.8:5000/storage/add-category'),
       headers: {
         'Authorization': 'Bearer $token',
@@ -53,7 +52,7 @@ Future<List<dynamic>?> deleteCategorye(int noteId, String token) async {
 Future<void> editCategory(
     String category, int categoryID, String token) async {
   try {
-    final response = await http.put(
+    await http.put(
       Uri.parse('http://192.168.1.8:5000/storage/update-category'),
       headers: {
         'Authorization': 'Bearer $token',

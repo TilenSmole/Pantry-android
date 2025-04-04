@@ -26,7 +26,7 @@ class CustomOverlay {
           Positioned.fill(
             child: GestureDetector(
               onTap: hide,
-              child: Container(color: Colors.black.withOpacity(0.5)),
+              child: Container(color: Colors.black),
             ),
           ),
           Positioned(

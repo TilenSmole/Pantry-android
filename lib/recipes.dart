@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'Components/RECIPES/recipie.dart';
 import 'Components/RECIPES/add_recipe.dart';
-import 'Components/RECIPES/selectCriteria.dart';
-import 'Components/RECIPES/API/recipes.API.dart' as API;
+import 'Components/RECIPES/select_criteria.dart';
+import 'Components/RECIPES/API/recipes_api.dart' as API;
 import 'colors.dart';
 
 class Recipies extends StatefulWidget {
   @override
-  _RecipiesState createState() => _RecipiesState();
+  RecipiesState createState() => RecipiesState();
 }
 
-class _RecipiesState extends State<Recipies> {
+class RecipiesState extends State<Recipies> {
   List<dynamic> _recipes = [];
-  List<dynamic> _DisplayRecipes = [];
+  List<dynamic> _displayRecipes = [];
 
   static List<String> _selectedValues = [];
 
@@ -30,12 +30,12 @@ class _RecipiesState extends State<Recipies> {
     print("Updating suggestions");
     setState(() {
       String inputText = _searchController.text.toLowerCase();
-      _DisplayRecipes = [];
+      _displayRecipes = [];
 
       if (inputText.isEmpty) {
-        _DisplayRecipes = _recipes;
+        _displayRecipes = _recipes;
       } else {
-        _DisplayRecipes = _recipes
+        _displayRecipes = _recipes
             .where((recipe) =>
                 recipe["name"].toLowerCase().contains(inputText.toLowerCase()))
             .toList();
@@ -43,8 +43,8 @@ class _RecipiesState extends State<Recipies> {
         for (var recipe in _recipes) {
           for (var ingredient in recipe["ingredients"]) {
             if (ingredient.toLowerCase().contains(inputText..toLowerCase())) {
-              if (!_DisplayRecipes.contains(recipe)) {
-                _DisplayRecipes.add(recipe);
+              if (!_displayRecipes.contains(recipe)) {
+                _displayRecipes.add(recipe);
               }
             }
           }
@@ -56,13 +56,13 @@ class _RecipiesState extends State<Recipies> {
 
   void _updateSuggestionsIngredients() {
     print("Updating _updateSuggestionsIngredients");
-    _DisplayRecipes = [];
+    _displayRecipes = [];
     for (var item in _selectedValues) {
       for (var recipe in _recipes) {
         for (var ingredient in recipe["ingredients"]) {
           if (item.toLowerCase() == ingredient.toLowerCase()) {
-            if (!_DisplayRecipes.contains(recipe)) {
-              _DisplayRecipes.add(recipe);
+            if (!_displayRecipes.contains(recipe)) {
+              _displayRecipes.add(recipe);
             }
           }
         }
@@ -74,7 +74,7 @@ class _RecipiesState extends State<Recipies> {
     _recipes = await API.fetchRecipes(); //API.getStorageLocal();//s
 
     setState(() {
-      _DisplayRecipes = _recipes;
+      _displayRecipes = _recipes;
     });
   }
 
@@ -110,7 +110,7 @@ class _RecipiesState extends State<Recipies> {
                           final result = await Navigator.push<List<String>>(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => selectCriteria()),
+                                builder: (context) => SelectCriteria()),
                           );
 
                           if (result != null) {
@@ -133,7 +133,7 @@ class _RecipiesState extends State<Recipies> {
                         ),
                         onPressed: () {
                           setState(() {
-                            _DisplayRecipes = _recipes;
+                            _displayRecipes = _recipes;
                             _searchController.text = "";
                             _searchFocusNode.unfocus();
                             _selectedValues = [];
@@ -150,7 +150,7 @@ class _RecipiesState extends State<Recipies> {
                     child: GridView.count(
                       crossAxisCount: 3,
                       children: <Widget>[
-                        for (var recipe in _DisplayRecipes)
+                        for (var recipe in _displayRecipes)
                           InkWell(
                               onTap: () {
                                 Navigator.push(

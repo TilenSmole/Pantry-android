@@ -6,10 +6,10 @@ import '../HELPERS/colors.dart';
 
 class Analyser extends StatefulWidget {
   @override
-  _AnalyserState createState() => _AnalyserState();
+  AnalyserState createState() => AnalyserState();
 }
 
-class _AnalyserState extends State<Analyser> {
+class AnalyserState extends State<Analyser> {
   List _recipes = [];
   List _storage = [];
   Map<int, String> _analyse = {};

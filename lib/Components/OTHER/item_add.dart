@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 // For rootBundle
 import './API/item_add.dart' as API;
 import '../HELPERS/colors.dart';
-import '../HELPERS/inputField.dart';
+import '../HELPERS/input_field.dart';
 
 class AddItem extends StatefulWidget {
   @override
-  _addItemState createState() => _addItemState();
+  AddItemState createState() => AddItemState();
 }
 
-class _addItemState extends State<AddItem> {
+class AddItemState extends State<AddItem> {
   String? token;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _carbonsController = TextEditingController();
@@ -91,7 +91,7 @@ class _addItemState extends State<AddItem> {
                       Checkbox(
                         tristate: true,
                         value: isVegetarian,
-                        onChanged: (bool) {
+                        onChanged: (bool? value) {
                           setState(() {
                             isVegetarian = !isVegetarian;
                           });
@@ -108,7 +108,7 @@ class _addItemState extends State<AddItem> {
                       Checkbox(
                         tristate: true,
                         value: isVegan,
-                        onChanged: (bool) {
+                        onChanged: (bool? value) {
                           setState(() {
                             isVegan = !isVegan;
                           });

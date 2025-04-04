@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile.dart' as profile;
-import 'recipies.dart';
+import 'recipes.dart';
 import 'shopping_cart.dart';
 import 'storage.dart';
 import 'colors.dart';
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            padding:  EdgeInsets.symmetric(horizontal: 30.0),
             child: Icon(Icons.shopping_cart),
           ),
           label: 'List',
