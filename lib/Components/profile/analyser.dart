@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../Recipes/API/recipes.API.dart' as API;
-import '../Storage/API/StorageAPI.dart' as StorageAPI;
+import '../Recipes/API/recipes_api.dart' as API;
+import '../Storage/API/storage_api.dart' as StorageAPI;
 import '../Recipes/recipie.dart';
 import '../HELPERS/colors.dart';
 

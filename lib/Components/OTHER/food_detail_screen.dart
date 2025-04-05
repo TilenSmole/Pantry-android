@@ -22,11 +22,24 @@ class FoodDetailScreen extends StatefulWidget {
 class FoodDetailScreenState extends State<FoodDetailScreen> {
   List<String> categories = [];
   late TextEditingController _controllersWarning;
+String selectedDropdownValue = "Default";
 
   @override
   void initState() {
     super.initState();
     fetchCategories();
+
+final userStorageDefaults = widget.food["UserStorageDefaults"];
+if (userStorageDefaults is List &&
+    userStorageDefaults.isNotEmpty &&
+    userStorageDefaults[0]["defaultStorageCategory"] != null) {
+  selectedDropdownValue =
+      userStorageDefaults[0]["defaultStorageCategory"].toString();
+}
+if (!categories.contains(selectedDropdownValue)) {
+  selectedDropdownValue = categories.firstOrNull ?? "Default";
+}
+
 
     String warningRaw = (widget.food["UserStorageDefaults"]?.isEmpty ?? true)
         ? "0"
@@ -105,21 +118,13 @@ class FoodDetailScreenState extends State<FoodDetailScreen> {
                   _buildNutritionInfo("Is Vegetarian",
                       widget.food["isVegetarian"] ? "Yes" : "No"),
                   SizedBox(height: 20),
-                  _buildNutritionInfo(
-                    "Default storage:",
-                    widget.food["UserStorageDefaults"]?.isEmpty == true
-                        ? "Default"
-                        : widget.food["UserStorageDefaults"]?[0]
-                                    ["defaultStorageCategory"]
-                                ?.toString() ??
-                            "Default",
-                  ),
                   Text(
                     "Set default location storage:",
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   DropdownButton<String>(
                     dropdownColor: C.darkGrey,
+                    value: selectedDropdownValue,
                     items: categories.map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -137,6 +142,7 @@ class FoodDetailScreenState extends State<FoodDetailScreen> {
                           setState(() {
                             widget.food["UserStorageDefaults"]?[0]
                                 ["defaultStorageCategory"] = newValue;
+                                selectedDropdownValue = newValue;
                           });
                         }
                       }

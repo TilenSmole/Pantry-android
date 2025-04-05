@@ -29,6 +29,7 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   String? token;
   OverlayEntry? _overlayEntry;
   Map<int, LayerLink> _layerLinks = {};
+  bool isLoading = false;
 
   late ScrollController _scrollController;
   @override
@@ -292,9 +293,20 @@ class CreateShoppingCartState extends State<ShoppingCart> {
   }
 
   Future<void> uploadItem() async {
-    print('Adding New Item');
-    API.uploadItem(_newQtntyItemController.text, _newItemController.text);
-    shoppingCart = await API.getItems();
+
+setState(() {
+      isLoading = true; 
+    });
+  
+    await API.uploadItem(_newQtntyItemController.text, _newItemController.text);
+
+    await getItems();
+
+    setState(() {
+      isLoading = false; 
+    });
+
+
   }
 
   void openInputTypingField() {
@@ -319,13 +331,22 @@ class CreateShoppingCartState extends State<ShoppingCart> {
       shoppingCart.removeAt(index);
       _controllersQTY.remove(index);
       _controllersITM.remove(index);
-    });
+    }); 
     API.delete(itemID);
   }
 
   Future<void> bought(itemID, index) async {
-    API.bought(itemID);
-    getItems();
+    setState(() {
+      isLoading = true; 
+    });
+
+    await API.bought(itemID);
+
+    await getItems();
+
+    setState(() {
+      isLoading = false; 
+    });
   }
 
   @override
@@ -341,54 +362,69 @@ class CreateShoppingCartState extends State<ShoppingCart> {
                   Tab(text: "SHOPPING LIST"),
                   Tab(text: "PREV. BOUGHT"),
                 ],
-                indicatorColor: C.orange, 
-                labelColor: C.orange, 
+                indicatorColor: C.orange,
+                labelColor: C.orange,
                 unselectedLabelColor: Colors.grey,
               ),
             ),
           ),
-          body: TabBarView(
+          body: Stack(
             children: [
-              ShoppingCartView(
-                  shoppingCart: shoppingCart,
-                  openText: openText,
-                  openInput: openInput,
-                  newQtntyItemController: _newQtntyItemController,
-                  newItemController: _newItemController,
-                  scrollController: _scrollController,
-                  focusNode: _focusNode,
-                  openInputTypingField: openInputTypingField,
-                  closeTypingField: closeTypingField,
-                  bought: bought,
-                  delete: delete,
-                  name: "SHOPPING CART",
-                  checked: false,
-                  controllersQTY: _controllersQTY,
-                  controllersITM: _controllersITM,
-                  focusNodesITM: _focusNodesITM,
-                  focusNodesQTY: _focusNodesQTY,
-                  layerLinks: _layerLinks,
-                  newLayerController: _newLayerController),
-              ShoppingCartView(
-                  shoppingCart: shoppingCart,
-                  openText: openText,
-                  openInput: openInput,
-                  newQtntyItemController: _newQtntyItemController,
-                  newItemController: _newItemController,
-                  scrollController: _scrollController,
-                  focusNode: _focusNode,
-                  openInputTypingField: openInputTypingField,
-                  closeTypingField: closeTypingField,
-                  bought: bought,
-                  delete: delete,
-                  name: "PREVIOUSLY BOUGHT",
-                  checked: true,
-                  controllersQTY: _controllersQTY,
-                  controllersITM: _controllersITM,
-                  focusNodesITM: _focusNodesITM,
-                  focusNodesQTY: _focusNodesQTY,
-                  layerLinks: _layerLinks,
-                  newLayerController: _newLayerController),
+              TabBarView(
+                children: [
+                  ShoppingCartView(
+                    shoppingCart: shoppingCart,
+                    openText: openText,
+                    openInput: openInput,
+                    newQtntyItemController: _newQtntyItemController,
+                    newItemController: _newItemController,
+                    scrollController: _scrollController,
+                    focusNode: _focusNode,
+                    openInputTypingField: openInputTypingField,
+                    closeTypingField: closeTypingField,
+                    bought: bought,
+                    delete: delete,
+                    name: "SHOPPING CART",
+                    checked: false,
+                    controllersQTY: _controllersQTY,
+                    controllersITM: _controllersITM,
+                    focusNodesITM: _focusNodesITM,
+                    focusNodesQTY: _focusNodesQTY,
+                    layerLinks: _layerLinks,
+                    newLayerController: _newLayerController,
+                  ),
+                  ShoppingCartView(
+                    shoppingCart: shoppingCart,
+                    openText: openText,
+                    openInput: openInput,
+                    newQtntyItemController: _newQtntyItemController,
+                    newItemController: _newItemController,
+                    scrollController: _scrollController,
+                    focusNode: _focusNode,
+                    openInputTypingField: openInputTypingField,
+                    closeTypingField: closeTypingField,
+                    bought: bought,
+                    delete: delete,
+                    name: "PREVIOUSLY BOUGHT",
+                    checked: true,
+                    controllersQTY: _controllersQTY,
+                    controllersITM: _controllersITM,
+                    focusNodesITM: _focusNodesITM,
+                    focusNodesQTY: _focusNodesQTY,
+                    layerLinks: _layerLinks,
+                    newLayerController: _newLayerController,
+                  ),
+                ],
+              ),
+
+              if (isLoading)
+                Container(
+                  color:
+                      Colors.black.withOpacity(0.5), 
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
             ],
           ),
         ));

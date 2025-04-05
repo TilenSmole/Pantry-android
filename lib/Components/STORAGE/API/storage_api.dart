@@ -129,7 +129,7 @@ Future<void> updateItem(int itemID, String amount, ingredient) async {
 }
 
 Future<void> addANewItem(
-    String amount, String ingredient, List categories) async {
+    String amount, String ingredient, String category) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
   try {
@@ -140,7 +140,7 @@ Future<void> addANewItem(
         'Content-Type': 'application/json'
       },
       body: jsonEncode(
-          {'amount': amount, 'ingredient': ingredient, "category": categories}),
+          {'amount': amount, 'ingredient': ingredient, "category": category}),
     );
     if (response.statusCode == 404) {
       await prefs.setBool('isSyncedItems', false);

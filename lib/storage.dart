@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pantry_app/Components/STORAGE/add_item.dart';
 import './Components/load_ingredients.dart';
 import 'Components/suggestion_overlay.dart';
-import './Components/Storage/API/StorageAPI.dart' as API;
-import 'package:shared_preferences/shared_preferences.dart';
+import './Components/Storage/API/storage_api.dart' as API;
 import 'colors.dart';
-import './Components/HELPERS/custom_overlay.dart';
 import 'Components/HELPERS/get_categories.dart';
+import 'Components/HELPERS/confirm_delete.dart';
 
 class Storage extends StatefulWidget {
   @override
@@ -30,7 +30,6 @@ class CreateStorageState extends State<Storage> {
   final FocusNode _focusNode = FocusNode();
   Map<String, bool> openClose = {};
   final TextEditingController _ingredientController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
   List<String> categories = [];
   final TextEditingController _itemController = TextEditingController();
   final FocusNode _addItemFocusNode = FocusNode();
@@ -93,16 +92,6 @@ class CreateStorageState extends State<Storage> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void _showAddItemOverlay() {
-    CustomOverlay(
-      context: context,
-      controllers: [_ingredientController, _amountController],
-      onSave: addANewItem,
-      hintTexts: ["Enter ingredient", "Enter amount", "Enter category"],
-      title: "Add a New Storage Item",
-      categories: categories,
-    ).show();
-  }
 
   OverlayEntry _createOverlayEntry(String mapId, int itemId) {
     if (!_layerLinks.containsKey(mapId)) {
@@ -211,33 +200,7 @@ class CreateStorageState extends State<Storage> {
     // API.updateStorageLocal(_storage);
   }
 
-  Future<void> addANewItem() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? idItemStr = prefs.getString('idItem');
-    int idItem = idItemStr != null ? int.parse(idItemStr) : 0;
-
-    var amount = _amountController.text;
-    var ingredient = _ingredientController.text;
-    //  API.addANewItem(amount, ingredient, categories);
-
-    final Map<String, dynamic> item = {
-      'id': idItem - 1,
-      'amount': amount,
-      'ingredient': ingredient,
-      'category': selectedCategory,
-      'userId': 1,
-    };
-    await prefs.setString('idItem', (idItem - 1).toString());
-
-    setState(() {
-      _storage.add(item);
-      selectedCategory = "";
-      _removeOverlay();
-      loadFridge();
-    });
-
-    // API.updateStorageLocal(_storage);
-  }
+  
 
   Future<void> fetchCategories() async {
     List<String> fetchedCategories = await GetCategories.fetchCategories();
@@ -259,7 +222,7 @@ class CreateStorageState extends State<Storage> {
       if (item != null && item['category'] != "") {
         print(item['category']);
 
-        var category = item['category'];
+        var category = item['category'].toLowerCase();
         if (items.containsKey(category)) {
           items[category]!.add(item);
         } else {
@@ -284,10 +247,10 @@ class CreateStorageState extends State<Storage> {
         _layerLinks[item["id"].toString()] = LayerLink();
         openClose[item["id"].toString()] = false;
       } else {
-        if (items.containsKey("default")) {
-          items["default"]!.add(item);
+        if (items.containsKey("Default")) {
+          items["Default"]!.add(item);
         } else {
-          items["default"] = [item];
+          items["Default"] = [item];
         }
         _controllersITM["${item["id"]}"] =
             TextEditingController(text: item["ingredient"]);
@@ -297,7 +260,7 @@ class CreateStorageState extends State<Storage> {
         var focusNode = FocusNode();
         focusNode.addListener(() {
           if (!focusNode.hasFocus) {
-            //     updateItem("${item["id"]}default", item['id']);
+            //     updateItem("${item["id"]}Default", item['id']);
           }
         });
 
@@ -467,10 +430,20 @@ class CreateStorageState extends State<Storage> {
                                                                   });
                                                                 },
                                                               ),
-                                                              IconButton(
-                                                                icon: Icon(Icons
-                                                                    .delete),
-                                                                onPressed: () {
+                                                              ConfirmDeleteButton(
+                                                                itemId: item[
+                                                                    'id'].toString(),
+                                                                index:
+                                                                    index,
+                                                                itemIdString: item[
+                                                                        'id']
+                                                                    .toString(), 
+                                                                category:
+                                                                    category, 
+                                                                onDelete: (itemId,
+                                                                    index,
+                                                                    itemIdString,
+                                                                    category) {
                                                                   delete(
                                                                       item[
                                                                           'id'],
@@ -482,7 +455,7 @@ class CreateStorageState extends State<Storage> {
                                                               ),
                                                               IconButton(
                                                                 icon: Icon(Icons
-                                                                    .post_add),
+                                                                    .check),
                                                                 onPressed: () {
                                                                   updateItem(
                                                                       item[
@@ -518,7 +491,10 @@ class CreateStorageState extends State<Storage> {
               ),
         floatingActionButton: GestureDetector(
           onTap: () {
-            _showAddItemOverlay();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddStorageItem()),
+            );
           },
           child: Container(
               height: 75.0,
